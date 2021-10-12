@@ -2,29 +2,32 @@
 NAME=webserv
 CC= clang++
 CFLAGS = -Wall -Wextra -Werror -std=c++98
-INCLUDE= include
 RM=rm -rf
-HEADER = include/sample.hpp
+HEADER =	
 
-SRCS = sample.cpp
+SRCS =	main.cpp \
+		parsing/parser.cpp \
+		parsing/Server.cpp \
+		parsing/Location.cpp
 
 OBJS = $(addprefix .objs/, $(SRCS:.cpp=.o))
 
 SRCS_DIRECTORY=source/
 OBJS_DIRECTORY=.objs/
 
-$(OBJS_DIRECTORY)%.o : $(SRCS_DIRECTORY)%.cpp $(HEADER)
-	@$(CC) $(CFLAGS) $< -I$(INCLUDE) -c -o $@
+$(OBJS_DIRECTORY)%.o : $(SRCS_DIRECTORY)%.cpp
+	$(CC) $(CFLAGS) $< -c -o $@
 
 
 all : $(OBJS_DIRECTORY) $(NAME)
 
 $(NAME) : $(OBJS)
-	@$(CC) $(CFLAGS) $< -I$(INCLUDE) -o $@
+	$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
 
 
 $(OBJS_DIRECTORY):
 	@mkdir $@
+	@mkdir -p $@/parsing
 
 clean :
 	@$(RM) $(OBJS)
