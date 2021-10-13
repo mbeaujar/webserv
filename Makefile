@@ -6,10 +6,12 @@ RM=rm -rf
 HEADER =	
 
 SRCS =	main.cpp \
+		parsing/search_server.cpp \
 		parsing/parser.cpp \
+		parsing/skip.cpp \
 		parsing/server/Server.cpp \
-		parsing/Location.cpp \
-		parsing/find_server.cpp
+		parsing/create_server.cpp \
+		parsing/server/listen.cpp
 
 OBJS = $(addprefix .objs/, $(SRCS:.cpp=.o))
 

@@ -1,14 +1,3 @@
-/**
- * @file parser.cpp
- * @author mbeaujar (mbeaujar@student.42.fr)
- * @brief 
- * @version 0.1
- * @date 2021-10-12
- * 
- * @copyright Copyright (c) 2021
- * 
- */
-
 #include "server/Server.hpp"
 #include <iostream>
 #include <fstream>
@@ -41,11 +30,11 @@ std::vector<Server> parser(const char *filename)
 
 	std::string file = readFile(filename);
 	
-	//servers = find_server(file);
+	servers = find_server(file);
 
-	Server a = Server();
-	a.cut_location(file);
-	printVectorLocation(a.get_location());
+	// Server a = Server();
+	// a.cut_location(file);
+	// printVectorLocation(a.get_location());
 	// servers.push_back(Server());
 	//servers[0].cut_location(file);
 	//printVectorLocation(servers[0].get_location());

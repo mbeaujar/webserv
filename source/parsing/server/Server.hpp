@@ -1,55 +1,39 @@
-/**
- * @file Server.hpp
- * @author mbeaujar (mbeaujar@student.42.fr)
- * @brief 
- * @version 0.1
- * @date 2021-10-12
- * 
- * @copyright Copyright (c) 2021
- * 
- */
-
 #ifndef __SERVER_HPP__
 # define __SERVER_HPP__
 
 # include <iostream>
 # include <vector>
 # include <map>
-# include "../Location.hpp"
+
+struct Port {
+	int port;
+	bool ipv4;
+};
 
 class Server {
     public:
         Server();
         Server(Server const &copy);
-        virtual ~Server();
-        Server &operator=(Server const &copy);
+        virtual	~Server();
+        Server&	operator=(Server const &copy);
 
-		bool    is_default() const;
-		bool    get_autoindex() const;
-		std::string get_root() const;
+		void 	adding_port(int const & port, bool const & ipv4);
+		void 	adding_error_page(int const & error, std::string const & path);
 
-		bool find_name(std::string const &name) const;
-		std::string find_error(int const &code) const;
+		void	set_limit_body_size(int const & limit_body_size);
+		void 	set_default_server(bool const & default_server);
+		
+		int	 	get_limit_body_size() const;
+		bool  	get_default_server() const;
 
+		bool 	find_port(int const & port) const;
 
-		void set_default(bool is_default);
-		void set_autoindex(bool autoindex);
-		void set_root(std::string const &root);
-		void add_Server_name(std::string const &new_name);
-		void add_error_page(std::pair<int, std::string> const &new_error);
-
-		void cut_location(std::string file);
-		std::vector<Location>       get_location();
-
-    private: 
-
-		bool _default;
-		bool _autoindex;
-		std::string _root;
-		std::vector<std::string>    _name;
-		std::vector<Location>       _location;
-		std::map<int, std::string>  _error_page;
-
+    private:
+		std::vector<Port>				_port;
+		bool							_default_server;
+		std::map<int , std::string>		_error_page;
+		int 							_limit_body_size;
+		// std::map<std::string, Location> _location;
 };
 
 #endif
