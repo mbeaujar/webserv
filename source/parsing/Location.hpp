@@ -19,15 +19,16 @@
 class Location 
 {
     public:
-        Location();
+        Location(std::string location_block);
         Location(Location const &copy);
         ~Location();
         Location &operator=(Location const &copy);
-        void cut_location(std::string file);
+        //void cut_location(std::string file);
         void parse_location(void);
 
 
         std::string location_block;
+        std::string target;
         bool autoindex;
         std::vector<std::string> index;
         std::vector<std::string> fastcgi_param;

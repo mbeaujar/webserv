@@ -15,7 +15,7 @@
 # include <iostream>
 # include <vector>
 # include <map>
-# include "Location.hpp"
+# include "../Location.hpp"
 
 class Server {
     public:
@@ -24,7 +24,6 @@ class Server {
         virtual ~Server();
         Server &operator=(Server const &copy);
 
-		int     get_port() const;
 		bool    is_default() const;
 		bool    get_autoindex() const;
 		std::string get_root() const;
@@ -33,15 +32,17 @@ class Server {
 		std::string find_error(int const &code) const;
 
 
-		void set_port(int const &port);
 		void set_default(bool is_default);
 		void set_autoindex(bool autoindex);
 		void set_root(std::string const &root);
 		void add_Server_name(std::string const &new_name);
 		void add_error_page(std::pair<int, std::string> const &new_error);
 
+		void cut_location(std::string file);
+		std::vector<Location>       get_location();
+
     private: 
-		int	_port;
+
 		bool _default;
 		bool _autoindex;
 		std::string _root;

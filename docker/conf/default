@@ -1,21 +1,28 @@
 
-server {
-	listen 80 default_server;
+server 
+{
+	listen 90;
+	listen 100;
+	listen 110;
 	listen [::]:80 default_server;
 
-	root /var/www/html;
+	root /var/www/html
+	;
 
 	index index.html index.htm index.nginx-debian.html;
-	server_name _;
 
-	location / {
+	server_name werbserv #je suis un test
+	;
+
+	error_page 404 https://lldlfldfldf;
+	error_page 404 https://localhost;
+
+	location / { #ici
 		try_files $uri $uri/ =404;
 	}
 
-	location / {
-		# ici
-	}
 
 }
 
-server {}
+server {
+}

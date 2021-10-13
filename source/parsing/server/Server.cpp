@@ -5,8 +5,7 @@
  * 
  */
 Server::Server()
-	: _port(0),
-	  _default(false),
+	: _default(false),
 	  _autoindex(false),
 	  _root(),
 	  _name(),
@@ -19,8 +18,7 @@ Server::Server()
  * @param src 
  */
 Server::Server(Server const & src)
-	: _port(src._port),
-	  _default(src._default),
+	: _default(src._default),
 	  _autoindex(src._autoindex),
 	  _root(src._root),
 	  _name(src._name),
@@ -42,7 +40,6 @@ Server::~Server() {}
 Server & Server::operator=(Server const & rhs) {
     if (this == &rhs)
         return *this;
-	_port = rhs._port;
 	_default = rhs._default;
 	_autoindex = rhs._autoindex;
 	_root = rhs._root;
@@ -50,13 +47,6 @@ Server & Server::operator=(Server const & rhs) {
 	_error_page = rhs._error_page;
     return *this;
 }
-
-/**
- * @brief return the port 
- * 
- * @return int 
- */
-int Server::get_port() const { return _port; }
 
 /**
  * @brief return true if the Server is the Server by default
@@ -106,13 +96,6 @@ std::string Server::find_error(int const & error_code) const {
 }
 
 /**
- * @brief Set the port object
- * 
- * @param port 
- */
-void Server::set_port(int const & port) { _port = port; }
-
-/**
  * @brief Set the default object
  * 
  * @param is_default 
@@ -146,4 +129,46 @@ void Server::add_Server_name(std::string const &new_name) { _name.push_back(new_
  * @param new_error pair<int, std::string>
  */
 void Server::add_error_page(std::pair<int, std::string> const &new_error) { _error_page.insert(new_error); }
+/**
+ * @brief
+ *
+ * @param
+ */
+std::vector<Location>       Server::get_location() { return _location; }
+
+void Server::cut_location(std::string file)
+{
+	int i = 0;
+	int debut = 0;
+	int fin = 0;
+	std::string block = "";
+
+	while (file[i] != '\0')
+	{
+		block = "";
+		if (file[i] == 'l' && 
+		file[i + 1] && file[i + 1] == 'o' && 
+		file[i + 2] && file[i + 2] == 'c' && 
+		file[i + 3] && file[i + 3] == 'a' && 
+		file[i + 4] && file[i + 4] == 't' && 
+		file[i + 5] && file[i + 5] == 'i' && 
+		file[i + 6] && file[i + 6] == 'o' && 
+		file[i + 7] && file[i + 7] == 'n')
+		{
+			debut = i;
+			while (file[i] && file[i] != '}')
+			{
+				block += file[i];
+				i++;
+			}
+			if (file[i] == '}')
+				fin = i + 1;
+			else
+				throw std::invalid_argument("Wrong file");
+			block += file[i];
+			_location.push_back(Location(block));
+		}
+		i++;
+	}
+}
 

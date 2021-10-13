@@ -15,8 +15,9 @@
  * @brief Construct a new Location::Location object
  * 
  */
-Location::Location()
-	: autoindex(false),
+Location::Location(std::string location_block)
+	:location_block(location_block),
+	 autoindex(false),
 	  index(),
 	  fastcgi_param(),
 	  fastcgi_pass() {}
@@ -33,7 +34,8 @@ Location::~Location() {}
  * @fastcgi_param copy 
  */
 Location::Location(Location const &copy)
-	: autoindex(copy.autoindex),
+	: location_block(copy.location_block),
+		autoindex(copy.autoindex),
 	  index(copy.index),
 	  fastcgi_param(copy.fastcgi_param),
 	  fastcgi_pass(copy.fastcgi_pass) {}
@@ -53,36 +55,4 @@ Location& Location::operator=(Location const &copy)
 	fastcgi_param = copy.fastcgi_param;
 	fastcgi_pass = copy.fastcgi_pass;
 	return *this;
-}
-
-void Location::cut_location(std::string file)
-{
-	int i = 0;
-	int debut = 0;
-	int fin = 0;
-
-	while (file[i] != '\0')
-	{
-		if (file[i] == 'l' && 
-		file[i + 1] && file[i + 1] == 'o' && 
-		file[i + 2] && file[i + 2] == 'c' && 
-		file[i + 3] && file[i + 3] == 'a' && 
-		file[i + 4] && file[i + 4] == 't' && 
-		file[i + 5] && file[i + 5] == 'i' && 
-		file[i + 6] && file[i + 6] == 'o' && 
-		file[i + 7] && file[i + 7] == 'n')
-		{
-			debut = i;
-			i+=7;
-			while (file[i] && file[i] != '}')
-				i++;
-			if (file[i] == '}')
-				fin = i;
-			else
-				throw std::invalid_argument("Wrong file");
-		}
-		i++;
-	}
-	location_block = file.substr(debut, fin);
-	std::cout << location_block << std::endl;
 }
