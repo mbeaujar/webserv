@@ -2,8 +2,7 @@
 #include "server/Server.hpp"
 #include "../prototype.hpp"
 
-
-std::vector<Server> find_server(std::string file)
+std::vector<Server> parse_server(std::string file)
 {
 	std::vector<Server> lst;
 
@@ -25,9 +24,9 @@ std::vector<Server> find_server(std::string file)
 			}
 			if (file[i] == '{') { // add a new server
 				int skip = skip_bracket(file, i);
-				std::string server = file.substr(i, skip - i);
-				lst.push_back(create_server(server));
-				std::cout << "find" << std::endl;
+				std::string server = file.substr(i, skip - (i - 1));
+				lst.push_back(config_server(server));
+				std::cout << "find server" << std::endl;
 				i = skip;
 			}
 			else

@@ -1,17 +1,22 @@
 #.SILENT:
-NAME=webserv
-CC= clang++
+NAME   = webserv
+CC     = clang++
+RM     = rm -rf
 CFLAGS = -Wall -Wextra -Werror -std=c++98
-RM=rm -rf
-HEADER =	
 
-SRCS =	main.cpp \
-		parsing/search_server.cpp \
-		parsing/parser.cpp \
-		parsing/skip.cpp \
-		parsing/server/Server.cpp \
-		parsing/create_server.cpp \
-		parsing/server/listen.cpp
+HEADER = source/config/server
+
+SRCS  =	main.cpp \
+		config/directives/client_size.cpp \
+		config/directives/error_page.cpp \
+		config/directives/listen.cpp \
+		config/directives/skip_utils.cpp \
+		config/server/Location.cpp \
+		config/server/Server.cpp \
+		config/config_server.cpp \
+		config/parse_server.cpp \
+		config/parser.cpp 
+
 
 OBJS = $(addprefix .objs/, $(SRCS:.cpp=.o))
 
@@ -30,7 +35,8 @@ $(NAME) : $(OBJS)
 
 $(OBJS_DIRECTORY):
 	@mkdir $@
-	@mkdir -p $@/parsing/server
+	@mkdir -p $@/config/directives
+	@mkdir -p $@/config/server
 
 clean :
 	@$(RM) $(OBJS)

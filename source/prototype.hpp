@@ -1,12 +1,15 @@
 #ifndef __PROTOTYPE_HPP__
 #define __PROTOTYPE_HPP__
 
-#include "parsing/server/Server.hpp"
+#include "config/server/Server.hpp"
+#include "config/server/Location.hpp"
 #include <vector>
+#include <sstream>
 
 std::vector<Server>	parser(const char *filename);
-std::vector<Server>	find_server(std::string file);
-Server				create_server(std::string server);
+std::vector<Server> parse_server(std::string file);
+Server 				config_server(std::string file);
+Location			config_location(std::string file);
 int					parse_error_page(std::string file, int i, Server &a);
 int					parse_elements(std::string file, int i, Server &a);
 int					parse_root(std::string file, int i, Server &a);
@@ -15,6 +18,17 @@ int					skip_comment(std::string file, int i);
 int					skip_space(std::string file, int i);
 int					skip_word(std::string file, int i);
 int 				parse_listen(std::string file, int i, Server &a);
+int					parse_error_page(std::string file, int i, Server &a);
+int 				parse_client_size(std::string file, int i, Server &a);
+int					recup_nb(std::string file, int & i);
+
+template <typename tostring>
+std::string to_string(tostring n)
+{
+	std::ostringstream ss;
+	ss << n;
+	return ss.str();
+}
 
 // template <typename T>
 // void printVector(T &vector)

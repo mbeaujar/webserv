@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../prototype.hpp"
+#include "../../prototype.hpp"
 
 
 int skip_space(std::string file, int i) {
@@ -11,8 +11,7 @@ int skip_space(std::string file, int i) {
 int skip_bracket(std::string file, int i) {
 	int counter = 0;
 	while (file[i]) {
-		if (file[i] == '#')
-			i = skip_comment(file, i);
+		i = skip_comment(file, i);
 		if (file[i] == '{')
 			counter++;
 		if (file[i] == '}')
@@ -25,6 +24,10 @@ int skip_bracket(std::string file, int i) {
 }
 
 int skip_comment(std::string file, int i) {
+	if (file[i] == '#')
+		i++;
+	else
+		return i;
 	while (file[i] && file[i] != '\n')
 		i++;
 	if (file[i] == '\n')

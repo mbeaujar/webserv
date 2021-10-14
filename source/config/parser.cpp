@@ -5,7 +5,6 @@
 #include <exception>
 #include "../prototype.hpp"
 
-
 std::string readFile(std::string filename) 
 {
     std::string	    content, line;
@@ -13,11 +12,11 @@ std::string readFile(std::string filename)
 
     file.open(filename.c_str());
     if (!file.is_open())
-    	throw std::invalid_argument("Wrong file 1");
+    	throw std::invalid_argument("can't open the file in argument");
     while (std::getline(file, line))
         content += line + "\n";
 	if (content == "")
-		throw std::invalid_argument("Wrong file 2");
+		throw std::invalid_argument("Empty file or file is a directory");
     return content;
 }
 
@@ -30,7 +29,7 @@ std::vector<Server> parser(const char *filename)
 
 	std::string file = readFile(filename);
 	
-	servers = find_server(file);
+	servers = parse_server(file);
 
 	// Server a = Server();
 	// a.cut_location(file);
