@@ -16,10 +16,11 @@ server
 
 	location #ici
 	/ { #ici
-		autoindex on on;
+		autoindex ons;
 		try_files $uri $uri/ =404;
 		index index.html index.html index.php fkfkfkf;
 	}
+
 
 	error_page 300  amozjlenf ; 
 }

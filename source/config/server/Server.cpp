@@ -35,6 +35,10 @@ void Server::adding_error_page(int const &error, std::string const &path) {
 	_error_page.insert(std::make_pair(error, path));
 }
 
+void Server::adding_location(std::string const & path, Location const & location) {
+	_location.insert(std::make_pair(path, location));
+}
+
 void Server::set_client_size(int const & client_size) {
 	_client_size = client_size;
 }
@@ -65,4 +69,16 @@ std::string Server::find_error(int const & error) const {
 	if (search != _error_page.end())
 		return search->second;
 	return "";
+}
+
+bool Server::find_location(std::string const & path) const {
+	std::map<std::string, Location>::const_iterator it = _location.find(path);
+
+	if (it != _location.end())
+		return true;
+	return false;
+}
+
+Location Server::get_location(std::string const & path) const {
+	return _location.find(path)->second;
 }

@@ -58,14 +58,19 @@ Server config_server(std::string file)
 			std::string path = recup_path_location(file, i);
 			if (file[i] != '{')
 				throw std::invalid_argument("invalid number of arguments in \"location\" directive");
+			if (a.find_location(path))
+				throw std::invalid_argument("duplicate location \"" + path + "\"");
 			// recup le path
 			int skip = skip_bracket(file, i);
 			std::string location = file.substr(i, skip - (i - 1));
-			// // i = config_location();
+			a.adding_location(path, config_location(location));
+			i = skip + 1;
 		} else
 			i++;
 
 		// if location
 	}
+	Location tmp = a.get_location("/");
+	std::cout << "autoindex: " << tmp.get_autoindex() << std::endl;
  	return a;
 }

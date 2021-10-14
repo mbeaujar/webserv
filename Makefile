@@ -7,12 +7,14 @@ CFLAGS = -Wall -Wextra -Werror -std=c++98
 HEADER = source/config/server
 
 SRCS  =	main.cpp \
+		config/directives/autoindex.cpp \
 		config/directives/client_size.cpp \
 		config/directives/error_page.cpp \
 		config/directives/listen.cpp \
 		config/directives/skip_utils.cpp \
 		config/server/Location.cpp \
 		config/server/Server.cpp \
+		config/config_location.cpp \
 		config/config_server.cpp \
 		config/parse_server.cpp \
 		config/parser.cpp 

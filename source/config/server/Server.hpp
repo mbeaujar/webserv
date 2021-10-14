@@ -4,6 +4,7 @@
 # include <iostream>
 # include <vector>
 # include <map>
+# include "Location.hpp"
 
 struct Port {
 	int port;
@@ -19,22 +20,25 @@ class Server {
 
 		void 		adding_port(int const & port, bool const & ipv4);
 		void 		adding_error_page(int const & error, std::string const & path);
+		void		adding_location(std::string const & path, Location const & location);
 
 		void		set_client_size(int const & limit_body_size);
 		void 		set_default_server(bool const & default_server);
 		
 		int	 		get_client_size() const;
 		bool  		get_default_server() const;
+		Location 	get_location(std::string const & path) const;
 
 		bool 		find_port(int const & port, bool const & ipv4) const;
 		std::string	find_error(int const & error) const;
+		bool 		find_location(std::string const & path) const;
 
     private:
 		std::vector<Port>				_port;
 		bool							_default_server;
 		std::map<int , std::string>		_error_page;
 		int 							_client_size;
-		// std::map<std::string, Location> _location;
+		std::map<std::string, Location> _location;
 };
 
 #endif
