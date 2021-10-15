@@ -25,6 +25,7 @@ int					recup_nb(std::string file, int & i);
 int					parse_autoindex(std::string file, int i, Location &a);
 int 				parse_index(std::string file, int i, Location &a);
 int 				parse_root(std::string file, int i, Location &a);
+int 				parse_return(std::string file, int i, Location &a);
 
 template <typename tostring>
 std::string to_string(tostring n)

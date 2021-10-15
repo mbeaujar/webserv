@@ -9,7 +9,11 @@ Location::Location()
 	  _root(),
 	  _index(),
 	  _fastcgi_param(),
-	  _fastcgi_pass() {}
+	  _fastcgi_pass(),
+	  _return()
+{
+	_return.first = -1;
+}
 
 /**
  * @brief Destroy the Location::Location object
@@ -27,7 +31,8 @@ Location::Location(Location const &copy)
 	  _root(copy._root),
 	  _index(copy._index),
 	  _fastcgi_param(copy._fastcgi_param),
-	  _fastcgi_pass(copy._fastcgi_pass) {}
+	  _fastcgi_pass(copy._fastcgi_pass),
+	  _return(copy._return) {}
 
 /**
  * @brief 
@@ -44,6 +49,7 @@ Location& Location::operator=(Location const &copy)
 	_index = copy._index;
 	_fastcgi_param = copy._fastcgi_param;
 	_fastcgi_pass = copy._fastcgi_pass;
+	_return = copy._return;
 	return *this;
 }
 
@@ -67,9 +73,18 @@ void Location::set_autoindex(bool const & autoindex) {
 	_autoindex = autoindex;
 }
 
+void Location::set_return(int const & code, std::string const & path) {
+	if (_return.first == -1)  {
+		_return.first = code;
+		_return.second = path;
+	}
+}
+
 bool Location::get_autoindex() const { return _autoindex; }
 
 std::string Location::get_root() const { return _root; }
+
+std::pair<int, std::string> Location::get_return() const { return _return; }
 
 bool Location::find_index(std::string const & index) const {
 	std::vector<std::string>::const_iterator it = _index.begin(), ite = _index.end();

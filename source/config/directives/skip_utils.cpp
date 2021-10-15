@@ -1,6 +1,17 @@
 #include <iostream>
 #include "../../prototype.hpp"
 
+
+int recup_nb(std::string file, int & i) {
+	int port = 0;
+
+	while (isdigit(file[i])) {
+		port = (port * 10) +  (file[i] - 48);
+		i++;
+	}
+	return port;
+}
+
 int skip_space(std::string file, int i) {
 	while (file[i] && isspace(file[i]))
 		i++;
@@ -20,7 +31,7 @@ int skip_bracket(std::string file, int i) {
 		i++;
 	}
 	if (!file[i])
-		throw std::invalid_argument("unknow directive");
+		throw std::invalid_argument("unexpected \"}\" or \"{\"");
 	return i;
 }
 

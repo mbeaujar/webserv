@@ -32,8 +32,11 @@ std::vector<Server> parse_server(std::string file)
 			else
 				throw std::invalid_argument("unknow directive, expected '{' after \"server\"");
 		}
-		else if (file[i] && !isspace(file[i]) && file[i] != '#')
+		else if (file[i] && !isspace(file[i]) && file[i] != '#') {
+			if (file[i] == '}' || file[i] == '{')
+				throw std::invalid_argument("unexpected \"{\" or \"}\"");
 			throw std::invalid_argument("unknow directive between server");
+		}
 	}
 	return lst;
 }

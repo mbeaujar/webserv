@@ -1,29 +1,22 @@
 
 server 
 {
-	listen [::]:80 default;
-	#listen [::]:;	
+	listen 80;
 
-	
-	#server_name mael; 
-
-	#root /var/www/html;
-
-	#index index.html index.htm index.nginx-debian.html;
-
-	#error_page 404 https://localhost;
+	client_max_body_size 10m;
+	error_page 404 https://localhost;
+	error_page 300  amozjlenf ;
 
 	location / { 
 		autoindex on;
 		index index.gtml;
-		root r/va{r/alkrznglkeawww/html;
+		root r/var/alkrznglkeawww/html;
+		return 0 http://ghjhjhjh;
+		#return 302 http://papapapapapap;
 		#try_files $uri $uri/ =404;
 	}
 
-	error_page 300  amozjlenf ;
-	client_max_body_size 10m;
 }
-
 
 server {
 

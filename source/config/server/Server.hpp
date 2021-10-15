@@ -34,10 +34,10 @@ class Server {
 		bool 		find_location(std::string const & path) const;
 
     private:
-		std::vector<Port>				_port;
-		bool							_default_server;
-		std::map<int , std::string>		_error_page;
 		int 							_client_size;
+		bool							_default_server;
+		std::vector<Port>				_port;
+		std::map<int , std::string>		_error_page;
 		std::map<std::string, Location> _location;
 };
 

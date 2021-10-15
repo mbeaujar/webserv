@@ -2,17 +2,6 @@
 #include "../../prototype.hpp"
 #include "../server/Server.hpp"
 
-
-int recup_nb(std::string file, int & i) {
-	int port = 0;
-
-	while (isdigit(file[i])) {
-		port = (port * 10) +  (file[i] - 48);
-		i++;
-	}
-	return port;
-}
-
 bool parse_word(std::string file, int & i) {
 	int skip = skip_word(file, i);
 	std::string word = file.substr(i, skip - i);
