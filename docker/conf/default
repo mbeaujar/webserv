@@ -3,25 +3,28 @@ server
 {
 	listen [::]:80 default;
 	#listen [::]:;	
+
 	
-	client_max_body_size 0M;
-	
-	server_name mael; 
+	#server_name mael; 
 
-	root /var/www/html;
+	#root /var/www/html;
 
-	index index.html index.htm index.nginx-debian.html;
+	#index index.html index.htm index.nginx-debian.html;
 
-	error_page 404 https://localhost;
+	#error_page 404 https://localhost;
 
-	location #ici
-	/ { #ici
-		autoindex ons;
-		try_files $uri $uri/ =404;
-		index index.html index.html index.php fkfkfkf;
+	location / { 
+		autoindex on;
+		index index.gtml;
+		root r/va{r/alkrznglkeawww/html;
+		#try_files $uri $uri/ =404;
 	}
 
-
-	error_page 300  amozjlenf ; 
+	error_page 300  amozjlenf ;
+	client_max_body_size 10m;
 }
 
+
+server {
+
+}

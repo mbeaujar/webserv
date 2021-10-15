@@ -10,7 +10,9 @@ Location config_location(std::string file)
 	int nb_autoindex = 0;
 	int i = 0;
 
-	while (file[i])
+	if (file[i] == '{')
+		i++;
+	while (file[i] && file[i] != '}')
 	{
 		if (file[i] == '#')
 			i = skip_comment(file, i);
@@ -20,9 +22,17 @@ Location config_location(std::string file)
 			i++;
 
 		// if root
-
+		if (file.compare(i, 4, "root") == 0) {
+			i += 4;
+			i = parse_root(file, i, a);
+		}
 
 		// if index 
+		if (file.compare(i, 5, "index") == 0) {
+			i += 5;
+			i = parse_index(file, i, a);
+		}
+
 		// if autoindex
 		if (file.compare(i, 9, "autoindex") == 0) {
 			i += 9;

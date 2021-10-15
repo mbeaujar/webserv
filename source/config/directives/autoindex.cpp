@@ -8,7 +8,7 @@ int	parse_autoindex(std::string file, int i, Location &a)
     std::string state;
 	
     if (!isspace(file[i]))
-		throw std::invalid_argument("unknow directive \"autoindex" + file.substr(i, skip_word(file, i) - i) + "\"");
+		throw std::invalid_argument("unknow directive \"autoindex" + file.substr(i, skip_word_exception(file, i) - i) + "\"");
     while (file[i] && file[i] != ';')
 	{
         int tmp = i;
@@ -20,7 +20,7 @@ int	parse_autoindex(std::string file, int i, Location &a)
             arg++;
             if (file.substr(i, skip_word(file, i) - i) == "on")
                 autoindex = true;
-            else if (file.substr(i, skip_word(file, i) - i) == "off")
+            else if (file.substr(i, skip_word(file, i) - i) == "off") 
                 autoindex = false;
             else
                 throw std::invalid_argument("invalid value " + file.substr(tmp, skip_word(file, i) - i) + " in \"autoindex\" directive, it must be \"on\" or \"off\""); 

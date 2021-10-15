@@ -1,7 +1,6 @@
 #include <iostream>
 #include "../../prototype.hpp"
 
-
 int skip_space(std::string file, int i) {
 	while (file[i] && isspace(file[i]))
 		i++;
@@ -20,23 +19,32 @@ int skip_bracket(std::string file, int i) {
 			break;
 		i++;
 	}
+	if (!file[i])
+		throw std::invalid_argument("unknow directive");
 	return i;
 }
 
 int skip_comment(std::string file, int i) {
-	if (file[i] == '#')
-		i++;
-	else
-		return i;
-	while (file[i] && file[i] != '\n')
-		i++;
-	if (file[i] == '\n')
+	while (file[i] && file[i] == '#') {
+		while (file[i] && file[i] != '\n')
+			i++;
+		if (file[i] == '\n')
+			i++;
+	}
+	return i;
+}
+
+int skip_word_exception(std::string file, int i) {
+	while (file[i] && !isspace(file[i]) && file[i] != ';' && file[i] != '#')
 		i++;
 	return i;
 }
 
 int skip_word(std::string file, int i) {
-	while (file[i] && !isspace(file[i]) && file[i] != ';' && file[i] != '#')
+	while (file[i] && !isspace(file[i]) && file[i] != ';' && file[i] != '#') {
+		if (file[i] == '{' || file[i] == '}')
+			throw std::invalid_argument("directive is not termined by \";\"");
 		i++;
+	}
 	return i;
 }

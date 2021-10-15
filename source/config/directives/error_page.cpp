@@ -18,7 +18,7 @@ int	parse_error_page(std::string file, int i, Server &a)
     std::string value;
 
     if (!isspace(file[i]))
-		throw std::invalid_argument("unknow directive \"error_page" + file.substr(i, skip_word(file, i) - i) + "\"");
+		throw std::invalid_argument("unknow directive \"error_page" + file.substr(i, skip_word_exception(file, i) - i) + "\"");
 	while (file[i] && file[i] != ';' && file[i] != '{')
 	{
         if (file[i] == ';')
@@ -35,10 +35,10 @@ int	parse_error_page(std::string file, int i, Server &a)
                     i++;
                 }
                 if (!isspace(file[i]))
-                    throw std::invalid_argument("invalid value \"" + file.substr(tmp, skip_word(file, i) - tmp) + "\"" + " in ...");
+                    throw std::invalid_argument("invalid value \"" + file.substr(tmp, skip_word_exception(file, i) - tmp) + "\"" + " in ...");
                 braket_check(file, i);
                 if (error < 300 || error > 599)
-                    throw std::invalid_argument("value \"" + file.substr(tmp, skip_word(file, i) - tmp) + "\" must be between 300 and 599 in ...");
+                    throw std::invalid_argument("value \"" + file.substr(tmp, skip_word_exception(file, i) - tmp) + "\" must be between 300 and 599 in ...");
             }
             else if (code == 1)
             {
@@ -57,7 +57,8 @@ int	parse_error_page(std::string file, int i, Server &a)
         throw std::invalid_argument("directive \"error_page\" is not terminated by \";\" in ...");
     if (file[i] != ';' || code != 2)
         throw std::invalid_argument("invalid number of arguments in \"error_page\" directive in ...");
-	// std::cout << "code: " << error << "\t" << "path: " << value << std::endl;
 	a.adding_error_page(error, value);
+    if (file[i] && file[i] == ';')
+        i++;
     return i;
 }

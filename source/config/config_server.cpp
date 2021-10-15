@@ -35,13 +35,13 @@ Server config_server(std::string file)
 	int i = 0;
 	int nb_client_size = 0;
 
-	while (file[i])
+	if (file[i] == '{')
+		i++;
+	while (file[i] && file[i] != '}')
 	{
-		if (file[i] == '#')
-			i = skip_comment(file, i);
-		else if (isspace(file[i]))
-			i = skip_space(file, i);
-		else if (file.compare(i, 6, "listen") == 0) {
+		i = skip_comment(file, i);
+		i = skip_space(file, i);
+		if (file.compare(i, 6, "listen") == 0) {
 			i += 6;
 			i = parse_listen(file, i, a);
 		} else  if (file.compare(i, 10, "error_page") == 0) {
@@ -60,17 +60,17 @@ Server config_server(std::string file)
 				throw std::invalid_argument("invalid number of arguments in \"location\" directive");
 			if (a.find_location(path))
 				throw std::invalid_argument("duplicate location \"" + path + "\"");
-			// recup le path
 			int skip = skip_bracket(file, i);
 			std::string location = file.substr(i, skip - (i - 1));
 			a.adding_location(path, config_location(location));
 			i = skip + 1;
-		} else
-			i++;
+		} else if (file[i] && !isspace(file[i]) && file[i] != '#' && file[i] != '}')
+			throw std::invalid_argument("unknow directive \"" + file.substr(i, skip_word(file, i) - i) + "\"");
 
-		// if location
 	}
-	Location tmp = a.get_location("/");
-	std::cout << "autoindex: " << tmp.get_autoindex() << std::endl;
+	if (a.find_location("/")) {
+		Location tmp = a.get_location("/");
+		std::cout << "autoindex: " << tmp.get_autoindex() << std::endl;
+	}
  	return a;
 }

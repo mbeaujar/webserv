@@ -29,7 +29,7 @@ int parse_listen(std::string file, int i, Server &a)
 	int ipv6 = 0;
 
 	if (!isspace(file[i]))
-		throw std::invalid_argument("unknow directive \"listen" + file.substr(i, skip_word(file, i) - i) + "\"");
+		throw std::invalid_argument("unknow directive \"listen" + file.substr(i, skip_word_exception(file, i) - i) + "\"");
 	while (file[i] && file[i] != ';')
 	{
 		i = skip_space(file, i);
@@ -59,6 +59,8 @@ int parse_listen(std::string file, int i, Server &a)
 	}
 	a.adding_port(port, ipv6 == 0);
 	if (is_default == true)
-		a.set_default_server(is_default);	
+		a.set_default_server(is_default);
+	if (file[i] == ';')
+		i++;
 	return i;
 }
