@@ -27,6 +27,9 @@ class Server {
 		
 		int	 		get_client_size() const;
 		bool  		get_default_server() const;
+		std::map<int, std::string> get_error_page() const;
+		std::vector<Port> get_port() const;
+		std::map<std::string, Location> get_all_location() const;
 		Location 	get_location(std::string const & path) const;
 
 		bool 		find_port(int const & port, bool const & ipv4) const;

@@ -17,7 +17,7 @@ int parse_root(std::string file, int i, Location &a)
                 throw std::invalid_argument("unexpected \"}\"");
 			int skip = skip_word(file, i);
 			std::string word = file.substr(i, skip - i);
-			a.adding_index(word);
+			a.set_root(word);
 			i = skip;
 			count++;
 		}

@@ -84,6 +84,12 @@ bool Location::get_autoindex() const { return _autoindex; }
 
 std::string Location::get_root() const { return _root; }
 
+std::vector<std::string> Location::get_index() const { return _index; }
+
+std::vector<std::string> Location::get_param() const { return _fastcgi_param; }
+
+std::vector<std::string> Location::get_pass() const { return _fastcgi_pass; }
+
 std::pair<int, std::string> Location::get_return() const { return _return; }
 
 bool Location::find_index(std::string const & index) const {

@@ -35,11 +35,7 @@ Location config_location(std::string file)
 			i = parse_return(file, i, a);
 		} else
 			i++;
-
-		// if return -- maybe
 		
-
-
 		// if ... cgi param
 
 		// if ... cgi pass

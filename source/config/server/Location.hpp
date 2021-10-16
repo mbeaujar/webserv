@@ -22,6 +22,9 @@ class Location
 
 		bool get_autoindex() const;
 		std::string get_root() const;
+		std::vector<std::string> get_index() const;
+		std::vector<std::string> get_param() const;
+		std::vector<std::string> get_pass() const;
 		std::pair<int, std::string> get_return() const;
 
 

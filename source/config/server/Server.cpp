@@ -1,26 +1,29 @@
 #include "Server.hpp"
 
 Server::Server()
-	: _port(),
+	: _client_size(0),
 	  _default_server(false),
+	  _port(),
 	  _error_page(),
-	  _client_size(0) {}
+	  _location() {}
 
 Server::Server(Server const &copy)
-	: _port(copy._port),
+	: _client_size(copy._client_size) ,
 	  _default_server(copy._default_server),
+	  _port(copy._port),
 	  _error_page(copy._error_page),
-	  _client_size(copy._client_size) {}
+	  _location(copy._location) {}
 
 Server::~Server() {}
 
 Server& Server::operator=(Server const &copy) {
 	if (this == &copy)
 		return *this;
-	_port = copy._port;
-	_default_server = copy._default_server;
-	_error_page = copy._error_page;
 	_client_size = copy._client_size;
+	_default_server = copy._default_server;
+	_port = copy._port;
+	_error_page = copy._error_page;
+	_location = copy._location;
 	return *this;
 }
 
@@ -49,7 +52,11 @@ void Server::set_default_server(bool const & default_server) {
 	_default_server = default_server;
 }
 
+std::map<int, std::string> Server::get_error_page() const { return _error_page; }
+
 bool Server::get_default_server() const { return _default_server; }
+
+std::vector<Port> Server::get_port() const { return _port; }
 
 bool Server::find_port(int const & port, bool const & ipv4) const {
 	std::vector<Port>::const_iterator it = _port.begin(), ite = _port.end();
@@ -78,6 +85,8 @@ bool Server::find_location(std::string const & path) const {
 		return true;
 	return false;
 }
+
+std::map<std::string, Location> Server::get_all_location() const { return _location; }
 
 Location Server::get_location(std::string const & path) const {
 	return _location.find(path)->second;

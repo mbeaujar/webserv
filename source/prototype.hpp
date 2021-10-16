@@ -35,6 +35,20 @@ std::string to_string(tostring n)
 	return ss.str();
 }
 
+template <typename T>
+void printvector(std::vector<T> &vector)
+{
+	typename std::vector<T>::iterator it = vector.begin(), ite = vector.end();
+	std::cout << "[ ";
+	while (it != ite) {
+		std::cout << *it;
+		if (it + 1 != ite)
+			std::cout << ", ";
+		++it;
+	}
+	std::cout << " ]" << "\n";
+}
+
 // template <typename T>
 // void printVector(T &vector)
 // {
