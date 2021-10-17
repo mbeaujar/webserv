@@ -26,7 +26,6 @@ std::vector<Server> parse_server(std::string file)
 				std::string server = file.substr(i, skip - (i - 1));
 				// std::cout << "|" << server << "|" << std::endl;
 				lst.push_back(config_server(server));
-				std::cout << "find server" << std::endl;
 				i = skip;
 			}
 			else

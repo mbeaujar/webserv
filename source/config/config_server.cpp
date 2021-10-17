@@ -68,9 +68,5 @@ Server config_server(std::string file)
 			throw std::invalid_argument("unknow directive \"" + file.substr(i, skip_word(file, i) - i) + "\"");
 
 	}
-	if (a.find_location("/")) {
-		Location tmp = a.get_location("/");
-		std::cout << "autoindex: " << tmp.get_autoindex() << std::endl;
-	}
  	return a;
 }

@@ -44,7 +44,5 @@ Location config_location(std::string file)
 		// if ... method http
 
 	}
-	// std::cout << "here: " << a.get_return().first << std::endl;
-	// std::cout << "here: " << a.get_return().second << std::endl;
 	return a;
 }
