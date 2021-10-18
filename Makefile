@@ -1,30 +1,47 @@
 #.SILENT:
-NAME=webserv
-CC= clang++
+NAME   = webserv
+CC     = clang++
+RM     = rm -rf
 CFLAGS = -Wall -Wextra -Werror -std=c++98
-INCLUDE= include
-RM=rm -rf
-HEADER = include/sample.hpp
 
-SRCS = sample.cpp
+HEADER = source/config/server
+
+SRCS  =	main.cpp \
+		config/directives/autoindex.cpp \
+		config/directives/client_size.cpp \
+		config/directives/error_page.cpp \
+		config/directives/index.cpp \
+		config/directives/listen.cpp \
+		config/directives/return.cpp \
+		config/directives/root.cpp \
+		config/directives/skip_utils.cpp \
+		config/server/Location.cpp \
+		config/server/Server.cpp \
+		config/config_location.cpp \
+		config/config_server.cpp \
+		config/parse_server.cpp \
+		config/parser.cpp 
+
 
 OBJS = $(addprefix .objs/, $(SRCS:.cpp=.o))
 
 SRCS_DIRECTORY=source/
 OBJS_DIRECTORY=.objs/
 
-$(OBJS_DIRECTORY)%.o : $(SRCS_DIRECTORY)%.cpp $(HEADER)
-	@$(CC) $(CFLAGS) $< -I$(INCLUDE) -c -o $@
+$(OBJS_DIRECTORY)%.o : $(SRCS_DIRECTORY)%.cpp
+	@$(CC) $(CFLAGS) $< -c -o $@
 
 
 all : $(OBJS_DIRECTORY) $(NAME)
 
 $(NAME) : $(OBJS)
-	@$(CC) $(CFLAGS) $< -I$(INCLUDE) -o $@
+	@$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
 
 
 $(OBJS_DIRECTORY):
 	@mkdir $@
+	@mkdir -p $@/config/directives
+	@mkdir -p $@/config/server
 
 clean :
 	@$(RM) $(OBJS)

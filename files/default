@@ -1,0 +1,20 @@
+
+server 
+{
+	listen 80;
+
+	location / { 
+		index index.nginx-debian.html;
+		root /var/www/html;
+	}
+}
+
+
+server  {
+	listen 8080;
+
+	location / {
+		index index.nginx-debian.html;
+		root /var/www/html;
+	}
+}
