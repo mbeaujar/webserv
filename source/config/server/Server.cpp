@@ -54,6 +54,8 @@ void Server::set_default_server(bool const & default_server) {
 
 std::map<int, std::string> Server::get_error_page() const { return _error_page; }
 
+int Server::get_number_of_port() const { return _port.size(); }
+
 bool Server::get_default_server() const { return _default_server; }
 
 std::vector<Port> Server::get_port() const { return _port; }

@@ -21,8 +21,9 @@ SRCS  =	main.cpp \
 		config/config_server.cpp \
 		config/parse_server.cpp \
 		config/parser.cpp \
-		socket/create_socket.cpp 
-
+		socket/connections.cpp \
+		socket/create.cpp \
+		socket/socket.cpp
 
 OBJS = $(addprefix .objs/, $(SRCS:.cpp=.o))
 

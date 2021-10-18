@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 		++it;
 	}
 	// socket
-	create_sockets();
+	handle_socket(servers);
 
 
 	return 0;

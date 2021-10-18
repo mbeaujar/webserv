@@ -32,7 +32,7 @@ int 				parse_fastcgi_param(std::string file, int i, Location &a);
 int 				parse_fastcgi_pass(std::string file, int i, Location &a);
 int					recup_nb(std::string file, int & i);
 void				printserver(Server &a);
-int 				create_sockets();
+int 				handle_socket(std::vector<Server> & servers);
 
 template <typename tostring>
 std::string to_string(tostring n)
