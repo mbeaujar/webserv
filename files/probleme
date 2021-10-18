@@ -9,7 +9,6 @@ server
 	}
 }
 
-
 server  {
 	listen 8080;
 

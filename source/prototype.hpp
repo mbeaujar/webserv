@@ -6,26 +6,32 @@
 #include <vector>
 #include <sstream>
 
+// -------------------------------- CONFIG
+
 std::vector<Server>	parser(const char *filename);
 std::vector<Server> parse_server(std::string file);
 Server 				config_server(std::string file);
 Location 			config_location(std::string file);
-int					parse_error_page(std::string file, int i, Server &a);
-int					parse_elements(std::string file, int i, Server &a);
-int					parse_root(std::string file, int i, Server &a);
+int 				skip_word_exception(std::string file, int i);
 int					skip_bracket(std::string file, int i);
 int					skip_comment(std::string file, int i);
 int					skip_space(std::string file, int i);
 int					skip_word(std::string file, int i);
-int 				skip_word_exception(std::string file, int i);
-int 				parse_listen(std::string file, int i, Server &a);
-int					parse_error_page(std::string file, int i, Server &a);
-int 				parse_client_size(std::string file, int i, Server &a);
-int					recup_nb(std::string file, int & i);
 int					parse_autoindex(std::string file, int i, Location &a);
-int 				parse_index(std::string file, int i, Location &a);
-int 				parse_root(std::string file, int i, Location &a);
+int 				parse_client_size(std::string file, int i, Server &a);
+int					parse_error_page(std::string file, int i, Server &a);
+int					parse_error_page(std::string file, int i, Server &a);
+int					parse_elements(std::string file, int i, Server &a);
 int 				parse_return(std::string file, int i, Location &a);
+int                 parse_method(std::string file, int i, Location &a);
+int 				parse_index(std::string file, int i, Location &a);
+int 				parse_listen(std::string file, int i, Server &a);
+int 				parse_root(std::string file, int i, Location &a);
+int					parse_root(std::string file, int i, Server &a);
+int 				parse_fastcgi_param(std::string file, int i, Location &a);
+int 				parse_fastcgi_pass(std::string file, int i, Location &a);
+int					recup_nb(std::string file, int & i);
+void				printserver(Server &a);
 
 template <typename tostring>
 std::string to_string(tostring n)

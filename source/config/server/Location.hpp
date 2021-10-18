@@ -13,7 +13,7 @@ class Location
         Location &operator=(Location const &copy);
 
 		void adding_index(std::string const & index);
-		void adding_param(std::string const & param);
+		void adding_param(std::string const & param); 
 		void adding_pass(std::string const & pass);
 
 		void set_root(std::string const & root);
