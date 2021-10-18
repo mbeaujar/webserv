@@ -20,7 +20,8 @@ SRCS  =	main.cpp \
 		config/config_location.cpp \
 		config/config_server.cpp \
 		config/parse_server.cpp \
-		config/parser.cpp 
+		config/parser.cpp \
+		socket/create_socket.cpp 
 
 
 OBJS = $(addprefix .objs/, $(SRCS:.cpp=.o))
@@ -42,6 +43,7 @@ $(OBJS_DIRECTORY):
 	@mkdir $@
 	@mkdir -p $@/config/directives
 	@mkdir -p $@/config/server
+	@mkdir -p $@/socket
 
 clean :
 	@$(RM) $(OBJS)
