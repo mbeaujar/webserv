@@ -1,4 +1,5 @@
 #include "socket.hpp"
+#include <fcntl.h>
 
 /**
  * @brief close all the fds
@@ -56,6 +57,7 @@ int handle_socket(std::vector<Server> & servers) {
 	FD_ZERO(&current_sockets);
 	std::map<int, bool>::iterator it = sockets.begin(), ite = sockets.end();
 	while (it != ite) {
+		fcntl(it->first, F_SETFL, O_NONBLOCK); // idk
 		FD_SET(it->first, &current_sockets);
 		++it;
 	}
@@ -71,6 +73,7 @@ int handle_socket(std::vector<Server> & servers) {
 			if (FD_ISSET(i, &ready_sockets)) {
 				if (sockets.find(i) != ite) {
 					int client_socket = accept_new_connection(i);
+					fcntl(client_socket, F_SETFL, O_NONBLOCK); // idk again
 					FD_SET(client_socket, &current_sockets);
 				} else {
 					handle_connections(i);
@@ -79,5 +82,5 @@ int handle_socket(std::vector<Server> & servers) {
 			}
 		}
 	}
-
 }
+//  siege localhost -r100 -c100
