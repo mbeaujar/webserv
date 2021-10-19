@@ -11,12 +11,13 @@ int create_socket_ipv4(int port, int backlog = 1) {
 	SA_IN server_addr;
 	int server_socket;
 	int opt = 1;
+	socklen_t optlen = sizeof(opt);
 	
 	if ((server_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
 		std::cerr << "Failed to create socket" << std::endl;
 		return -1;
 	}
-	if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1) {
+	if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, optlen) == -1) {
 		std::cerr << "Failed to set socket options" << std::endl;
 		close(server_socket);
 		return -1;
@@ -49,12 +50,13 @@ int create_socket_ipv6(int port, int backlog = 1) {
 	SA_IN6 server_addr;
 	int server_socket;
 	int opt = 1;
+	socklen_t optlen = sizeof(opt);
 	
 	if ((server_socket = socket(AF_INET6, SOCK_STREAM, 0)) == -1) {
 		std::cerr << "Failed to create socket" << std::endl;
 		return -1;
 	}
-	if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1) {
+	if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, optlen) == -1) {
 		std::cerr << "Failed to set socket options" << std::endl;
 		close(server_socket);
 		return -1;
