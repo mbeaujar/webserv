@@ -6,20 +6,13 @@ server
 	client_max_body_size 10m;
 	error_page 404 https://localhost;
 	error_page 300  amozjlenf ;
-	return 301 https://fjfjkfjkfjf;
 
 	location / { 
 		autoindex on;
 		index index.gtml;
 		root r/var/alkrznglkeawww/html;
-		
+		method toto;
 		#try_files $uri $uri/ =404;
 	}
-
-}
-
-server {
-	listen 80;
-	return 301 https://papapapapapa;
 
 }

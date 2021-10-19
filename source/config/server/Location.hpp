@@ -4,6 +4,16 @@
 # include <iostream>
 # include <vector>
 
+# define DELETE 0
+# define GET    1
+# define POST   2
+
+struct s_method {
+    bool m_get;
+    bool m_post;
+    bool m_delete;
+};
+
 class Location 
 {
     public:
@@ -15,11 +25,13 @@ class Location
 		void adding_index(std::string const & index);
 		void adding_param(std::string const & param); 
 		void adding_pass(std::string const & pass);
+        void adding_method(int nb);
 
 		void set_root(std::string const & root);
 		void set_autoindex(bool const & autoindex);
 		void set_return(int const & code, std::string const & path);
 
+        bool get_method(int nb);
 		bool get_autoindex() const;
 		std::string get_root() const;
 		std::vector<std::string> get_index() const;
@@ -36,6 +48,7 @@ class Location
         bool 						_autoindex;
 		std::string					_root;
 		std::vector<std::string> 	_index;
+        s_method	                _method;
         std::vector<std::string> 	_fastcgi_param;
         std::vector<std::string> 	_fastcgi_pass;
 		std::pair<int, std::string> _return;

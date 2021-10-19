@@ -8,6 +8,7 @@ Location::Location()
 	: _autoindex(false),
 	  _root(),
 	  _index(),
+	  _method(),
 	  _fastcgi_param(),
 	  _fastcgi_pass(),
 	  _return()
@@ -30,6 +31,7 @@ Location::Location(Location const &copy)
 	: _autoindex(copy._autoindex),
 	  _root(copy._root),
 	  _index(copy._index),
+	  _method(copy._method),
 	  _fastcgi_param(copy._fastcgi_param),
 	  _fastcgi_pass(copy._fastcgi_pass),
 	  _return(copy._return) {}
@@ -47,10 +49,31 @@ Location& Location::operator=(Location const &copy)
 	_autoindex = copy._autoindex;
 	_root = copy._root;
 	_index = copy._index;
+	_method = copy._method;
 	_fastcgi_param = copy._fastcgi_param;
 	_fastcgi_pass = copy._fastcgi_pass;
 	_return = copy._return;
 	return *this;
+}
+
+bool Location::get_method(int nb)
+{
+    if (nb == 0)
+        return true;
+    else if (nb == 1)
+        return true;
+    else
+        return true;
+}
+
+void Location::adding_method(int nb) {
+
+    if (nb == 0)
+        _method.m_delete = true;
+    else if (nb == 1)
+        _method.m_get = true;
+    else
+        _method.m_post = true;
 }
 
 void Location::adding_index(std::string const & index) {

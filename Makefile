@@ -12,6 +12,7 @@ SRCS  =	main.cpp \
 		config/directives/error_page.cpp \
 		config/directives/index.cpp \
 		config/directives/listen.cpp \
+		config/directives/method.cpp \
 		config/directives/return.cpp \
 		config/directives/root.cpp \
 		config/directives/skip_utils.cpp \

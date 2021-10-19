@@ -39,15 +39,15 @@ Location parse_location(std::string file)
 		} else if (file.compare(i, 6, "return") == 0) {
 			i += 6;
 			i = parse_return(file, i, a);
+		} else if (file.compare(i, 6, "method") == 0) {
+            i += 6;
+            i = parse_method(file, i, a);
         } else
 			i++; 
 		
 		
 		
-		// else if (file.compare(i, 6, "method") == 0) { // if ... method http
-        //     i += 6;
-        //     i = parse_method(file, i, a);
-		// } else if (file.compare(i, 13, "fastcgi_param") == 0) {
+		// else if (file.compare(i, 13, "fastcgi_param") == 0) {
 		// 	i += 13;
 		// 	i = parse_fastcgi_param(file, i, a); 
 		// } else if (file.compare(i, 12, "fastcgi_pass") == 0) { 
@@ -57,5 +57,10 @@ Location parse_location(std::string file)
 		// 	i++;
 		
 	}
+    if (!a.get_method(DELETE) && !a.get_method(GET) && !a.get_method(POST)) {
+        a.adding_method(DELETE);
+        a.adding_method(GET);
+        a.adding_method(POST);
+    }
 	return a;
 }
