@@ -1,5 +1,11 @@
 #include "socket.hpp"
 
+/**
+ * @brief close all the fds
+ * 
+ * @param fds list of fds
+ * @return int 
+ */
 int release_fds(std::map<int, bool> & fds) {
 	std::map<int, bool>::iterator it = fds.begin(), ite = fds.end();
 	while (it != ite) {
@@ -9,8 +15,13 @@ int release_fds(std::map<int, bool> & fds) {
 	return 0;
 }
 
-// le booléen ne sert à rien
-// la map sert à être plus rapide dans les recherches
+
+/**
+ * @brief Create a map of fd (fd = servers port)
+ * 
+ * @param servers list of servers
+ * @return std::map<int, bool>  booleen is useless
+ */
 std::map<int, bool> config_socket(std::vector<Server> & servers) {
 	std::map<int, bool> sockets;
 	std::vector<Server>::iterator it = servers.begin(), ite = servers.end();
@@ -32,6 +43,12 @@ std::map<int, bool> config_socket(std::vector<Server> & servers) {
 	return sockets;
 }
 
+/**
+ * @brief Create multiple sockets who handle multiple connections
+ * 
+ * @param servers list of servers
+ * @return int 
+ */
 int handle_socket(std::vector<Server> & servers) {
 	fd_set current_sockets, ready_sockets;
 	std::map<int, bool> sockets = config_socket(servers);

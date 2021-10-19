@@ -1,5 +1,11 @@
 #include "socket.hpp"
 
+/**
+ * @brief accept a new connection (wait until there is a new connection)
+ * 
+ * @param server_socket 
+ * @return int 
+ */
 int accept_new_connection(int server_socket) {
 	int addr_size = sizeof(SA_IN);
 	int client_socket;
@@ -11,6 +17,12 @@ int accept_new_connection(int server_socket) {
 }
 
 
+/**
+ * @brief read and respond the client request
+ * 
+ * @param client_socket 
+ * @return int 
+ */
 int handle_connections(int client_socket) {
 	int bytes_read;
 	char buffer[BUFFERSIZE] = {0};

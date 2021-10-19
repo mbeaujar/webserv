@@ -1,14 +1,14 @@
 #include <iostream>
-#include "server/Server.hpp"
-#include "../prototype.hpp"
+#include "Server.hpp"
+#include "../../prototype.hpp"
 
-// 1 root max
-
-// 1 location avec le même chemin max 
-
-// error_page illimité -- si il y a 2 error_page c'est le premier dans le fichier qui compte
-
-
+/**
+ * @brief recup the path of the location
+ * 
+ * @param file server (config file)
+ * @param i index
+ * @return std::string path
+ */
 std::string recup_path_location(std::string file, int & i) {
 	std::string word = "";
 	
@@ -28,7 +28,12 @@ std::string recup_path_location(std::string file, int & i) {
 	return word;
 }
 
-
+/**
+ * @brief parse the content of the server (config file)
+ * 
+ * @param file bracket of the server (config file)
+ * @return Server 
+ */
 Server config_server(std::string file) 
 {
 	Server a;
@@ -62,11 +67,57 @@ Server config_server(std::string file)
 				throw std::invalid_argument("duplicate location \"" + path + "\"");
 			int skip = skip_bracket(file, i);
 			std::string location = file.substr(i, skip - (i - 1));
-			a.adding_location(path, config_location(location));
+			a.adding_location(path, parse_location(location));
 			i = skip + 1;
 		} else if (file[i] && !isspace(file[i]) && file[i] != '#' && file[i] != '}')
 			throw std::invalid_argument("unknow directive \"" + file.substr(i, skip_word(file, i) - i) + "\"");
 
 	}
  	return a;
+}
+
+/**
+ * @brief split servers and parse them
+ * 
+ * @param file content of the file in argument
+ * @return std::vector<Server> list of Server
+ */
+std::vector<Server> parse_server(std::string file)
+{
+	std::vector<Server> lst;
+	size_t size = file.size();
+
+	for (size_t i = 0; file[i]; i++)
+	{
+		i = skip_space(file, i);
+		i = skip_comment(file, i);	
+		if (!file[i] || i > size)
+			break;
+		if (file[i] && i + 6 < size && file.compare(i, 6, "server") == 0) 
+		{
+			i += 6;
+			while (file[i] && file[i] != '{') { // skip space + comment
+				if (isspace(file[i]))
+					i = skip_space(file, i);
+				else if (file[i] == '#')
+					i = skip_comment(file, i);
+				else 
+					throw std::invalid_argument("Invalid number of arguments in \"server\"");
+			}
+			if (file[i] == '{') { // add a new server
+				size_t skip = skip_bracket(file, i);
+				std::string server = file.substr(i, skip - (i - 1));
+				lst.push_back(config_server(server));
+				i = skip;
+			}
+			else
+				throw std::invalid_argument("unknow directive, expected '{' after \"server\"");
+		}
+		else if (file[i] && !isspace(file[i]) && file[i] != '#') {
+			if (file[i] == '}' || file[i] == '{')
+				throw std::invalid_argument("unexpected \"{\" or \"}\"");
+			throw std::invalid_argument("unknow directive between server");
+		}
+	}
+	return lst;
 }

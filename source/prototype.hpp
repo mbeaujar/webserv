@@ -6,12 +6,17 @@
 #include <vector>
 #include <sstream>
 
-// -------------------------------- CONFIG
+// -------------------------------- config
 
 std::vector<Server>	parser(const char *filename);
+
+// -------------- config/server
+
 std::vector<Server> parse_server(std::string file);
-Server 				config_server(std::string file);
-Location 			config_location(std::string file);
+Location 			parse_location(std::string file);
+
+// -------------- config/directives
+
 int 				skip_word_exception(std::string file, int i);
 int					skip_bracket(std::string file, int i);
 int					skip_comment(std::string file, int i);
@@ -27,12 +32,15 @@ int                 parse_method(std::string file, int i, Location &a);
 int 				parse_index(std::string file, int i, Location &a);
 int 				parse_listen(std::string file, int i, Server &a);
 int 				parse_root(std::string file, int i, Location &a);
-int					parse_root(std::string file, int i, Server &a);
 int 				parse_fastcgi_param(std::string file, int i, Location &a);
 int 				parse_fastcgi_pass(std::string file, int i, Location &a);
 int					recup_nb(std::string file, int & i);
-void				printserver(Server &a);
+
+// -------------------------------- socket 
+
 int 				handle_socket(std::vector<Server> & servers);
+
+
 
 template <typename tostring>
 std::string to_string(tostring n)

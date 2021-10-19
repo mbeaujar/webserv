@@ -1,5 +1,12 @@
 #include "socket.hpp"
 
+/**
+ * @brief Create a socket ipv4 object
+ * 
+ * @param port 	port to bind
+ * @param backlog number of connections 
+ * @return int fd of the object
+ */
 int create_socket_ipv4(int port, int backlog = 1) {
 	SA_IN server_addr;
 	int server_socket;
@@ -31,6 +38,13 @@ int create_socket_ipv4(int port, int backlog = 1) {
 	return server_socket;
 }
 
+/**
+ * @brief Create a socket ipv6 object
+ * 
+ * @param port  port to bind
+ * @param backlog number of connections
+ * @return int fd of the object 
+ */
 int create_socket_ipv6(int port, int backlog = 1) {
 	SA_IN6 server_addr;
 	int server_socket;

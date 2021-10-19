@@ -2,6 +2,7 @@
 server 
 {
 	listen 80;
+	listen [::]:80;
 
 	location / { 
 		index index.nginx-debian.html;
