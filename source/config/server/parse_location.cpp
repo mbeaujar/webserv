@@ -1,10 +1,16 @@
 #include <iostream>
-#include "server/Server.hpp"
-#include "server/Location.hpp"
-#include "../prototype.hpp"
+#include "Server.hpp"
+#include "Location.hpp"
+#include "../../prototype.hpp"
 
 
-Location config_location(std::string file)
+/**
+ * @brief parse the content of the location (config file)
+ * 
+ * @param file bracket of the location
+ * @return Location 
+ */
+Location parse_location(std::string file)
 {
 	Location a;
 	int nb_autoindex = 0;
@@ -50,10 +56,6 @@ Location config_location(std::string file)
 		// } else
 		// 	i++;
 		
-		
-
-
-
 	}
 	return a;
 }

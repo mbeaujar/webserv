@@ -1,11 +1,17 @@
-#include "server/Server.hpp"
+// #include "server/Server.hpp"
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <exception>
 #include "../prototype.hpp"
 
-std::string readFile(std::string filename) 
+/**
+ * @brief read the file in argument
+ * 
+ * @param filename 
+ * @return std::string content of the file
+ */
+std::string read_file(std::string filename) 
 {
     std::string	    content, line;
     std::ifstream	file;
@@ -20,32 +26,18 @@ std::string readFile(std::string filename)
     return content;
 }
 
+
+/**
+ * @brief parse the file in argument 
+ * 
+ * @param filename path of the file
+ * @return std::vector<Server> list of Server
+ */
 std::vector<Server> parser(const char *filename)
 {
 	std::vector<Server> servers;
-	// Server *a = new Server();
-
-	// servers.push_back(a);
-
-	std::string file = readFile(filename);
-	
+	std::string file = read_file(filename);
 	servers = parse_server(file);
-
-	// Server a = Server();
-	// a.cut_location(file);
-	// printVectorLocation(a.get_location());
-	// servers.push_back(Server());
-	//servers[0].cut_location(file);
-	//printVectorLocation(servers[0].get_location());
-	// check entre les serveur
-	// if (!clean_file(file))
-
-	// for (int i = 0; file[i]; i++)
-	// {
-		// if (find server)
-			// servers.push_back(create_server());
-	// }
-
 	return servers;
 }
 
