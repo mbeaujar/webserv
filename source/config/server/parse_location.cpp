@@ -42,7 +42,14 @@ Location parse_location(std::string file)
 		} else if (file.compare(i, 6, "method") == 0) {
             i += 6;
             i = parse_method(file, i, a);
-        } else
+        } else if (file.compare(i, 13, "fastcgi_param") == 0) {
+		 	i += 13;
+		 	i = parse_fastcgi_param(file, i, a); 
+			if (a.get_param().size() != 2)
+				throw std::invalid_argument("\"fastcgi_param\" must contain 2 parameters");
+			int key_param = parse_key(a.get_param()[0]);
+			std::cout << "key = " << key_param << std::endl;
+		} else
 			i++; 
 		
 		

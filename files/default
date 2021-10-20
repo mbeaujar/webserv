@@ -7,6 +7,7 @@ server
 	location / { 
 		index index.nginx-debian.html;
 		root /var/www/html;
+		fastcgi_param SERVER_SOFTWARE f;
 	}
 }
 

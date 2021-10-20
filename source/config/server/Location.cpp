@@ -10,6 +10,7 @@ Location::Location()
 	  _index(),
 	  _method(),
 	  _fastcgi_param(),
+	  _fastcgi_param_map(),
 	  _fastcgi_pass(),
 	  _return()
 {
@@ -82,6 +83,10 @@ void Location::adding_index(std::string const & index) {
 
 void Location::adding_param(std::string const & param) {
 	_fastcgi_param.push_back(param);
+}
+
+void Location::adding_param_map(int const& key, std::string const& value) {
+	_fastcgi_param_map[key]=value;
 }
 
 void Location::adding_pass(std::string const & pass) {

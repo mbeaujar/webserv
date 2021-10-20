@@ -16,6 +16,7 @@ SRCS  =	main.cpp \
 		config/directives/return.cpp \
 		config/directives/root.cpp \
 		config/directives/skip_utils.cpp \
+		config/directives/fastcgi_param.cpp \
 		config/server/Location.cpp \
 		config/server/parse_location.cpp \
 		config/server/parse_server.cpp \
