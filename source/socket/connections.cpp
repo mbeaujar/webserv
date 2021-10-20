@@ -41,7 +41,9 @@ int handle_connections(int client_socket) {
 	buffer[msgsize-1] = 0;
 	std::cout << "request: " << "\n";
 	std::cout << buffer << "\n";
-	write(client_socket, "Hello", 5);
+	write(client_socket, "HTTP/1.1 200 OK\n", 16);
+	write(client_socket, "\n", 1);
+	write(client_socket, "<html>\n<head>\n<title>404 Not Found</title>\n</head>\n<body bgcolor=\"white\">\n<center>\n<h1>404 Not Found</h1>\n</center>\n<hr>\n<center>webserv/1.0.0 (Ubuntu)</center>\n</body>\n</html>",176);
 	close(client_socket);
 	return 0;
 }
