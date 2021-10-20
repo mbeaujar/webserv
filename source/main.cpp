@@ -19,13 +19,13 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 	// debug
-	// std::vector<Server>::iterator it = servers.begin(), ite = servers.end();
-	// while (it != ite) {
-	// 	printserver(*it);
-	// 	++it;
-	// }
+	std::vector<Server>::iterator it = servers.begin(), ite = servers.end();
+	while (it != ite) {
+		printserver(*it);
+		++it;
+	}
 	// // socket
-	// return handle_socket(servers);
+	return handle_socket(servers);
 	// return 0;
 }
 

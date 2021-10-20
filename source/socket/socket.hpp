@@ -17,6 +17,10 @@
 # define BACKLOG 10
 
 
+# ifndef __APPLE__
+#  define __APPLE__ 0
+# endif
+
 int create_socket_ipv4(int port, int backlog);
 int create_socket_ipv6(int port, int backlog);
 int accept_new_connection(int server_socket);

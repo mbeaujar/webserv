@@ -47,3 +47,5 @@ int handle_connections(int client_socket) {
 	close(client_socket);
 	return 0;
 }
+
+// si la requete n'est pas supporté 405
