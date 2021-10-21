@@ -16,14 +16,13 @@ int accept_new_connection(int server_socket) {
 	return client_socket;
 }
 
-
 /**
  * @brief read and respond the client request
  * 
  * @param client_socket 
- * @return int 
+ * @return int
  */
-int handle_connections(int client_socket) {
+int handle_connections(int client_socket, Server &a) {
 	int bytes_read;
 	char buffer[BUFFERSIZE] = {0};
 	int msgsize = 0;
@@ -34,13 +33,21 @@ int handle_connections(int client_socket) {
 			break;
 	}
 	if (bytes_read == -1) {
+		std::cout << buffer << std::endl;
 		std::cerr << "Failed to read the request" << std::endl;
 		close(client_socket);
 		return -1;
 	}
 	buffer[msgsize-1] = 0;
+
+	std::cout << "port: " << a.get_port()[0].port << std::endl;
+	// la
+	
+	// print request
 	std::cout << "request: " << "\n";
 	std::cout << buffer << "\n";
+
+	// send 404 error page
 	write(client_socket, "HTTP/1.1 200 OK\n", 16);
 	write(client_socket, "\n", 1);
 	write(client_socket, "<html>\n<head>\n<title>404 Not Found</title>\n</head>\n<body bgcolor=\"white\">\n<center>\n<h1>404 Not Found</h1>\n</center>\n<hr>\n<center>webserv/1.0.0 (Ubuntu)</center>\n</body>\n</html>",176);

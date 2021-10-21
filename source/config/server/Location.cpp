@@ -58,9 +58,9 @@ Location& Location::operator=(Location const &copy)
 
 bool Location::get_method(int nb)
 {
-    if (nb == 0)
+    if (nb == DELETE)
         return true;
-    else if (nb == 1)
+    else if (nb == GET)
         return true;
     else
         return true;
@@ -68,9 +68,9 @@ bool Location::get_method(int nb)
 
 void Location::adding_method(int nb) {
 
-    if (nb == 0)
+    if (nb == DELETE)
         _method.m_delete = true;
-    else if (nb == 1)
+    else if (nb == GET)
         _method.m_get = true;
     else
         _method.m_post = true;

@@ -1,4 +1,4 @@
-#ifndef __SOCKET_HPP__
+ #ifndef __SOCKET_HPP__
 #define __SOCKET_HPP__
 
 # include "../prototype.hpp"
@@ -16,7 +16,6 @@
 # define BUFFERSIZE 1024
 # define BACKLOG 10
 
-
 # ifndef __APPLE__
 #  define __APPLE__ 0
 # endif
@@ -24,6 +23,6 @@
 int create_socket_ipv4(int port, int backlog);
 int create_socket_ipv6(int port, int backlog);
 int accept_new_connection(int server_socket);
-int handle_connections(int client_socket);
+int handle_connections(int client_socket, Server &a);
 
 #endif 

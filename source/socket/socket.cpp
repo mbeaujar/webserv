@@ -16,7 +16,6 @@ int release_fds(std::map<int, Server> & fds) {
 	return 0;
 }
 
-
 /**
  * @brief Create a map of fd (fd = servers port)
  * 
@@ -53,30 +52,39 @@ std::map<int, Server> config_socket(std::vector<Server> & servers) {
 int handle_socket(std::vector<Server> & servers) {
 	fd_set current_sockets, ready_sockets;
 	std::map<int, Server> sockets = config_socket(servers);
+	int max_fd = 0;
 
 	FD_ZERO(&current_sockets);
 	std::map<int, Server>::iterator it = sockets.begin(), ite = sockets.end();
 	while (it != ite) {
 		fcntl(it->first, F_SETFL, O_NONBLOCK); // idk
+		if (it->first > max_fd)
+			max_fd = it->first;
 		FD_SET(it->first, &current_sockets);
 		++it;
 	}
+	std::map<int, Server>::iterator search;
+	std::map<int, Server>  clients;
 	// ctrl-C pour quitter -> leaks
 	while (true) {
 		ready_sockets = current_sockets;
-		if (select(FD_SETSIZE, &ready_sockets, NULL, NULL, NULL) < 0) {
+		if (select(max_fd + 1, &ready_sockets, NULL, NULL, NULL) < 0) {
 			std::cerr << "Failed to select" << std::endl;
 			release_fds(sockets);
 			return 1;
 		}
-		for (int i=0; i < FD_SETSIZE; i++) {
+		for (int i=0; i < max_fd + 1; i++) {
 			if (FD_ISSET(i, &ready_sockets)) {
-				if (sockets.find(i) != ite) {
+				search = sockets.find(i);
+				if (search != ite) {
 					int client_socket = accept_new_connection(i);
 					fcntl(client_socket, F_SETFL, O_NONBLOCK); // idk again
+					if (client_socket > max_fd)
+						max_fd = client_socket;
+					clients.insert(std::make_pair(client_socket, search->second));
 					FD_SET(client_socket, &current_sockets);
 				} else {
-					handle_connections(i);
+					handle_connections(i, clients.find(i)->second);
 					FD_CLR(i, &current_sockets);
 				}
 			}
@@ -84,3 +92,6 @@ int handle_socket(std::vector<Server> & servers) {
 	}
 }
 //  siege localhost -r100 -c100
+
+
+#define SCRIPT_FILENAME 1

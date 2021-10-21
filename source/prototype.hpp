@@ -6,6 +6,10 @@
 #include <vector>
 #include <sstream>
 
+# define DELETE 0
+# define GET    1
+# define POST   2
+
 // -------------------------------- config
 
 std::vector<Server>	parser(const char *filename);

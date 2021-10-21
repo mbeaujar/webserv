@@ -8,6 +8,7 @@
 # define GET    1
 # define POST   2
 
+
 struct s_method {
     bool m_get;
     bool m_post;
