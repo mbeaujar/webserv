@@ -6,17 +6,18 @@
 
 class Request {
 	public:
-        Request();
-        ~Request();
-        Request(Request const & src);
-        Request & operator=(Request const & rhs);
+                Request();
+                ~Request();
+                Request(Request const & src);
+                Request & operator=(Request const & rhs);
 
-        void 				set_method(int const & method);
-        void 					set_path(std::string const & path);
-        void 				set_host(std::string const & host);
-        int				get_method() const;
-        std::string     get_path() const;
-        std::string            get_host() const;
+                void 		set_method(int const & method);
+                void 		set_path(std::string const & path);
+                void 		set_host(std::string const & host);
+
+                int		get_method() const;
+                std::string     get_path() const;
+                std::string     get_host() const;
 
 	private:
 		std::string	_host;
