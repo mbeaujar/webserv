@@ -19,8 +19,7 @@ class Request {
 		std::string		_host;
 		int         	_method;
 		std::string 	_path;
-		// std::string 	_body; // les requêtes POST contiennent un body
-		
+		// std::string 	_body; // les requêtes POST contiennent un body	
 };
 
 #endif

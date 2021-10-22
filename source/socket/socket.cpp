@@ -84,7 +84,9 @@ int handle_socket(std::vector<Server> & servers) {
 					clients.insert(std::make_pair(client_socket, search->second));
 					FD_SET(client_socket, &current_sockets);
 				} else {
-					handle_connections(i, clients.find(i)->second);
+					std::map<int, Server>::iterator find = clients.find(i);
+					handle_connections(i, find->second);
+					clients.erase(it);
 					FD_CLR(i, &current_sockets);
 				}
 			}

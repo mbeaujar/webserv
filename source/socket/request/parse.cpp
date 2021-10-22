@@ -19,7 +19,7 @@ Request parse_request(std::string request) {
     int i = 0;
     Request r;
 
-    while (request[i] {
+    while (request[i]) {
 
         if (request.compare(i, 3, "GET") == 0) {
             r.set_method(GET);
