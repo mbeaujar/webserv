@@ -1,9 +1,9 @@
 // #include "server/Server.hpp"
+#include "../prototype.hpp"
+#include <exception>
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <exception>
-#include "../prototype.hpp"
 
 /**
  * @brief read the file in argument
@@ -21,6 +21,7 @@ std::string read_file(std::string filename)
     	throw std::invalid_argument("can't open the file in argument");
     while (std::getline(file, line))
         content += line + "\n";
+	file.close();
 	if (content == "")
 		throw std::invalid_argument("Empty file or file is a directory");
     return content;

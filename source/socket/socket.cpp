@@ -96,6 +96,3 @@ int handle_socket(std::vector<Server> & servers) {
 	}
 }
 //  siege localhost -r100 -c100
-
-
-#define SCRIPT_FILENAME 1

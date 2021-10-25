@@ -10,6 +10,8 @@
 
 
 struct s_method {
+	s_method& operator=(s_method const & rhs);
+
     bool m_get;
     bool m_post;
     bool m_delete;
@@ -32,7 +34,8 @@ class Location
 		void set_autoindex(bool const & autoindex);
 		void set_return(int const & code, std::string const & path);
 
-        bool get_method(int nb);
+        bool get_method(int nb) const;
+		s_method get_methods() const;
 		bool get_autoindex() const;
 		std::string get_root() const;
 		std::vector<std::string> get_index() const;

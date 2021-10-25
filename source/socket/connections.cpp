@@ -47,14 +47,14 @@ int handle_connections(int client_socket, Server & server) {
 	std::cout << "request: " << std::endl;
 	std::cout << buffer << std::endl;
 
-	Request r = parse_request(buffer);
+	Request r = parse_request(buffer); // si il casse buffer n'est pas free
 	delete [] buffer;
 
 	std::string response = create_response(r, server);
 	print_request(r);
 	std::cout << response << std::endl;
 	write(client_socket, response.c_str(), response.length());
-	// write(client_socket, "<html>\n<head>\n<title>404 Not Found</title>\n</head>\n<body bgcolor=\"white\">\n<center>\n<h1>404 Not Found</h1>\n</center>\n<hr>\n<center>webserv/1.0.0 (Ubuntu)</center>\n</body>\n</html>",176);
+	
 	close(client_socket);
 	return 0;
 }

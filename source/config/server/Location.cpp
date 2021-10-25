@@ -1,5 +1,16 @@
 #include "Location.hpp"
 
+
+
+s_method& s_method::operator=(s_method const & rhs) {
+	if (this == &rhs)
+		return *this;
+	m_get = rhs.m_get;
+	m_delete = rhs.m_delete;
+	m_post = rhs.m_post;
+	return *this;
+}
+
 /**
  * @brief Construct a new Location::Location object
  * 
@@ -11,10 +22,7 @@ Location::Location()
 	  _method(),
 	  _fastcgi_param(),
 	  _fastcgi_pass(),
-	  _return()
-{
-	_return.first = -1;
-}
+	  _return(-1, "") {}
 
 /**
  * @brief Destroy the Location::Location object
@@ -56,7 +64,7 @@ Location& Location::operator=(Location const &copy)
 	return *this;
 }
 
-bool Location::get_method(int nb)
+bool Location::get_method(int nb) const
 {
     if (nb == DELETE)
         return true;
@@ -65,6 +73,8 @@ bool Location::get_method(int nb)
     else
         return true;
 }
+
+s_method Location::get_methods() const { return _method; }
 
 void Location::adding_method(int nb) {
 

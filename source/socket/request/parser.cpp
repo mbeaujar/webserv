@@ -13,7 +13,10 @@ int first_line(std::string & request, Request & r, int i)
     return i;
 }
 
+
 // Request parse_header(std::string header) 
+
+
 Request parse_request(std::string request) {
     
     int i = 0;
@@ -78,10 +81,10 @@ int     atoi(std::string str, int index) {
 void    print_request(Request const & a) {
 
     std::cout << "----- Request -----" << std::endl;
-    std::cout << "\t -> Host   :" << a.get_host()           << std::endl;
-    std::cout << "\t -> Path   :" << a.get_path()           << std::endl;
-    std::cout << "\t -> Method :" << a.get_method()         << std::endl;
-    std::cout << "\t -> Type   :" << a.get_content_type()   << std::endl;
-    std::cout << "\t -> Length :" << a.get_content_length() << std::endl;
+    std::cout << " -> Host   :" << a.get_host()           << std::endl;
+    std::cout << " -> Path   :" << a.get_path()           << std::endl;
+    std::cout << " -> Method :" << a.get_method()         << std::endl;
+    std::cout << " -> Type   :" << a.get_content_type()   << std::endl;
+    std::cout << " -> Length :" << a.get_content_length() << std::endl;
     std::cout << "-------------------" << std::endl;
 }
