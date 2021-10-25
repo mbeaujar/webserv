@@ -57,7 +57,7 @@ int handle_socket(std::vector<Server> & servers) {
 	FD_ZERO(&current_sockets);
 	std::map<int, Server>::iterator it = sockets.begin(), ite = sockets.end();
 	while (it != ite) {
-		fcntl(it->first, F_SETFL, O_NONBLOCK); // idk
+		fcntl(it->first, F_SETFL, O_NONBLOCK);
 		if (it->first > max_fd)
 			max_fd = it->first;
 		FD_SET(it->first, &current_sockets);
@@ -73,21 +73,23 @@ int handle_socket(std::vector<Server> & servers) {
 			release_fds(sockets);
 			return 1;
 		}
-		for (int i=0; i < max_fd + 1; i++) {
+		for (int i = 0; i < max_fd + 1; i++) {
 			if (FD_ISSET(i, &ready_sockets)) {
 				search = sockets.find(i);
 				if (search != ite) {
 					int client_socket = accept_new_connection(i);
-					fcntl(client_socket, F_SETFL, O_NONBLOCK); // idk again
+					fcntl(client_socket, F_SETFL, O_NONBLOCK);
 					if (client_socket > max_fd)
 						max_fd = client_socket;
 					clients.insert(std::make_pair(client_socket, search->second));
 					FD_SET(client_socket, &current_sockets);
 				} else {
 					std::map<int, Server>::iterator find = clients.find(i);
-					handle_connections(i, find->second);
-					clients.erase(it);
-					FD_CLR(i, &current_sockets);
+					if (find != clients.end())  {
+						handle_connections(i, find->second);
+						clients.erase(i);
+						FD_CLR(i, &current_sockets);
+					}
 				}
 			}
 		}

@@ -21,6 +21,11 @@ SRCS  =	main.cpp \
 		config/server/parse_server.cpp \
 		config/server/Server.cpp \
 		config/parser.cpp \
+		socket/request/parser.cpp \
+		socket/request/Request.cpp \
+		socket/response/create.cpp \
+		socket/response/get.cpp \
+		socket/response/utils.cpp \
 		socket/connections.cpp \
 		socket/create.cpp \
 		socket/socket.cpp
@@ -44,7 +49,8 @@ $(OBJS_DIRECTORY):
 	@mkdir $@
 	@mkdir -p $@/config/directives
 	@mkdir -p $@/config/server
-	@mkdir -p $@/socket
+	@mkdir -p $@/socket/request
+	@mkdir -p $@/socket/response
 
 clean :
 	@$(RM) $(OBJS)

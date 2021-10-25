@@ -1,18 +1,27 @@
 
-server 
-{
+server {
 	listen 80;
 
-	client_max_body_size 10m;
-	error_page 404 https://localhost;
-	error_page 300  amozjlenf ;
+	autoindex on;
 
-	location / { 
-		autoindex on;
-		index index.gtml;
-		root r/var/alkrznglkeawww/html;
-		method toto;
-		#try_files $uri $uri/ =404;
+	location / {
+		root /var;
+		index index.nginx-debian.html;
+		return 301 http://lalalalalalalalalaalla;
 	}
 
+	#location /www {
+	#	root /var/www/html;
+	#	index index.nginx-debian.html;
+	#}
+
+	location /www {
+		#root /var;
+		index index.nginx-debian.html;
+	}
+
+	location /test {
+		root /var/www;
+		index index.php;
+	}
 }
