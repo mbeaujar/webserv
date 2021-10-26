@@ -17,6 +17,7 @@ SRCS  =	main.cpp \
 		config/directives/root.cpp \
 		config/directives/skip_utils.cpp \
 		config/server/Location.cpp \
+		config/server/s_method.cpp \
 		config/server/parse_location.cpp \
 		config/server/parse_server.cpp \
 		config/server/Server.cpp \

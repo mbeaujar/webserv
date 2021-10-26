@@ -56,7 +56,7 @@ std::string Request::get_path() const { return _path; }
 int         Request::get_method() const { return _method; }
 std::string Request::get_content_type() const { return _content_type; }
 int         Request::get_content_length() const { return _content_length; }
-int			Request::get_transfer_encoding() const { return _transfer_encoding; }
+std::vector<std::string>		Request::get_transfer_encoding() const { return _transfer_encoding; }
 std::pair<int, std::string> Request::get_error() const { return _error; }
 std::pair<int, std::string> Request::get_return() const { return _return; }
 struct s_method     Request::get_methods() const { return _methods; }

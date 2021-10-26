@@ -37,7 +37,7 @@ Location search_location(std::string path, Server const & server) {
 	std::string longuest_path = "/";
 	std::map<std::string, Location> all = server.get_all_location();
 	std::map<std::string, Location>::iterator it = all.begin(), ite;
-	tmp.set_return(1, "f uck le a-word");
+	tmp.set_return(1, "fuck le a-word");
 
 	if ((ite = all.find("/")) != all.end()) {
 		tmp = ite->second;

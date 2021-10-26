@@ -26,8 +26,10 @@ std::string path_to_file(Request & request, Location location) {
 					return path_index;
 				++it;
 			}
-			if (location.get_autoindex() == false)
+			if (location.get_autoindex() == false) {
+				std::cerr << "Error: is a directory + autoindex is off" << std::endl;
 				request.set_error(std::make_pair(404, "Not Found"));
+			}
 		}
 	}
 	else
@@ -41,6 +43,7 @@ std::string method_get(Request & request, Server const & server) {
 	Location	location;
 
 	if ((location = search_location(request.get_path(), server)).get_return().first == 1) {
+		std::cerr << "Error: Can't find a location for the path" << std::endl;
 		request.set_error(std::make_pair(404, "Not Found"));
 		return "";
 	}
@@ -48,11 +51,13 @@ std::string method_get(Request & request, Server const & server) {
 		struct s_method m = location.get_methods();
 		request.set_methods(m);
 		request.set_error(std::make_pair(405, "Method Not Allowed"));
+		std::cerr << "Error: Method not allowed" << std::endl;
 		return "";
 	}
 	std::pair<int, std::string> redirect = location.get_return();
 	if (redirect.first != -1) {
 		request.set_return(std::make_pair(redirect.first, redirect.second));
+		std::cerr << "Info: redirection" << std::endl;
 		return "";
 	}
 	std::string path = path_to_file(request, location);

@@ -70,8 +70,8 @@ Request parse_request(std::string request) {
         } 
 		else if (request.compare(i, 18, "Transfer-Encoding:") == 0) {  // CHUNKED GZIP
 			i += 19;
-			while (request[i] && request[i] != "\n") {
-				request.add_transfer_encoding(request.substr(i, skip_word_request(request, i) - i));
+			while (request[i] && request[i] != '\n') {
+				r.add_transfer_encoding(request.substr(i, skip_word_request(request, i) - i));
 				i = skip_word_request(request, i);
 				if (request[i] != '\n')
 					i++;
@@ -89,10 +89,14 @@ Request parse_request(std::string request) {
                 i++;
         }
     }
-    if (r.get_host().empty() || host > 0) // + si il y en a plusieurs
+    if (r.get_host().empty() || host > 1) {
+		std::cerr << "Error: none or too many Host field" << std::endl;
         r.set_error(std::make_pair(400, "Bad request"));
-	if (r.get_path().length() > 2048) 
+	}
+	if (r.get_path().length() > 2048) {
+		std::cerr << "Error: path to long (more than 2048 characters" << std::endl;
         r.set_error(std::make_pair(400, "Bad request"));
+	}
 	return r;
 }
 
@@ -114,9 +118,9 @@ void    print_request(Request & a) {
     std::cout << " -> Host     : -> " << a.get_host()           << std::endl;
     std::cout << " -> Type     : -> " << a.get_content_type()   << std::endl;
     std::cout << " -> Path     : -> " << a.get_path()           << std::endl;
-    std::cout << " -> Method   : -> " << allow_method(a)         << std::endl;
+    std::cout << " -> Method   : -> " << a.get_method()         << std::endl;
     std::cout << " -> Length   : -> " << a.get_content_length() << std::endl;
-    std::cout << " -> Encoding : -> " << a.get_transfer_encoding() << std::endl;
+    // std::cout << " -> Encoding : -> " << a.get_transfer_encoding() << std::endl;
     std::cout << " -> Error    : -> " << a.get_error().first << " -> " << a.get_error().second << std::endl;
     std::cout << " -> Return   : -> " << a.get_return().first << " -> " << a.get_return().second << std::endl;
     std::cout << "-------------------------------" << std::endl;

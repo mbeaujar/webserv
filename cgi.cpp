@@ -1,32 +1,31 @@
 #include <iostream>
 #include <unistd.h>
 #include <stdio.h>
+#include <fcntl.h>
 #include <fstream>
 
 // sudo apt install libsqlite3-dev libxml2-dev
 // ./configure --without-iconv
 
-std::string read_file(std::string filename) 
-{
-    std::string	    content, line;
-    std::ifstream	file;
-
-    file.open(filename.c_str());
-    while (std::getline(file, line))
-        content += line + "\n";
-	file.close();
-    return content;
-}
+// REQUEST_METHOD=GET
+// SERVER_PROTOCOL=HTTP/1.1
+// PATH_INFO=/
 
 int main(int argc, char *argv[], char *envp[])
 {
 	(void)argc;
 	(void)argv;
 	int pid;
-	std::string content = read_file("");
+
+	int fd = open("php", O_RDONLY);
+	char *tab[] { "php-cgi", 0};
 	pid = fork();
 	if (pid == 0) {
-
+		dup2(fd, 0);
+		execve("/usr/bin/php-cgi", tab, envp);
+		std::cout << "FUCK" << std::endl;
+		return 0;
 	}
+	close(fd);
 	return 0;
 }

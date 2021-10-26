@@ -1,16 +1,5 @@
 #include "Location.hpp"
 
-
-
-s_method& s_method::operator=(s_method const & rhs) {
-	if (this == &rhs)
-		return *this;
-	m_get = rhs.m_get;
-	m_delete = rhs.m_delete;
-	m_post = rhs.m_post;
-	return *this;
-}
-
 /**
  * @brief Construct a new Location::Location object
  * 

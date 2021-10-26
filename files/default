@@ -8,10 +8,6 @@ server
 		root /var/www/html;
 		index index.php index.html index.nginx-debian.html;
 	}
-
-	location /index.php {
-		return 301 http://localhost:80/index.html;
-	}
 }
 
 server  {

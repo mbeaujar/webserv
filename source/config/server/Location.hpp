@@ -3,19 +3,13 @@
 
 # include <iostream>
 # include <vector>
+# include "s_method.hpp"
 
 # define DELETE 0
 # define GET    1
 # define POST   2
 
 
-struct s_method {
-	s_method& operator=(s_method const & rhs);
-
-    bool m_get;
-    bool m_post;
-    bool m_delete;
-};
 
 class Location 
 {
