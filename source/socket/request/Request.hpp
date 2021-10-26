@@ -5,6 +5,9 @@
 #include "../../config/server/Location.hpp"
 # include <iostream>
 
+# define CHUNKED	0
+# define GZIP		1
+
 class Request {
     public:
         Request();
@@ -17,20 +20,22 @@ class Request {
         void			set_host(std::string const & host);
         void			set_content_length(int len);
         void			set_content_type(std::string const & type);
-        void			set_transfer_encoding(int const & t_p);
+        void			add_transfer_encoding(std::string const & transfer_encoding);
         void			set_error(std::pair<int, std::string> const & error);
         void			set_return(std::pair<int, std::string> const & error);
         void			set_methods(struct s_method & met);
-
-        std::string		get_path() const;
+        void			set_date(std::string const & date);
+		
+		std::string		get_path() const;
         std::string		get_host() const;
         int				get_method() const;
         int		        get_content_length() const;
         std::string		get_content_type() const;
-		int				get_transfer_encoding() const;
+		std::vector<std::string>				get_transfer_encoding() const;
         std::pair<int, std::string> 	get_error() const;
         std::pair<int, std::string> 	get_return() const;
         struct s_method		get_methods() const;
+        std::string		get_date() const;
 
     private:
         std::string     _host;
@@ -38,10 +43,11 @@ class Request {
         std::string		_path;
         int             _content_length;
         std::string     _content_type;
-        int 			_transfer_encoding;// Transfer-Encoding: chunked
+        std::vector<std::string> _transfer_encoding;// Transfer-Encoding: chunked
 		std::pair<int, std::string> 	_error;
 		std::pair<int, std::string> 	_return;
        	struct s_method    		 _methods;
+		std::string		_date;
 };
 
 #endif

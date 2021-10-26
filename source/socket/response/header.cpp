@@ -1,6 +1,5 @@
 #include "../socket.hpp"
 
-
 std::string allow_method(Request & request) {
 	std::string method;
 	struct s_method m = request.get_methods();
@@ -71,8 +70,8 @@ std::string header(Request & request) {
 	std::pair<int, std::string> redirect = request.get_return();
 
 	if (redirect.first != -1)
-		request.set_error(std::make_pair(301, "Moved Permanently"));
-	header += "HTTP/1.1 " + to_string(request.get_error().first) + " " + request.get_error().second;
+		request.set_error(std::make_pair(redirect.first, "Moved Permanently"));
+	header += "HTTP/1.1 " + to_string(request.get_error().first) + " " + request.get_error().second + "\n";
 	header += "Date: " + hour_date() + "\n";
 	header += "Server: " + request.get_host() + "\n";
 	header += "Content-length: " + to_string(request.get_content_length()) + "\n";

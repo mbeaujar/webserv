@@ -1,14 +1,14 @@
+
 server
 {
 	listen 80;
 	listen [::]:80;
 
-	location / { 
+	location / {
 		root /var/www/html;
 		index index.php index.html index.nginx-debian.html;
-		return 301 http://localhost:80/test;
+		return 301 http://fafafafafaffa;
 	}
-
 }
 
 server  {

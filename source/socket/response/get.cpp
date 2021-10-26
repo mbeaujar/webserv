@@ -52,17 +52,12 @@ std::string method_get(Request & request, Server const & server) {
 	}
 	std::pair<int, std::string> redirect = location.get_return();
 	if (redirect.first != -1) {
-		// request.set_error(std::make_pair(redir, "301 Moved Permanently"));
 		request.set_return(std::make_pair(redirect.first, redirect.second));
 		return "";
 	}
 	std::string path = path_to_file(request, location);
-	if (request.get_error().first == 200) {
-		std::string content = get_file_content(path);
-		response = "HTTP/1.1 200 OK\n";
-		response += "\n";
-		response += content;
-	}
+	if (request.get_error().first == 200)
+		response = get_file_content(path);
 	return response;
 }
 

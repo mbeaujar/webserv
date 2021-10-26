@@ -21,6 +21,7 @@ Location 			parse_location(std::string file);
 
 // -------------- config/directives
 
+int					skip_word_request(std::string file, int i);
 int 				skip_word_exception(std::string file, int i);
 int					skip_bracket(std::string file, int i);
 int					skip_comment(std::string file, int i);

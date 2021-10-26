@@ -30,12 +30,13 @@
 int			accept_new_connection(int server_socket);
 int			create_socket_ipv4(int port, int backlog);
 int			create_socket_ipv6(int port, int backlog);
+std::string allow_method(Request & request);
 int			handle_connections(int client_socket, Server & server);
 
 // ------------------------------- socket/request
 
 bool		is_directory(std::string path);
-void		print_request(Request const & a);
+void    	print_request(Request & a);
 char		*read_header(int client_socket, int limit);
 Request 	parse_request(std::string request);
 

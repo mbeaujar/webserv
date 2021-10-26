@@ -47,11 +47,15 @@ int handle_connections(int client_socket, Server & server) {
 	std::cout << "request: " << std::endl;
 	std::cout << buffer << std::endl;
 
+	std::cout << "---------------------------------------" << std::endl;
 	Request r = parse_request(buffer); // si il casse buffer n'est pas free
-	delete [] buffer;
+	std::cout << "> Request" << std::endl;
+	std::cout << buffer << std::endl;
+ 	delete [] buffer;
 
-	std::string response = create_response(r, server);
 	print_request(r);
+	std::string response = create_response(r, server);
+	std::cout << "> Response" << std::endl;
 	std::cout << response << std::endl;
 	write(client_socket, response.c_str(), response.length());
 	

@@ -17,11 +17,11 @@ std::string create_response(Request & request, Server const & server) {
 	if (request.get_method() == DELETE) {
 		// body = method_get(request, server);
 	}
-	response += header(request);
-
 	if (request.get_error().first != 200) {
 		body = create_error(to_string(request.get_error().first) + " " + request.get_error().second);
 	}
+	request.set_content_length(body.length());
+	response += header(request);
 	response += body;
 	return response;
 }
