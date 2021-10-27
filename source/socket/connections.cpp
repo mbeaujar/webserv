@@ -60,12 +60,7 @@ int handle_connections(int client_socket, Server & server) {
  	delete [] buffer;
 
 	print_request(r);
-	std::string response = create_response(r, server, client_socket);
-	std::cout << "> Response" << std::endl;
-	std::cout << response << std::endl;
-	write(client_socket, response.c_str(), response.length());
-	
-	close(client_socket);
+	create_response(r, server, client_socket);
 	return 0;
 }
 

@@ -52,6 +52,9 @@ std::map<int, Server> config_socket(std::vector<Server> & servers) {
 int handle_socket(std::vector<Server> & servers) {
 	fd_set current_sockets, current_clients, ready_sockets, ready_clients;
 	std::map<int, Server> sockets = config_socket(servers);
+	std::map<int, Server>::iterator search;
+	std::map<int, Server>  clients;
+	thread post;
 	int max_fd = 0;
 
 	FD_ZERO(&current_sockets);
@@ -64,10 +67,7 @@ int handle_socket(std::vector<Server> & servers) {
 		FD_SET(it->first, &current_sockets);
 		++it;
 	}
-	std::map<int, Server>::iterator search;
-	std::map<int, Server>  clients;
-	// ctrl-C pour quitter -> leaks
-	while (true) {
+	while (true) { // ctrl-C pour quitter -> leaks
 		ready_sockets = current_sockets;
 		ready_clients = current_clients;
 		if (select(max_fd + 1, &ready_sockets, &ready_clients, NULL, NULL) < 0) { 

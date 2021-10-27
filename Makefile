@@ -55,6 +55,9 @@ $(OBJS_DIRECTORY):
 	@mkdir -p $@/socket/request
 	@mkdir -p $@/socket/response
 
+test:
+	@netcat localhost 80 < netcat
+
 clean :
 	@$(RM) $(OBJS)
 

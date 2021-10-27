@@ -6,7 +6,7 @@
  */
 Location::Location()
 	: _autoindex(false),
-	  _root(),
+	  _root("/var/www/html"),
 	  _index(),
 	  _method(),
 	  _fastcgi_param(),

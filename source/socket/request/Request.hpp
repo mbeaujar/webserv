@@ -17,6 +17,7 @@ class Request {
 
         void			set_method(int const & method);
         void			set_path(std::string const & path);
+        void			set_query_string(std::string const & query_string);
         void			set_host(std::string const & host);
         void			set_content_length(int len);
         void			set_content_type(std::string const & type);
@@ -27,6 +28,7 @@ class Request {
         void			set_date(std::string const & date);
 		
 		std::string		get_path() const;
+		std::string		get_query_string() const;
         std::string		get_host() const;
         int				get_method() const;
         int		        get_content_length() const;
@@ -41,6 +43,7 @@ class Request {
         std::string     _host;
         int           	_method;
         std::string		_path;
+		std::string		_query_string;
         int             _content_length;
         std::string     _content_type;
         std::vector<std::string> _transfer_encoding;// Transfer-Encoding: chunked

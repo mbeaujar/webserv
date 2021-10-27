@@ -80,6 +80,6 @@ std::string header(Request & request) {
 		header += "Allow:" + allow_method(request) + "\n";
 	if (redirect.first != -1)
 		header += "Location: " + redirect.second + "\n";
-	header += "\n";
+	header += "\r\n"; // blank line
 	return header;
 }

@@ -2,18 +2,8 @@
 
 std::string path_to_file(Request & request, Location location) {
 	std::string r_root = location.get_root();
-	std::string path;
+	std::string path = r_root + request.get_path();
 
-	if (r_root.empty()) {
-		r_root = "/var/www/html";
-	}
-	if (r_root[r_root.length()-1] == '/') {
-		r_root.erase(r_root.end());
-	}
-	if (request.get_path() == "/")
-		path = r_root;
-	else
-		path = r_root + request.get_path();
 	if (file_exist(path)) {
 		if (is_directory(path)) {
 			if (path[path.length() - 1] != '/')
@@ -37,18 +27,13 @@ std::string path_to_file(Request & request, Location location) {
 	return path;
 }
 
-/**
- * @brief 
- * 
- * @param request 
- * @param server 
- * @return std::string 
- */
 std::string method_get(Request & request, Server const & server) {
 	std::string	html;
 	std::string	response;
 	Location	location;
 
+	if (request.get_error().first != 200)
+		return "";
 	if ((location = search_location(request.get_path(), server)).get_return().first == 1) {
 		std::cerr << "Error: Can't find a location for the path" << std::endl;
 		request.set_error(std::make_pair(404, "Not Found"));
@@ -64,7 +49,7 @@ std::string method_get(Request & request, Server const & server) {
 	std::pair<int, std::string> redirect = location.get_return();
 	if (redirect.first != -1) {
 		request.set_return(std::make_pair(redirect.first, redirect.second));
-		std::cerr << "Info: redirection" << std::endl;
+		std::cerr << "Warning: redirection" << std::endl;
 		return "";
 	}
 	std::string path = path_to_file(request, location);
@@ -72,3 +57,4 @@ std::string method_get(Request & request, Server const & server) {
 		response = get_file_content(path);
 	return response;
 }
+

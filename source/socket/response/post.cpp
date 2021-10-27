@@ -16,31 +16,32 @@ char    *read_body(int client_socket, int limit, int buffersize) {
 	return buffer;
 }
 
-void method_post(Request & request, Server const & server, int client_socket) { // + struct
-	std::string	html;
-	Location	location;
-	char *buffer = read_body(client_socket, 0, request.get_content_length());
-
+void *method_post(void *arg) {
+	thread *a = static_cast<thread*>(arg);
+	Server const & server = *(a->server);
+	Request & request = *(a->request);
+	int client_socket = a->fd;
+	char *buffer;
+	Location location;
+	
+	if (request.get_error().first != 200)
+		return NULL;
 	if ((location = search_location(request.get_path(), server)).get_return().first == 1) {
 		std::cerr << "Error: Can't find a location for the path" << std::endl;
 		request.set_error(std::make_pair(404, "Not Found"));
-		return;
+		return NULL;
 	}
 	if (location.get_method(POST) == false) {
 		struct s_method m = location.get_methods();
 		request.set_methods(m);
 		request.set_error(std::make_pair(405, "Method Not Allowed"));
 		std::cerr << "Error: Method not allowed" << std::endl;
-		return;
+		return NULL;
 	}
-	std::pair<int, std::string> redirect = location.get_return();
-	if (redirect.first != -1) {
-		request.set_return(std::make_pair(redirect.first, redirect.second));
-		std::cerr << "Info: redirection" << std::endl;
-		return;
-	}
-	// std::string path = path_to_file(request, location);
-	// if (request.get_error().first == 200)
-	// 	 response = get_file_content(path);
+	buffer = read_body(client_socket, 0, request.get_content_length());
 	delete [] buffer;
+	return NULL;
 }
+
+// In any case, if a POST request is made with a Content-Type which 
+// cannot be handled by the application, it should return a 415 status-code.

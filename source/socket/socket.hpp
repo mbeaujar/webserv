@@ -25,6 +25,13 @@
 #  define __APPLE__ 0
 # endif
 
+struct thread {
+	
+	Request *request;
+	Server const *server;
+	int fd;
+};
+
 // -------------------------------- socket
 
 int			accept_new_connection(int server_socket);
@@ -45,10 +52,11 @@ Request 	parse_header(std::string request);
 bool		file_exist(std::string filename);
 std::string	get_file_content(std::string filename);
 std::string	method_get(Request & request, Server const & server);
-void        method_post(Request & request, Server const & server, int client_socket);
+void        method_delete(Request & request, Server const & server);
+void 		*method_post(void *arg);
 std::string	search_root(std::string path, Server const & server);
 Location	search_location(std::string path, Server const & server);
-std::string create_response(Request & request, Server const & server, int client_socket);
+void create_response(Request & request, Server const & server, int client_socket);
 std::string header(Request & request);
 char    *read_body(int client_socket, int limit, int buffersize);
 

@@ -17,6 +17,8 @@ int parse_root(std::string file, int i, Location &a)
                 throw std::invalid_argument("unexpected \"}\"");
 			int skip = skip_word(file, i);
 			std::string word = file.substr(i, skip - i);
+			if (word[word.length()-1] == '/')
+				word.erase(word.end());
 			a.set_root(word);
 			i = skip;
 			count++;
