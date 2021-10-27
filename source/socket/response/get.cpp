@@ -10,7 +10,7 @@ std::string path_to_file(Request & request, Location location) {
 	if (r_root[r_root.length()-1] == '/') {
 		r_root.erase(r_root.end());
 	}
-			if (FD_ISSET(i, &ready_sockets)) {
+	if (request.get_path() == "/")
 		path = r_root;
 	else
 		path = r_root + request.get_path();
