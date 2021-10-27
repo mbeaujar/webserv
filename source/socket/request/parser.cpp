@@ -14,10 +14,10 @@ int first_line(std::string & request, Request & r, int i)
 }
 
 
-// Request parse_header(std::string header) 
+// Request parse_body(std::string header) 
 
 
-Request parse_request(std::string request) {
+Request parse_header(std::string request) {
     
     int i = 0;
 	int host = 0;
@@ -25,26 +25,31 @@ Request parse_request(std::string request) {
     Request r;
 	
     while (request[i]) {
-
         if (request.compare(i, 3, "GET") == 0) {
-			if (method > 0)
+			if (method > 0) {
+		        std::cerr << "Error: too many methods" << std::endl;
 				r.set_error(std::make_pair(400, "Bad request"));
+            }
             r.set_method(GET);
             i += 4;
             i = first_line(request, r, i);
 			method++;
         }
         else if (request.compare(i, 4, "POST") == 0) {
-            if (method > 0)
+            if (method > 0) {
+		        std::cerr << "Error: too many methods" << std::endl;
 				r.set_error(std::make_pair(400, "Bad request"));
+            }
 			r.set_method(POST);
             i += 5;
             i = first_line(request, r, i);
 			method++;
         }
         else if (request.compare(i, 6, "DELETE") == 0) {
-            if (method > 0)
+            if (method > 0) {
+		        std::cerr << "Error: too many methods" << std::endl;
 				r.set_error(std::make_pair(400, "Bad request"));
+            }
 			r.set_method(DELETE);
             i += 7;
             i = first_line(request, r, i);
@@ -54,8 +59,10 @@ Request parse_request(std::string request) {
             i += 6;
             r.set_host(request.substr(i, skip_word_request(request, i) - i));
             i = skip_word_request(request, i);
-			if (method == 0)
-        		r.set_error(std::make_pair(400, "Bad request"));
+			if (method == 0) {
+		        std::cerr << "Error: host before method" << std::endl;
+				r.set_error(std::make_pair(400, "Bad request"));
+            }
 			host++;
         }
         else if (request.compare(i, 15, "Content-Length:") == 0) {

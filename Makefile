@@ -26,6 +26,7 @@ SRCS  =	main.cpp \
 		socket/request/Request.cpp \
 		socket/response/create.cpp \
 		socket/response/get.cpp \
+		socket/response/post.cpp \
 		socket/response/header.cpp \
 		socket/response/utils.cpp \
 		socket/connections.cpp \

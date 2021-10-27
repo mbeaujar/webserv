@@ -38,17 +38,19 @@ int			handle_connections(int client_socket, Server & server);
 bool		is_directory(std::string path);
 void    	print_request(Request & a);
 char		*read_header(int client_socket, int limit);
-Request 	parse_request(std::string request);
+Request 	parse_header(std::string request);
 
 // ------------------------------- socket/response
 
 bool		file_exist(std::string filename);
 std::string	get_file_content(std::string filename);
 std::string	method_get(Request & request, Server const & server);
+void        method_post(Request & request, Server const & server, int client_socket);
 std::string	search_root(std::string path, Server const & server);
 Location	search_location(std::string path, Server const & server);
-std::string	create_response(Request & request, Server const & server);
+std::string create_response(Request & request, Server const & server, int client_socket);
 std::string header(Request & request);
+char    *read_body(int client_socket, int limit, int buffersize);
 
 
 #endif

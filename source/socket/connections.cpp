@@ -16,6 +16,13 @@ int accept_new_connection(int server_socket) {
 	return client_socket;
 }
 
+/**
+ * @brief Read the header of the request
+ * 
+ * @param client_socket 	fd client
+ * @param limit 	client_max_body_size
+ * @return char* 	content of the header
+ */
 char *read_header(int client_socket, int limit) {
 	int bytes_read;
 	char *buffer = new char[BUFFERSIZE];
@@ -42,19 +49,18 @@ char *read_header(int client_socket, int limit) {
  * @return int
  */
 int handle_connections(int client_socket, Server & server) {
-
 	char *buffer = read_header(client_socket, server.get_client_size());
 	std::cout << "request: " << std::endl;
 	std::cout << buffer << std::endl;
 
 	std::cout << "---------------------------------------" << std::endl;
-	Request r = parse_request(buffer); // si il casse buffer n'est pas free
+	Request r = parse_header(buffer); // si il casse buffer n'est pas free
 	std::cout << "> Request" << std::endl;
 	std::cout << buffer << std::endl;
  	delete [] buffer;
 
 	print_request(r);
-	std::string response = create_response(r, server);
+	std::string response = create_response(r, server, client_socket);
 	std::cout << "> Response" << std::endl;
 	std::cout << response << std::endl;
 	write(client_socket, response.c_str(), response.length());

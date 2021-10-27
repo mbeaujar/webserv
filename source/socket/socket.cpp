@@ -50,11 +50,12 @@ std::map<int, Server> config_socket(std::vector<Server> & servers) {
  * @return int 
  */
 int handle_socket(std::vector<Server> & servers) {
-	fd_set current_sockets, ready_sockets;
+	fd_set current_sockets, current_clients, ready_sockets, ready_clients;
 	std::map<int, Server> sockets = config_socket(servers);
 	int max_fd = 0;
 
 	FD_ZERO(&current_sockets);
+	FD_ZERO(&current_clients);
 	std::map<int, Server>::iterator it = sockets.begin(), ite = sockets.end();
 	while (it != ite) {
 		fcntl(it->first, F_SETFL, O_NONBLOCK);
@@ -68,7 +69,8 @@ int handle_socket(std::vector<Server> & servers) {
 	// ctrl-C pour quitter -> leaks
 	while (true) {
 		ready_sockets = current_sockets;
-		if (select(max_fd + 1, &ready_sockets, NULL, NULL, NULL) < 0) {
+		ready_clients = current_clients;
+		if (select(max_fd + 1, &ready_sockets, &ready_clients, NULL, NULL) < 0) { 
 			std::cerr << "Failed to select" << std::endl;
 			release_fds(sockets);
 			return 1;
@@ -83,12 +85,14 @@ int handle_socket(std::vector<Server> & servers) {
 						max_fd = client_socket;
 					clients.insert(std::make_pair(client_socket, search->second));
 					FD_SET(client_socket, &current_sockets);
-				} else {
+					FD_SET(client_socket, &current_clients);
+				} else if (FD_ISSET(i, &ready_clients)) {
 					std::map<int, Server>::iterator find = clients.find(i);
 					if (find != clients.end())  {
 						handle_connections(i, find->second);
 						clients.erase(i);
 						FD_CLR(i, &current_sockets);
+						FD_CLR(i, &current_clients);
 					}
 				}
 			}

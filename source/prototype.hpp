@@ -1,10 +1,10 @@
 #ifndef __PROTOTYPE_HPP__
-#define __PROTOTYPE_HPP__
+# define __PROTOTYPE_HPP__
 
-#include "config/server/Server.hpp"
-#include "config/server/Location.hpp"
-#include <vector>
-#include <sstream>
+# include "config/server/Server.hpp"
+# include "config/server/Location.hpp"
+# include <vector>
+# include <sstream>
 
 # define DELETE 0
 # define GET    1

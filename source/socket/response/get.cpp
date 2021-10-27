@@ -10,7 +10,7 @@ std::string path_to_file(Request & request, Location location) {
 	if (r_root[r_root.length()-1] == '/') {
 		r_root.erase(r_root.end());
 	}
-	if (request.get_path() == "/")
+			if (FD_ISSET(i, &ready_sockets)) {
 		path = r_root;
 	else
 		path = r_root + request.get_path();
@@ -37,6 +37,13 @@ std::string path_to_file(Request & request, Location location) {
 	return path;
 }
 
+/**
+ * @brief 
+ * 
+ * @param request 
+ * @param server 
+ * @return std::string 
+ */
 std::string method_get(Request & request, Server const & server) {
 	std::string	html;
 	std::string	response;
@@ -65,5 +72,3 @@ std::string method_get(Request & request, Server const & server) {
 		response = get_file_content(path);
 	return response;
 }
-
-

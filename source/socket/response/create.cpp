@@ -4,7 +4,7 @@
 
 std::string create_error(std::string status) { return "<html>\n<head>\n<title>" + status + "</title>\n</head>\n<body bgcolor=\"white\">\n<center>\n<h1>" + status + "</h1>\n</center>\n<hr>\n<center>webserv/1.0.0 (Ubuntu)</center>\n</body>\n</html>"; }
 
-std::string create_response(Request & request, Server const & server) {
+std::string create_response(Request & request, Server const & server, int client_socket) {
 	std::string body;
 	std::string response;
 
@@ -12,8 +12,15 @@ std::string create_response(Request & request, Server const & server) {
 		body = method_get(request, server);
 	}
 	if (request.get_method() == POST) {
-		// body = method_get(request, server);
-	}
+		// method_post(request, server, client_socket);
+		char *buffer = read_body(client_socket, 0, request.get_content_length());
+		std::cout << "> body" << std::endl;
+		for (int i = 0; i < request.get_content_length(); i++) {
+			std::cout << buffer[i];
+		}
+		std::cout << std::endl;
+		delete [] buffer;
+	} 
 	if (request.get_method() == DELETE) {
 		// body = method_get(request, server);
 	}

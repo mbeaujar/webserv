@@ -9,8 +9,6 @@
 # define GET    1
 # define POST   2
 
-
-
 class Location 
 {
     public:
