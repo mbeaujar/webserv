@@ -24,9 +24,7 @@ int main(int argc, char *argv[])
 		printserver(*it);
 		++it;
 	}
-	// // socket
 	return handle_socket(servers);
-	// return 0;
 }
 
 

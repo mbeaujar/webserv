@@ -17,29 +17,27 @@ char    *read_body(int client_socket, int limit, int buffersize) {
 }
 
 void *method_post(void *arg) {
-	thread *a = static_cast<thread*>(arg);
-	Server const & server = *(a->server);
-	Request & request = *(a->request);
-	int client_socket = a->fd;
-	char *buffer;
-	Location location;
-	
-	if (request.get_error().first != 200)
-		return NULL;
-	if ((location = search_location(request.get_path(), server)).get_return().first == 1) {
-		std::cerr << "Error: Can't find a location for the path" << std::endl;
-		request.set_error(std::make_pair(404, "Not Found"));
-		return NULL;
-	}
-	if (location.get_method(POST) == false) {
-		struct s_method m = location.get_methods();
-		request.set_methods(m);
-		request.set_error(std::make_pair(405, "Method Not Allowed"));
-		std::cerr << "Error: Method not allowed" << std::endl;
-		return NULL;
-	}
-	buffer = read_body(client_socket, 0, request.get_content_length());
-	delete [] buffer;
+	Thread *a = reinterpret_cast<Thread*>(arg);
+	// char *buffer;
+	// Location location;
+	// if (request.get_error().first != 200)
+	// 	return NULL;
+	// if ((location = search_location(request.get_path(), server)).get_return().first == 1) {
+	// 	std::cerr << "Error: Can't find a location for the path" << std::endl;
+	// 	request.set_error(std::make_pair(404, "Not Found"));
+	// 	return NULL;
+	// }
+	// if (location.get_method(POST) == false) {
+	// 	struct s_method m = location.get_methods();
+	// 	request.set_methods(m);
+	// 	request.set_error(std::make_pair(405, "Method Not Allowed"));
+	// 	std::cerr << "Error: Method not allowed" << std::endl;
+	// 	return NULL;
+	// }
+	// buffer = read_body(client_socket, 0, request.get_content_length());
+	// delete [] buffer;
+	close(a->client_socket);
+	delete a;
 	return NULL;
 }
 

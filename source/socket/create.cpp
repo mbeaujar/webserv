@@ -65,6 +65,7 @@ int create_socket_ipv6(int port, int backlog = 1) {
 			return -1;
 		}
 	}
+	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin6_family = AF_INET6;
 	server_addr.sin6_port = htons(port);
 	server_addr.sin6_addr = in6addr_any;

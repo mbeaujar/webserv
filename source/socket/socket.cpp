@@ -51,11 +51,11 @@ std::map<int, Server> config_socket(std::vector<Server> & servers) {
  */
 int handle_socket(std::vector<Server> & servers) {
 	fd_set current_sockets, current_clients, ready_sockets, ready_clients;
+	int max_fd = 0;
+
 	std::map<int, Server> sockets = config_socket(servers);
 	std::map<int, Server>::iterator search;
 	std::map<int, Server>  clients;
-	thread post;
-	int max_fd = 0;
 
 	FD_ZERO(&current_sockets);
 	FD_ZERO(&current_clients);
@@ -93,10 +93,14 @@ int handle_socket(std::vector<Server> & servers) {
 						clients.erase(i);
 						FD_CLR(i, &current_sockets);
 						FD_CLR(i, &current_clients);
+						release_fds(sockets);
+						release_fds(clients);
+						return 0;
 					}
 				}
 			}
 		}
 	}
+	return 0;
 }
 //  siege localhost -r100 -c100

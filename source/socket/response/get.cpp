@@ -32,8 +32,6 @@ std::string method_get(Request & request, Server const & server) {
 	std::string	response;
 	Location	location;
 
-	if (request.get_error().first != 200)
-		return "";
 	if ((location = search_location(request.get_path(), server)).get_return().first == 1) {
 		std::cerr << "Error: Can't find a location for the path" << std::endl;
 		request.set_error(std::make_pair(404, "Not Found"));

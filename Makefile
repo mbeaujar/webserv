@@ -31,7 +31,8 @@ SRCS  =	main.cpp \
 		socket/response/utils.cpp \
 		socket/connections.cpp \
 		socket/create.cpp \
-		socket/socket.cpp
+		socket/socket.cpp \
+		socket/Thread.cpp 
 
 OBJS = $(addprefix .objs/, $(SRCS:.cpp=.o))
 
@@ -45,7 +46,7 @@ $(OBJS_DIRECTORY)%.o : $(SRCS_DIRECTORY)%.cpp
 all : $(OBJS_DIRECTORY) $(NAME)
 
 $(NAME) : $(OBJS)
-	@$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
+	@$(CC) $(CFLAGS) $(OBJS) -lpthread -o $(NAME)
 
 
 $(OBJS_DIRECTORY):
