@@ -50,7 +50,7 @@ void        method_delete(Request & request, Server const & server);
 void 		*method_post(void *arg);
 std::string	search_root(std::string path, Server const & server);
 Location	search_location(std::string path, Server const & server);
-void create_response(Request & request, Server const & server, int client_socket);
+void create_response(Request & request, Server const & server, int client_socket, int current_reading);
 std::string header(Request & request);
 char    *read_body(int client_socket, int limit, int buffersize);
 

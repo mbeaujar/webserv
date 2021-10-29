@@ -1,6 +1,6 @@
-POST /index.nginx-debian.html HTTP/1.1
-Host: 127.0.0.1
-Content-type: text/html
-Content-Length: 5
-
-SALUT
+POST / HTTP/1.1
+Host: localhost:8080
+User-Agent: Go-http-client/1.1
+Transfer-Encoding: chunked
+Content-Type: test/file
+Accept-Encoding: 

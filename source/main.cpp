@@ -73,16 +73,23 @@ void printserver(Server &a)
 			std::cout << "\t- index : ";
 			printvector(f);
 		}
-		f = it2->second.get_param();
-		if (f.size() > 0) {
-			std::cout << "\t- param : ";
-			printvector(f);
+		s_method z = it2->second.get_methods();
+		std::cout << "\t- method : ";
+		if (z.m_get == true)
+			std::cout << "GET";
+		if (z.m_post == true) {
+			if (z.m_get == true)
+				std::cout << ", ";
+			std::cout << "POST";
 		}
-		f = it2->second.get_pass();
-		if (f.size() > 0) {
-			std::cout << "\t- pass : ";
-			printvector(f);
+		if (z.m_delete == true) {
+			if (z.m_post == true || z.m_get == true)
+				std::cout << ", ";
+			std::cout << "DELETE";
 		}
+		std::cout << std::endl;
+		if (it2->second.get_fastcgi() != "")
+			std::cout << "\t- fastcgi: " << it2->second.get_fastcgi() << std::endl;
 		std::pair<int, std::string> g = it2->second.get_return();
 		if (g.first >= 0)
 			std::cout << "\t- return : " << g.first << " " << g.second << "\n";

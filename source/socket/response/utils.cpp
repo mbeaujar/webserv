@@ -54,3 +54,22 @@ Location search_location(std::string path, Server const & server) {
 	return tmp;
 }
 
+Location find_location(Request & request, Server const & server, int method) {
+	Location location;
+	(void)method;
+
+	if ((location = search_location(request.get_path(), server)).get_return().first == 1) {
+		std::cerr << "Error: Can't find a location for the path" << std::endl;
+		request.set_error(std::make_pair(404, "Not Found"));
+		return Location();
+	}
+	// check si la method delete est autorisé
+	if (location.get_method(GET) == false) {
+		struct s_method m = location.get_methods();
+		request.set_methods(m);
+		request.set_error(std::make_pair(405, "Method Not Allowed"));
+		std::cerr << "Error: Method not allowed" << std::endl;
+		return Location();
+	}
+	return Location();
+}

@@ -1,0 +1,10 @@
+server {
+	listen 80;
+
+	location .php {
+		method POST;
+		root /var/www/html;
+		index index.php;
+		fastcgi /home/user42/Bureau/webserv/ubuntu_cgi_tester;
+	}
+}

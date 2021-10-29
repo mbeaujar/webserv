@@ -5,13 +5,15 @@ void send_response(Request & request, std::string body, int client_socket) {
 	request.set_content_length(body.length());
 	std::string response = header(request);
 	response += body;
+	std::cout << "> response" << std::endl;
+	std::cout << response << std::endl;
 	write(client_socket, response.c_str(), response.length());
 	close(client_socket);
 }
 
 std::string create_error(std::string status) { return "<html>\n<head>\n<title>" + status + "</title>\n</head>\n<body bgcolor=\"white\">\n<center>\n<h1>" + status + "</h1>\n</center>\n<hr>\n<center>webserv/1.0.0 (Ubuntu)</center>\n</body>\n</html>"; }
 
-void create_response(Request & request, Server const & server, int client_socket) {
+void create_response(Request & request, Server const & server, int client_socket, int current_reading) {
 	int method = request.get_method();
 	std::pair<int, std::string> error = request.get_error();
 
@@ -20,7 +22,7 @@ void create_response(Request & request, Server const & server, int client_socket
 	if (method == POST) {
 		pthread_t id;
 		Thread *t = new Thread;
-		t->init(request, server, client_socket);
+		t->init(request, server, client_socket, current_reading);
 		pthread_create(&id, NULL, method_post, t);
 		pthread_detach(id);
 	} else {

@@ -54,14 +54,19 @@ Accept: */*
 
 // ---------------- curl POST
 
+GET /path?name=mael&password=moi HTTP/1.1
+
 POST / HTTP/1.1
 Host: localhost
 User-Agent: curl/7.58.0
 Accept: */*
-Content-Length: 11
+Content-Length: 22
 Content-Type: application/x-www-form-urlencoded
 
-// ------------------------
+
+name=mael&password=moi
+
+// ------------------------ RESPONSE
 
 
 HTTP/1.x 200 OK

@@ -93,14 +93,16 @@ int handle_socket(std::vector<Server> & servers) {
 						clients.erase(i);
 						FD_CLR(i, &current_sockets);
 						FD_CLR(i, &current_clients);
-						release_fds(sockets);
-						release_fds(clients);
-						return 0;
+						// release_fds(sockets);
+						// release_fds(clients);
+						// return 0;
 					}
 				}
 			}
 		}
 	}
+	release_fds(sockets);
+	release_fds(clients);
 	return 0;
 }
 //  siege localhost -r100 -c100

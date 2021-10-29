@@ -23,10 +23,9 @@ int accept_new_connection(int server_socket) {
  * @param limit 	client_max_body_size
  * @return char* 	content of the header
  */
-char *read_header(int client_socket, int limit) {
+char *read_header(int client_socket, int limit, int & msgsize) {
 	int bytes_read;
 	char *buffer = new char[BUFFERSIZE];
-	int msgsize = 0;
 
 	memset(buffer, 0, BUFFERSIZE);
 	if (limit == 0)
@@ -49,7 +48,8 @@ char *read_header(int client_socket, int limit) {
  * @return int
  */
 int handle_connections(int client_socket, Server & server) {
-	char *buffer = read_header(client_socket, server.get_client_size());
+	int current_reading = 0;
+	char *buffer = read_header(client_socket, server.get_client_size(), current_reading);
 	std::cout << "request: " << std::endl;
 	std::cout << buffer << std::endl;
 
@@ -60,7 +60,7 @@ int handle_connections(int client_socket, Server & server) {
  	delete [] buffer;
 
 	print_request(r);
-	create_response(r, server, client_socket);
+	create_response(r, server, client_socket, current_reading);
 	return 0;
 }
 

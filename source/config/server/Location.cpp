@@ -9,8 +9,7 @@ Location::Location()
 	  _root("/var/www/html"),
 	  _index(),
 	  _method(),
-	  _fastcgi_param(),
-	  _fastcgi_pass(),
+	  _fastcgi(),
 	  _return(-1, "") {}
 
 /**
@@ -29,8 +28,7 @@ Location::Location(Location const &copy)
 	  _root(copy._root),
 	  _index(copy._index),
 	  _method(copy._method),
-	  _fastcgi_param(copy._fastcgi_param),
-	  _fastcgi_pass(copy._fastcgi_pass),
+	  _fastcgi(copy._fastcgi),
 	  _return(copy._return) {}
 
 /**
@@ -47,8 +45,7 @@ Location& Location::operator=(Location const &copy)
 	_root = copy._root;
 	_index = copy._index;
 	_method = copy._method;
-	_fastcgi_param = copy._fastcgi_param;
-	_fastcgi_pass = copy._fastcgi_pass;
+	_fastcgi = copy._fastcgi;
 	_return = copy._return;
 	return *this;
 }
@@ -79,14 +76,6 @@ void Location::adding_index(std::string const & index) {
 	_index.push_back(index);
 }
 
-void Location::adding_param(std::string const & param) {
-	_fastcgi_param.push_back(param);
-}
-
-void Location::adding_pass(std::string const & pass) {
-	_fastcgi_pass.push_back(pass);
-}
-
 void Location::set_root(std::string const & root) {
 	_root = root;
 }
@@ -102,15 +91,15 @@ void Location::set_return(int const & code, std::string const & path) {
 	}
 }
 
+void Location::set_fastcgi(std::string const & fastcgi) { _fastcgi = fastcgi; }
+
 bool Location::get_autoindex() const { return _autoindex; }
+
+std::string Location::get_fastcgi() const { return _fastcgi; }
 
 std::string Location::get_root() const { return _root; }
 
 std::vector<std::string> Location::get_index() const { return _index; }
-
-std::vector<std::string> Location::get_param() const { return _fastcgi_param; }
-
-std::vector<std::string> Location::get_pass() const { return _fastcgi_pass; }
 
 std::pair<int, std::string> Location::get_return() const { return _return; }
 
@@ -124,7 +113,3 @@ bool Location::find_index(std::string const & index) const {
 	}
 	return false;
 }
-
-// bool Location::find_param(std::string const & param) const {
-
-// }

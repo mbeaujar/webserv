@@ -20,11 +20,9 @@ Location parse_location(std::string file)
 		i++;
 	while (file[i] && file[i] != '}')
 	{
-		if (file[i] == '#')
-			i = skip_comment(file, i);
-		else if (isspace(file[i]))
-			i = skip_space(file, i);
-		else if (file.compare(i, 4, "root") == 0) {
+		i = skip_comment(file, i);
+		i = skip_space(file, i);
+		if (file.compare(i, 4, "root") == 0) {
 			i += 4;
 			i = parse_root(file, i, a);
 		} else if (file.compare(i, 5, "index") == 0) {
@@ -42,20 +40,11 @@ Location parse_location(std::string file)
 		} else if (file.compare(i, 6, "method") == 0) {
             i += 6;
             i = parse_method(file, i, a);
-        } else
-			i++; 
-		
-		
-		
-		// else if (file.compare(i, 13, "fastcgi_param") == 0) {
-		// 	i += 13;
-		// 	i = parse_fastcgi_param(file, i, a); 
-		// } else if (file.compare(i, 12, "fastcgi_pass") == 0) { 
-		// 	i += 12;
-		// 	i = parse_fastcgi_pass(file, i, a); 
-		// } else
-		// 	i++;
-		
+        } else if (file.compare(i, 7, "fastcgi") == 0) {
+			i += 7;
+			i = parse_fastcgi(file, i, a);
+		} else if (file[i] && !isspace(file[i]) && file[i] != '#' && file[i] != '}')
+			throw std::invalid_argument("unknow directive \"" + file.substr(i, skip_word_exception(file, i) - i) + "\"");
 	}
     if (!a.get_method(DELETE) && !a.get_method(GET) && !a.get_method(POST)) {
         a.adding_method(DELETE);

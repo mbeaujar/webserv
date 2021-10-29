@@ -4,7 +4,16 @@ server {
 	listen [::]:8080;
 
 	location / {
-		root /var/www/html;
-		index index.html index.nginx-debian.html;
+		method GET;
+		root /home/user42/Bureau/webserv/YoupiBanane;
+		index youpi.bad_extension;
+		fastcgi /;
+		dfjhdkfjk
+	}
+
+	location /directory/ {
+		method GET;
+		root /home/user42/Bureau/webserv/YoupiBanane;
+		index youpi.bad_extension;
 	}
 }
