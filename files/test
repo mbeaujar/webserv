@@ -1,10 +1,10 @@
 server {
-	listen 80;
+	listen 8080;
 
-	location .php {
-		method POST;
+	location / {
 		root /var/www/html;
-		index index.php;
-		fastcgi /home/user42/Bureau/webserv/ubuntu_cgi_tester;
+		index index.html index.php index.nginx-debian.html;
+		fastcgi /usr/bin/php-cgi;
+		fastcgi_extension .php;
 	}
 }

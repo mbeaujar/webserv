@@ -27,23 +27,14 @@ std::string path_to_file(Request & request, Location location) {
 	return path;
 }
 
-std::string method_get(Request & request, Server const & server) {
+std::string method_get(Request & request, Server const & server, int client_socket) {
 	std::string	html;
 	std::string	response;
 	Location	location;
 
-	if ((location = search_location(request.get_path(), server)).get_return().first == 1) {
-		std::cerr << "Error: Can't find a location for the path" << std::endl;
-		request.set_error(std::make_pair(404, "Not Found"));
+	location = find_location(request, server, GET);
+	if (request.get_error().first != 200)
 		return "";
-	}
-	if (location.get_method(GET) == false) {
-		struct s_method m = location.get_methods();
-		request.set_methods(m);
-		request.set_error(std::make_pair(405, "Method Not Allowed"));
-		std::cerr << "Error: Method not allowed" << std::endl;
-		return "";
-	}
 	std::pair<int, std::string> redirect = location.get_return();
 	if (redirect.first != -1) {
 		request.set_return(std::make_pair(redirect.first, redirect.second));
@@ -53,6 +44,14 @@ std::string method_get(Request & request, Server const & server) {
 	std::string path = path_to_file(request, location);
 	if (request.get_error().first == 200)
 		response = get_file_content(path);
+	std::string cgi_extension = location.get_fastcgi_ext();
+	if (cgi_extension.empty() == false) {
+		if (path.length() > cgi_extension.length()) {
+			size_t len = path.length() - cgi_extension.length();
+			if (len >= 0 && path.compare(len, cgi_extension.length(), cgi_extension) == 0)
+				response = call_cgi(request, location.get_fastcgi(), client_socket, response, "GET", path);
+		}
+	}
 	return response;
 }
 

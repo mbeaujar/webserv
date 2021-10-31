@@ -38,7 +38,9 @@ int 				parse_index(std::string file, int i, Location &a);
 int 				parse_listen(std::string file, int i, Server &a);
 int 				parse_root(std::string file, int i, Location &a);
 int 				parse_fastcgi(std::string file, int i, Location &a);
+int 				parse_fastcgi_extension(std::string file, int i, Location &a);
 int					recup_nb(std::string file, int & i);
+
 
 // -------------------------------- socket 
 
@@ -67,44 +69,5 @@ void printvector(std::vector<T> &vector)
 	}
 	std::cout << " ]" << "\n";
 }
-
-// template <typename T>
-// void printVector(T &vector)
-// {
-// 	typename T::iterator iter;
-
-// 	std::cout << "vector: ";
-// 	iter = vector.begin();
-//     std::cout << '[';
-// 	while (iter != vector.end())
-// 	{
-// 		std::cout << *iter;
-// 		if (iter + 1 != vector.end())
-// 			std::cout << ",";
-// 		iter++;
-// 	}
-//     std::cout << ']';
-// 	std::cout << std::endl;
-// }
-
-// template <typename T>
-// void printVectorLocation(T vector)
-// {
-// 	typename T::iterator iter;
-
-// 	std::cout << "Location : ";
-// 	iter = vector.begin();
-//     std::cout << '[';
-// 	while (iter != vector.end())
-// 	{
-// 		std::cout << iter->location_block;
-//         std::cout << std::endl;
-// 		if (iter + 1 != vector.end())
-// 			std::cout << "***************************" << std::endl;
-// 		iter++;
-// 	}
-//     std::cout << ']';
-// 	std::cout << std::endl;
-// }
 
 #endif

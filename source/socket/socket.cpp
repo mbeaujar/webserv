@@ -75,30 +75,34 @@ int handle_socket(std::vector<Server> & servers) {
 			release_fds(sockets);
 			return 1;
 		}
-		for (int i = 0; i < max_fd + 1; i++) {
-			if (FD_ISSET(i, &ready_sockets)) {
-				search = sockets.find(i);
-				if (search != ite) {
-					int client_socket = accept_new_connection(i);
-					fcntl(client_socket, F_SETFL, O_NONBLOCK);
-					if (client_socket > max_fd)
-						max_fd = client_socket;
-					clients.insert(std::make_pair(client_socket, search->second));
-					FD_SET(client_socket, &current_sockets);
-					FD_SET(client_socket, &current_clients);
-				} else if (FD_ISSET(i, &ready_clients)) {
-					std::map<int, Server>::iterator find = clients.find(i);
-					if (find != clients.end())  {
-						handle_connections(i, find->second);
-						clients.erase(i);
-						FD_CLR(i, &current_sockets);
-						FD_CLR(i, &current_clients);
-						// release_fds(sockets);
-						// release_fds(clients);
-						// return 0;
+		try {
+			for (int i = 0; i < max_fd + 1; i++) {
+				if (FD_ISSET(i, &ready_sockets)) {
+					search = sockets.find(i);
+					if (search != ite) {
+						int client_socket = accept_new_connection(i);
+						if (client_socket != -1) {
+							fcntl(client_socket, F_SETFL, O_NONBLOCK);
+							if (client_socket > max_fd)
+								max_fd = client_socket;
+							clients.insert(std::make_pair(client_socket, search->second));
+							FD_SET(client_socket, &current_sockets);
+							FD_SET(client_socket, &current_clients);
+						}
+					}
+					else if (FD_ISSET(i, &ready_clients)) {
+						std::map<int, Server>::iterator find = clients.find(i);
+						if (find != clients.end()) {
+							handle_connections(i, find->second);
+							clients.erase(i);
+							FD_CLR(i, &current_sockets);
+							FD_CLR(i, &current_clients);
+						}
 					}
 				}
 			}
+		} catch (std::exception &e) {
+			std::cerr << "webserv: [warn]: " << e.what() << std::endl;
 		}
 	}
 	release_fds(sockets);

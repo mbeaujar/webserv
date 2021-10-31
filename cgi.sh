@@ -1,0 +1,2 @@
+env SERVER_PROTOCOL=HTTP/1.1 PATH_INFO=/usr/bin REQUEST_METHOD=GET QUERY_STRING=test1 php-cgi 
+#env REQUEST_METHOD=GET SERVER_PROTOCOL=HTTP/1.1 PATH_INFO=/index.php QUERY_STRING="name=mael" ./ubuntu_cgi_tester /var/www/html/index.php

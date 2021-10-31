@@ -10,6 +10,7 @@ SRCS  =	main.cpp \
 		config/directives/autoindex.cpp \
 		config/directives/client_size.cpp \
 		config/directives/error_page.cpp \
+		config/directives/fastcgi_extension.cpp \
 		config/directives/fastcgi.cpp \
 		config/directives/index.cpp \
 		config/directives/listen.cpp \
@@ -25,6 +26,7 @@ SRCS  =	main.cpp \
 		config/parser.cpp \
 		socket/request/parser.cpp \
 		socket/request/Request.cpp \
+		socket/response/cgi.cpp \
 		socket/response/create.cpp \
 		socket/response/get.cpp \
 		socket/response/post.cpp \

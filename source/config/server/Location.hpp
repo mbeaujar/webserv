@@ -22,11 +22,13 @@ class Location
 
 		void set_root(std::string const & root);
 		void set_fastcgi(std::string const & fastcgi);
+		void set_fastcgi_ext(std::string const & fastcgi_ext);
 		void set_autoindex(bool const & autoindex);
 		void set_return(int const & code, std::string const & path);
 
         bool get_method(int nb) const;
 		std::string get_fastcgi() const;
+		std::string get_fastcgi_ext() const;
 		s_method get_methods() const;
 		bool get_autoindex() const;
 		std::string get_root() const;
@@ -41,6 +43,7 @@ class Location
 		std::vector<std::string> 	_index;
         s_method	                _method;
 		std::string 				_fastcgi;
+		std::string					_fastcgi_ext; // fastcgi_extension
 		std::pair<int, std::string> _return;
 
 };

@@ -20,6 +20,20 @@ bool is_directory(std::string path) {
 	return false;
 }
 
+std::string cut_filename(std::string path) {
+	int i = path.length();
+	while (i > 0 && path[i] != '/')
+		i--;
+	return path.substr(i + 1, path.length());
+}
+
+std::string cut_path(std::string path) {
+	int i = path.length();
+	while (i > 0 && path[i] != '/')
+		i--;
+	return path.substr(0, i);
+}
+
 std::string path_in_common(std::string location, std::string & path) {
 	int len = 0;
 	
@@ -56,20 +70,19 @@ Location search_location(std::string path, Server const & server) {
 
 Location find_location(Request & request, Server const & server, int method) {
 	Location location;
-	(void)method;
 
 	if ((location = search_location(request.get_path(), server)).get_return().first == 1) {
 		std::cerr << "Error: Can't find a location for the path" << std::endl;
 		request.set_error(std::make_pair(404, "Not Found"));
-		return Location();
+		return location;
 	}
 	// check si la method delete est autorisé
-	if (location.get_method(GET) == false) {
+	if (location.get_method(method) == false) {
 		struct s_method m = location.get_methods();
 		request.set_methods(m);
 		request.set_error(std::make_pair(405, "Method Not Allowed"));
 		std::cerr << "Error: Method not allowed" << std::endl;
-		return Location();
+		return location;
 	}
-	return Location();
+	return location;
 }

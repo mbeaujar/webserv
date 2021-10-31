@@ -29,7 +29,7 @@ void create_response(Request & request, Server const & server, int client_socket
 		std::string response, body;
 
 		if (method == GET) 
-			body = method_get(request, server);
+			body = method_get(request, server, client_socket);
 		else
 			;// method_delete(request, server);
 		error = request.get_error();

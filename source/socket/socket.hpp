@@ -9,11 +9,12 @@
 # include <netinet/in.h>
 # include <arpa/inet.h>
 # include <unistd.h>
+# include <fcntl.h>
 # include <errno.h>
-# include <stdio.h>
+# include <cstdio>
 # include <fstream>
 # include <cstring>
-#include <sys/stat.h>
+# include <sys/stat.h>
 # include <time.h>
 
 # define SA_IN6	struct sockaddr_in6
@@ -44,15 +45,19 @@ Request 	parse_header(std::string request);
 // ------------------------------- socket/response
 
 bool		file_exist(std::string filename);
+std::string call_cgi(Request & request, std::string fastcgi, int client_socket, std::string body, std::string method, std::string path);
 std::string	get_file_content(std::string filename);
-std::string	method_get(Request & request, Server const & server);
+std::string method_get(Request & request, Server const & server, int client_socket);
 void        method_delete(Request & request, Server const & server);
 void 		*method_post(void *arg);
 std::string	search_root(std::string path, Server const & server);
 Location	search_location(std::string path, Server const & server);
+Location find_location(Request & request, Server const & server, int method);
 void create_response(Request & request, Server const & server, int client_socket, int current_reading);
 std::string header(Request & request);
 char    *read_body(int client_socket, int limit, int buffersize);
+std::string cut_filename(std::string path);
+std::string cut_path(std::string path);
 
 
 #endif
