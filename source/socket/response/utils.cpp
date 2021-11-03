@@ -1,6 +1,5 @@
 #include "../socket.hpp"
 
-
 bool file_exist(std::string filename) {
 	std::ifstream file;
 	file.open(filename.c_str());

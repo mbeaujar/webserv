@@ -10,6 +10,10 @@
 # define GET    1
 # define POST   2
 
+# ifndef LIMIT
+#  define LIMIT -1
+# endif
+
 // -------------------------------- config
 
 std::vector<Server>	parser(const char *filename);

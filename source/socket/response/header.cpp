@@ -43,6 +43,7 @@ std::string get_last_modified()
 	struct tm		*tm;
 	char 			buf[1000];
 	
+	memset(&stats, 0, sizeof(stats));
 	tm = gmtime(&stats.st_mtime);
 	strftime(buf, 100, "%a, %d %b %Y %H:%M:%S GMT", tm);
 	date = std::string(buf);
@@ -88,3 +89,4 @@ std::string header(Request & request) {
 	header += "\r\n"; // blank line
 	return header;
 }
+

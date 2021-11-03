@@ -1,3 +1,0 @@
-#env SERVER_PROTOCOL=HTTP/1.1 PATH_INFO=/var/www/html/ REQUEST_URI=/var/www/html/ REDIRECT_STATUS=200 SCRIPT_NAME=/home/user42/Bureau/webserv/ubuntu_cgi_tester SCRIPT_FILENAME=/var/www/html/index.php REQUEST_METHOD=GET ./ubuntu_cgi_tester /var/www/html/index.php
-env REQUEST_METHOD=GET QUERY_STRING="name=mael" SCRIPT_NAME=/home/user42/Bureau/webserv/ubuntu_cgi_tester SERVER_PROTOCOL=HTTP/1.1 PATH_INFO=/ REQUEST_URI=/ ./ubuntu_cgi_tester /var/www/html/index.php
-#env PATH_INFO=/ REQUEST_METHOD=GET REQUEST_URI=/ QUERY_STRING="name=mael" SCRIPT_FILENAME=/home/user42/Bureau/webserv/YoupiBanane/youpi.bla SCRIPT_NAME=/home/user42/Bureau/webserv/ubuntu_cgi_tester SERVER_PROTOCOL=HTTP/1.1 ./ubuntu_cgi_tester

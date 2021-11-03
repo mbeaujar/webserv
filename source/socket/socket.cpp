@@ -43,6 +43,17 @@ std::map<int, Server> config_socket(std::vector<Server> & servers) {
 	return sockets;
 }
 
+
+void wait_finish(std::map<int, Server> & sockets, std::map<int, Server> & clients, std::vector<pthread_t> & threads) {
+	std::vector<pthread_t>::iterator it = threads.begin(), ite = threads.end();
+	while (it != ite) {
+		pthread_join(*it, NULL);
+		++it;
+	}
+	release_fds(sockets);
+	release_fds(clients);
+}
+
 /**
  * @brief Create multiple sockets who handle multiple connections
  * 
@@ -51,8 +62,9 @@ std::map<int, Server> config_socket(std::vector<Server> & servers) {
  */
 int handle_socket(std::vector<Server> & servers) {
 	fd_set current_sockets, current_clients, ready_sockets, ready_clients;
-	int max_fd = 0;
+	int max_fd = 0, loop = 0;
 
+	std::vector<pthread_t> threads;
 	std::map<int, Server> sockets = config_socket(servers);
 	std::map<int, Server>::iterator search;
 	std::map<int, Server>  clients;
@@ -93,20 +105,22 @@ int handle_socket(std::vector<Server> & servers) {
 					else if (FD_ISSET(i, &ready_clients)) {
 						std::map<int, Server>::iterator find = clients.find(i);
 						if (find != clients.end()) {
-							handle_connections(i, find->second);
+							handle_connections(i, find->second, threads);
 							clients.erase(i);
 							FD_CLR(i, &current_sockets);
 							FD_CLR(i, &current_clients);
 						}
+						loop++;
 					}
 				}
 			}
 		} catch (std::exception &e) {
 			std::cerr << "webserv: [warn]: " << e.what() << std::endl;
 		}
+		if (LIMIT != -1 && loop >= LIMIT)
+			break;
 	}
-	release_fds(sockets);
-	release_fds(clients);
+	wait_finish(sockets, clients, threads);
 	return 0;
 }
 //  siege localhost -r100 -c100

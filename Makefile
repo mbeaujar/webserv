@@ -53,7 +53,6 @@ all : $(OBJS_DIRECTORY) $(NAME)
 $(NAME) : $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS) -lpthread -o $(NAME)
 
-
 $(OBJS_DIRECTORY):
 	@mkdir $@
 	@mkdir -p $@/config/directives

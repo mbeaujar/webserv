@@ -28,7 +28,7 @@ std::string path_to_file(Request & request, Location location) {
 	return path;
 }
 
-std::string method_get(Request & request, Server const & server, int client_socket) {
+std::string parse_get(Request & request, Server const & server, int client_socket) {
 	std::pair<int, std::string> redirect;
 	std::string	html, response, path;
 	Location	location;
@@ -49,8 +49,25 @@ std::string method_get(Request & request, Server const & server, int client_sock
 		response = autoindex_on(path);
 	} else if (is_cgi(path, location.get_fastcgi_ext()) == true) {
 		response = call_cgi(request, client_socket, path, "GET", location.get_fastcgi());
-		response = parse_cgi(request, response);
+		if (response.empty() == true) 
+			request.set_error(std::make_pair(502, "Bad Gateway"));
+		else
+			response = parse_cgi(request, response);
 	} else
 		response = get_file_content(path);
 	return response;
+}
+
+void *method_get(void *arg) {
+	Thread *a = reinterpret_cast<Thread*>(arg);
+	std::pair<int, std::string> error;
+
+	std::string body = parse_get(a->request, a->server, a->client_socket);
+	error = a->request.get_error();
+	if (error.first != 200)
+		body = create_error(to_string(error.first) + " " + error.second);
+	send_response(a->request, body, a->client_socket);
+	close(a->client_socket);
+	delete a;
+	return NULL;
 }

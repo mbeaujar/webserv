@@ -8,12 +8,35 @@
 // https://www.oreilly.com/openbook/cgi/ch03_02.html
 // https://www.w3.org/Protocols/HTTP/Object_Headers.html#date
 
+char	*dupnormi(const char *s1)
+{
+	int		i;
+	char	*s2;
+
+	i = 0;
+	while (s1[i])
+		i++;
+	try {
+		s2 = new char[i + 1];
+	} catch (std::bad_alloc) {
+		return NULL;
+	}
+	i = 0;
+	while (s1[i])
+	{
+		s2[i] = s1[i];
+		i++;
+	}
+	s2[i] = '\0';
+	return (s2);
+}
+
 void free_tab(char **envp, int len) {
 	if (envp == NULL)
 		return;
 	for (int i = 0; i < len; i++) {
 		if (envp[i])
-			delete envp[i];
+			delete [] envp[i];
 	}
 	delete [] envp;
 }
@@ -23,8 +46,8 @@ std::string clean_cgi(int fd_in, int fd_out, char **argv = NULL, char **envp = N
 		close(fd_in);
 	if (fd_out != -1)
 		close(fd_out);
-	free_tab(argv, 3);
-	free_tab(envp, 5);
+	free_tab(argv, 2);
+	free_tab(envp, 6);
 	return "";
 }
 
@@ -41,15 +64,15 @@ int create_temporary_file(std::string filename) {
 }
 
 char **create_envp(Request & request, std::string & method, std::string & path_to_cgi, std::string & path) {
-	char **envp = new char*[6];
+	char **envp = new char*[7];
 	std::string only_path_cgi = cut_path(path_to_cgi);
 
-	envp[0] = strdup(std::string("REQUEST_METHOD=" + method).c_str());
-	envp[1] = strdup(std::string("SERVER_PROTOCOL=HTTP/1.1").c_str());
-	envp[2] = strdup(std::string("PATH_INFO=" + only_path_cgi).c_str());
-	envp[3] = strdup(std::string("QUERY_STRING=" + request.get_query_string()).c_str());
-	envp[4] = strdup(std::string("REQUEST_URI=" + only_path_cgi).c_str());
-	envp[5] = strdup(std::string("SCRIPT_FILENAME=" + path).c_str());
+	envp[0] = dupnormi(std::string("REQUEST_METHOD=" + method).c_str());
+	envp[1] = dupnormi(std::string("SERVER_PROTOCOL=HTTP/1.1").c_str());
+	envp[2] = dupnormi(std::string("PATH_INFO=" + only_path_cgi).c_str());
+	envp[3] = dupnormi(std::string("QUERY_STRING=" + request.get_query_string()).c_str());
+	envp[4] = dupnormi(std::string("REQUEST_URI=" + only_path_cgi).c_str());
+	envp[5] = dupnormi(std::string("SCRIPT_FILENAME=" + path).c_str());
 	envp[6] = 0;
 	for (int i = 0; i < 6; i++) {
 		if (!envp[i]) {
@@ -63,13 +86,13 @@ char **create_envp(Request & request, std::string & method, std::string & path_t
 char **create_argv(std::string & path_to_cgi, std::string & path) {
 	char **argv = new char*[3];
 
-	argv[0] = strdup(cut_filename(path_to_cgi).c_str());
+	argv[0] = dupnormi(cut_filename(path_to_cgi).c_str());
 	if (argv[0] == NULL) {
 		delete [] argv;
 		std::cerr << "Error: cgi malloc for argv" << std::endl;
 		return NULL;
 	}
-	argv[1] = strdup(path.c_str());
+	argv[1] = dupnormi(path.c_str());
 	if (argv[1] == NULL) {
 		delete argv[0];
 		delete [] argv;

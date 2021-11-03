@@ -47,7 +47,7 @@ char *read_header(int client_socket, int limit, int & msgsize) {
  * @param client_socket 
  * @return int
  */
-int handle_connections(int client_socket, Server & server) {
+int handle_connections(int client_socket, Server & server, std::vector<pthread_t> & threads) {
 	int current_reading = 0;
 	char *buffer = read_header(client_socket, server.get_client_size(), current_reading);
 	std::cout << "request: " << std::endl;
@@ -60,7 +60,7 @@ int handle_connections(int client_socket, Server & server) {
  	delete [] buffer;
 
 	print_request(r);
-	create_response(r, server, client_socket, current_reading);
+	create_response(r, server, client_socket, current_reading, threads);
 	return 0;
 }
 
