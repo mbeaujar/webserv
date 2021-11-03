@@ -6,15 +6,12 @@
  */
 Location::Location()
 	: _autoindex(false),
-	  _root(),
+	  _root("/var/www/html"),
 	  _index(),
 	  _method(),
-	  _fastcgi_param(),
-	  _fastcgi_pass(),
-	  _return()
-{
-	_return.first = -1;
-}
+	  _fastcgi(),
+	  _fastcgi_ext(),
+	  _return(-1, "") {}
 
 /**
  * @brief Destroy the Location::Location object
@@ -32,8 +29,8 @@ Location::Location(Location const &copy)
 	  _root(copy._root),
 	  _index(copy._index),
 	  _method(copy._method),
-	  _fastcgi_param(copy._fastcgi_param),
-	  _fastcgi_pass(copy._fastcgi_pass),
+	  _fastcgi(copy._fastcgi),
+	  _fastcgi_ext(copy._fastcgi_ext),
 	  _return(copy._return) {}
 
 /**
@@ -50,27 +47,29 @@ Location& Location::operator=(Location const &copy)
 	_root = copy._root;
 	_index = copy._index;
 	_method = copy._method;
-	_fastcgi_param = copy._fastcgi_param;
-	_fastcgi_pass = copy._fastcgi_pass;
+	_fastcgi = copy._fastcgi;
+	_fastcgi_ext = copy._fastcgi_ext;
 	_return = copy._return;
 	return *this;
 }
 
-bool Location::get_method(int nb)
+bool Location::get_method(int nb) const
 {
-    if (nb == 0)
+    if (nb == DELETE)
         return true;
-    else if (nb == 1)
+    else if (nb == GET)
         return true;
     else
         return true;
 }
 
+s_method Location::get_methods() const { return _method; }
+
 void Location::adding_method(int nb) {
 
-    if (nb == 0)
+    if (nb == DELETE)
         _method.m_delete = true;
-    else if (nb == 1)
+    else if (nb == GET)
         _method.m_get = true;
     else
         _method.m_post = true;
@@ -78,14 +77,6 @@ void Location::adding_method(int nb) {
 
 void Location::adding_index(std::string const & index) {
 	_index.push_back(index);
-}
-
-void Location::adding_param(std::string const & param) {
-	_fastcgi_param.push_back(param);
-}
-
-void Location::adding_pass(std::string const & pass) {
-	_fastcgi_pass.push_back(pass);
 }
 
 void Location::set_root(std::string const & root) {
@@ -103,15 +94,19 @@ void Location::set_return(int const & code, std::string const & path) {
 	}
 }
 
+void Location::set_fastcgi(std::string const & fastcgi) { _fastcgi = fastcgi; }
+
+void Location::set_fastcgi_ext(std::string const & fastcgi_ext) { _fastcgi_ext = fastcgi_ext; }
+
 bool Location::get_autoindex() const { return _autoindex; }
+
+std::string Location::get_fastcgi() const { return _fastcgi; }
+
+std::string Location::get_fastcgi_ext() const { return _fastcgi_ext; }
 
 std::string Location::get_root() const { return _root; }
 
 std::vector<std::string> Location::get_index() const { return _index; }
-
-std::vector<std::string> Location::get_param() const { return _fastcgi_param; }
-
-std::vector<std::string> Location::get_pass() const { return _fastcgi_pass; }
 
 std::pair<int, std::string> Location::get_return() const { return _return; }
 
@@ -125,7 +120,3 @@ bool Location::find_index(std::string const & index) const {
 	}
 	return false;
 }
-
-// bool Location::find_param(std::string const & param) const {
-
-// }

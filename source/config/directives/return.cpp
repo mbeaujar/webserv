@@ -31,5 +31,7 @@ int parse_return(std::string file, int i, Location &a)
 	if (nb_word != 1 || code == -1)
 		throw std::invalid_argument("invalid number of arguments");
 	a.set_return(code, path);
+	if (file[i] == ';')
+		i++;
 	return i;
 }

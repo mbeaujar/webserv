@@ -1,10 +1,18 @@
 #ifndef __PROTOTYPE_HPP__
-#define __PROTOTYPE_HPP__
+# define __PROTOTYPE_HPP__
 
-#include "config/server/Server.hpp"
-#include "config/server/Location.hpp"
-#include <vector>
-#include <sstream>
+# include "config/server/Server.hpp"
+# include "config/server/Location.hpp"
+# include <vector>
+# include <sstream>
+
+# define DELETE 0
+# define GET    1
+# define POST   2
+
+# ifndef LIMIT
+#  define LIMIT -1
+# endif
 
 // -------------------------------- config
 
@@ -17,6 +25,7 @@ Location 			parse_location(std::string file);
 
 // -------------- config/directives
 
+int					skip_word_request(std::string file, int i);
 int 				skip_word_exception(std::string file, int i);
 int					skip_bracket(std::string file, int i);
 int					skip_comment(std::string file, int i);
@@ -32,9 +41,10 @@ int                 parse_method(std::string file, int i, Location &a);
 int 				parse_index(std::string file, int i, Location &a);
 int 				parse_listen(std::string file, int i, Server &a);
 int 				parse_root(std::string file, int i, Location &a);
-int 				parse_fastcgi_param(std::string file, int i, Location &a);
-int 				parse_fastcgi_pass(std::string file, int i, Location &a);
+int 				parse_fastcgi(std::string file, int i, Location &a);
+int 				parse_fastcgi_extension(std::string file, int i, Location &a);
 int					recup_nb(std::string file, int & i);
+
 
 // -------------------------------- socket 
 
@@ -63,44 +73,5 @@ void printvector(std::vector<T> &vector)
 	}
 	std::cout << " ]" << "\n";
 }
-
-// template <typename T>
-// void printVector(T &vector)
-// {
-// 	typename T::iterator iter;
-
-// 	std::cout << "vector: ";
-// 	iter = vector.begin();
-//     std::cout << '[';
-// 	while (iter != vector.end())
-// 	{
-// 		std::cout << *iter;
-// 		if (iter + 1 != vector.end())
-// 			std::cout << ",";
-// 		iter++;
-// 	}
-//     std::cout << ']';
-// 	std::cout << std::endl;
-// }
-
-// template <typename T>
-// void printVectorLocation(T vector)
-// {
-// 	typename T::iterator iter;
-
-// 	std::cout << "Location : ";
-// 	iter = vector.begin();
-//     std::cout << '[';
-// 	while (iter != vector.end())
-// 	{
-// 		std::cout << iter->location_block;
-//         std::cout << std::endl;
-// 		if (iter + 1 != vector.end())
-// 			std::cout << "***************************" << std::endl;
-// 		iter++;
-// 	}
-//     std::cout << ']';
-// 	std::cout << std::endl;
-// }
 
 #endif

@@ -1,20 +1,21 @@
 
-server
-{
-	listen 80;
-	listen [::]:80;
-
-	location / { 
-		index index.nginx-debian.html;
-		root /var/www/html;
-	}
-}
-
-server  {
+server {
 	listen 8080;
+	listen [::]:8080;
 
 	location / {
-		index index.nginx-debian.html;
+		method GET;
 		root /var/www/html;
+		index index.php;
+		fastcgi /home/user42/Bureau/webserv/ubuntu_cgi_tester;
+		fastcgi_extension .html;
+		#fastcgi /usr/bin/php-cgi;
+		#fastcgi_extension .php;
+	}
+
+	location /directory/ {
+		method GET;
+		root /home/user42/Bureau/webserv/YoupiBanane;
+		index youpi.bad_extension;
 	}
 }

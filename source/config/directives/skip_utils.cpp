@@ -45,6 +45,12 @@ int skip_comment(std::string file, int i) {
 	return i;
 }
 
+int skip_word_request(std::string file, int i) {
+	while (file[i] && !isspace(file[i]))
+		i++;
+	return i;
+}
+
 int skip_word_exception(std::string file, int i) {
 	while (file[i] && !isspace(file[i]) && file[i] != ';' && file[i] != '#')
 		i++;

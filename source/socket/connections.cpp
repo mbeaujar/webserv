@@ -16,36 +16,56 @@ int accept_new_connection(int server_socket) {
 	return client_socket;
 }
 
+/**
+ * @brief Read the header of the request
+ * 
+ * @param client_socket 	fd client
+ * @param limit 	client_max_body_size
+ * @return char* 	content of the header
+ */
+char *read_header(int client_socket, int limit, int & msgsize) {
+	int bytes_read;
+	char *buffer = new char[BUFFERSIZE];
+
+	memset(buffer, 0, BUFFERSIZE);
+	if (limit == 0)
+		limit = BUFFERSIZE;
+	while ((bytes_read = read(client_socket, &buffer[msgsize], 1)) > 0) {
+		msgsize += bytes_read;
+		if (msgsize > BUFFERSIZE - 1 || msgsize > limit - 1)
+			break;
+		if (msgsize - 1 > 3 && buffer[msgsize - 1] == '\n' && strcmp(buffer + msgsize - 4, "\r\n\r\n") == 0) { // stop at blank line
+			break;
+		}
+	}
+	return buffer;
+}
 
 /**
  * @brief read and respond the client request
  * 
  * @param client_socket 
- * @return int 
+ * @return int
  */
-int handle_connections(int client_socket) {
-	int bytes_read;
-	char buffer[BUFFERSIZE] = {0};
-	int msgsize = 0;
+int handle_connections(int client_socket, Server & server, std::vector<pthread_t> & threads) {
+	int current_reading = 0;
+	char *buffer = read_header(client_socket, server.get_client_size(), current_reading);
+	std::cout << "request: " << std::endl;
+	std::cout << buffer << std::endl;
 
-	while ((bytes_read = read(client_socket, buffer+msgsize, sizeof(buffer)-msgsize-1)) > 0) {
-		msgsize += bytes_read;
-		if (msgsize > BUFFERSIZE-1 || buffer[msgsize-1] == '\n') 
-			break;
-	}
-	if (bytes_read == -1) {
-		std::cerr << "Failed to read the request" << std::endl;
-		close(client_socket);
-		return -1;
-	}
-	buffer[msgsize-1] = 0;
-	std::cout << "request: " << "\n";
-	std::cout << buffer << "\n";
-	write(client_socket, "HTTP/1.1 200 OK\n", 16);
-	write(client_socket, "\n", 1);
-	write(client_socket, "<html>\n<head>\n<title>404 Not Found</title>\n</head>\n<body bgcolor=\"white\">\n<center>\n<h1>404 Not Found</h1>\n</center>\n<hr>\n<center>webserv/1.0.0 (Ubuntu)</center>\n</body>\n</html>",176);
-	close(client_socket);
+	std::cout << "---------------------------------------" << std::endl;
+	Request r = parse_header(buffer); // si il casse buffer n'est pas free
+	std::cout << "> Request" << std::endl;
+	std::cout << buffer << std::endl;
+ 	delete [] buffer;
+
+	print_request(r);
+	create_response(r, server, client_socket, current_reading, threads);
 	return 0;
 }
 
 // si la requete n'est pas supporté 405
+// si pas de index ou ne trouve pas le fichier -> 403 Forbidden
+// si pas de root -> chemin par default /var/wwww/html
+// POST chuncked -> curl -v -d 'salut le monde' -H "Transfer-Encoding: chunked" -X POST localhost:80
+

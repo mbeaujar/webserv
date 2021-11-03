@@ -1,0 +1,111 @@
+// ---------- google chrome
+
+GET / HTTP/1.1
+Host: localhost
+Connection: keep-alive
+Cache-Control: max-age=0
+sec-ch-ua: "Chromium";v="94", "Google Chrome";v="94", ";Not A Brand";v="99"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Linux"
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7
+
+
+// ------------- mozilla firefox
+
+GET / HTTP/1.1
+Host: localhost
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:93.0) Gecko/20100101 Firefox/93.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+DNT: 1
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+Cache-Control: max-age=0
+
+
+// -------------- Requests
+
+GET /index.html HTTP/1.1
+Host: localhost
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Encoding: gzip, deflate
+
+
+// ----------------- curl  GET
+
+GET / HTTP/1.1
+Host: localhost
+User-Agent: curl/7.58.0
+Accept: */*
+
+
+// ---------------- curl POST
+
+GET /path?name=mael&password=moi HTTP/1.1
+
+POST / HTTP/1.1
+Host: localhost
+User-Agent: curl/7.58.0
+Accept: */*
+Content-Length: 22
+Content-Type: application/x-www-form-urlencoded
+
+
+name=mael&password=moi
+
+// ------------------------ RESPONSE
+
+HTTP/1.x 200 OK
+Transfer-Encoding: chunked
+Date: Sat, 28 Nov 2009 04:36:25 GMT 
+Server: LiteSpeed
+Connection: close
+X-Powered-By: W3 Total Cache/0.8
+Pragma: public
+Expires: Sat, 28 Nov 2009 05:36:25 GMT
+Etag: "pub1259380237;gz"
+Cache-Control: max-age=3600, public
+Content-Type: text/html; charset=UTF-8
+Last-Modified: Sat, 28 Nov 2009 03:50:37 GMT
+X-Pingback: https://code.tutsplus.com/xmlrpc.php
+Content-Encoding: gzip
+Vary: Accept-Encoding, Cookie, User-Agent
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Top 20+ MySQL Best Practices - Nettuts+</title>
+<!-- ... rest of the html ... -->
+
+
+// ----------------------
+
+HTTP/1.x 200 OK
+Date: Sat, 28 Nov 2009 04:36:25 GMT
+Server: localhost
+Content-Length: 
+Last-Modified: Sat, 28 Nov 2009 03:50:37 GMT
+Allow ...
+Location ...
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Top 20+ MySQL Best Practices - Nettuts+</title>
+<!-- ... rest of the html ... -->
+

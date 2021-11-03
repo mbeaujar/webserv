@@ -16,7 +16,6 @@ int release_fds(std::map<int, Server> & fds) {
 	return 0;
 }
 
-
 /**
  * @brief Create a map of fd (fd = servers port)
  * 
@@ -44,6 +43,17 @@ std::map<int, Server> config_socket(std::vector<Server> & servers) {
 	return sockets;
 }
 
+
+void wait_finish(std::map<int, Server> & sockets, std::map<int, Server> & clients, std::vector<pthread_t> & threads) {
+	std::vector<pthread_t>::iterator it = threads.begin(), ite = threads.end();
+	while (it != ite) {
+		pthread_join(*it, NULL);
+		++it;
+	}
+	release_fds(sockets);
+	release_fds(clients);
+}
+
 /**
  * @brief Create multiple sockets who handle multiple connections
  * 
@@ -51,36 +61,66 @@ std::map<int, Server> config_socket(std::vector<Server> & servers) {
  * @return int 
  */
 int handle_socket(std::vector<Server> & servers) {
-	fd_set current_sockets, ready_sockets;
+	fd_set current_sockets, current_clients, ready_sockets, ready_clients;
+	int max_fd = 0, loop = 0;
+
+	std::vector<pthread_t> threads;
 	std::map<int, Server> sockets = config_socket(servers);
+	std::map<int, Server>::iterator search;
+	std::map<int, Server>  clients;
 
 	FD_ZERO(&current_sockets);
+	FD_ZERO(&current_clients);
 	std::map<int, Server>::iterator it = sockets.begin(), ite = sockets.end();
 	while (it != ite) {
-		fcntl(it->first, F_SETFL, O_NONBLOCK); // idk
+		fcntl(it->first, F_SETFL, O_NONBLOCK);
+		if (it->first > max_fd)
+			max_fd = it->first;
 		FD_SET(it->first, &current_sockets);
 		++it;
 	}
-	// ctrl-C pour quitter -> leaks
-	while (true) {
+	while (true) { // ctrl-C pour quitter -> leaks
 		ready_sockets = current_sockets;
-		if (select(FD_SETSIZE, &ready_sockets, NULL, NULL, NULL) < 0) {
+		ready_clients = current_clients;
+		if (select(max_fd + 1, &ready_sockets, &ready_clients, NULL, NULL) < 0) { 
 			std::cerr << "Failed to select" << std::endl;
 			release_fds(sockets);
 			return 1;
 		}
-		for (int i=0; i < FD_SETSIZE; i++) {
-			if (FD_ISSET(i, &ready_sockets)) {
-				if (sockets.find(i) != ite) {
-					int client_socket = accept_new_connection(i);
-					fcntl(client_socket, F_SETFL, O_NONBLOCK); // idk again
-					FD_SET(client_socket, &current_sockets);
-				} else {
-					handle_connections(i);
-					FD_CLR(i, &current_sockets);
+		try {
+			for (int i = 0; i < max_fd + 1; i++) {
+				if (FD_ISSET(i, &ready_sockets)) {
+					search = sockets.find(i);
+					if (search != ite) {
+						int client_socket = accept_new_connection(i);
+						if (client_socket != -1) {
+							fcntl(client_socket, F_SETFL, O_NONBLOCK);
+							if (client_socket > max_fd)
+								max_fd = client_socket;
+							clients.insert(std::make_pair(client_socket, search->second));
+							FD_SET(client_socket, &current_sockets);
+							FD_SET(client_socket, &current_clients);
+						}
+					}
+					else if (FD_ISSET(i, &ready_clients)) {
+						std::map<int, Server>::iterator find = clients.find(i);
+						if (find != clients.end()) {
+							handle_connections(i, find->second, threads);
+							clients.erase(i);
+							FD_CLR(i, &current_sockets);
+							FD_CLR(i, &current_clients);
+						}
+						loop++;
+					}
 				}
 			}
+		} catch (std::exception &e) {
+			std::cerr << "webserv: [warn]: " << e.what() << std::endl;
 		}
+		if (LIMIT != -1 && loop >= LIMIT)
+			break;
 	}
+	wait_finish(sockets, clients, threads);
+	return 0;
 }
 //  siege localhost -r100 -c100

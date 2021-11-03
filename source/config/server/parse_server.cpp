@@ -70,8 +70,7 @@ Server config_server(std::string file)
 			a.adding_location(path, parse_location(location));
 			i = skip + 1;
 		} else if (file[i] && !isspace(file[i]) && file[i] != '#' && file[i] != '}')
-			throw std::invalid_argument("unknow directive \"" + file.substr(i, skip_word(file, i) - i) + "\"");
-
+			throw std::invalid_argument("unknow directive \"" + file.substr(i, skip_word_exception(file, i) - i) + "\"");
 	}
  	return a;
 }
