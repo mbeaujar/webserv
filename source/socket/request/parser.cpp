@@ -38,7 +38,7 @@ Request parse_header(std::string request) {
 	
     lower_file(request);
     while (request[i]) {
-        if (request.compare(i, 3, "GET") == 0) {
+        if (request.compare(i, 3, "get") == 0) {
 			if (method > 0) {
 		        std::cerr << "Error: too many methods" << std::endl;
 				r.set_error(std::make_pair(400, "Bad request"));
@@ -49,7 +49,7 @@ Request parse_header(std::string request) {
             i = first_line(request, r, i);
 			method++;
         }
-        else if (request.compare(i, 4, "POST") == 0) {
+        else if (request.compare(i, 4, "post") == 0) {
             if (method > 0) {
 		        std::cerr << "Error: too many methods" << std::endl;
 				r.set_error(std::make_pair(400, "Bad request"));
@@ -60,7 +60,7 @@ Request parse_header(std::string request) {
             i = first_line(request, r, i);
 			method++;
         }
-        else if (request.compare(i, 6, "DELETE") == 0) {
+        else if (request.compare(i, 6, "delete") == 0) {
             if (method > 0) {
 		        std::cerr << "Error: too many methods" << std::endl;
 				r.set_error(std::make_pair(400, "Bad request"));
@@ -71,7 +71,7 @@ Request parse_header(std::string request) {
             i = first_line(request, r, i);
 			method++;
         }
-        else if (request.compare(i, 5, "Host:") == 0) {
+        else if (request.compare(i, 5, "host:") == 0) {
             i += 6;
             r.set_host(request.substr(i, skip_word_request(request, i) - i));
             i = skip_word_request(request, i);
@@ -82,19 +82,19 @@ Request parse_header(std::string request) {
             }
 			host++;
         }
-        else if (request.compare(i, 15, "Content-Length:") == 0) {
+        else if (request.compare(i, 15, "content-Length:") == 0) {
             i += 16;
             atoi(request, i);
             i = skip_word_request(request, i);
         }
-        else if (request.compare(i, 13, "Content-Type:") == 0) {
+        else if (request.compare(i, 13, "content-Type:") == 0) {
             i += 14;
             int tmp = i;
             while (request[i] && request[i] != '\n')
                 i++;
             r.set_content_type(request.substr(tmp, i - tmp));
         } 
-		else if (request.compare(i, 18, "Transfer-Encoding:") == 0) {  // CHUNKED GZIP
+		else if (request.compare(i, 18, "transfer-Encoding:") == 0) {  // CHUNKED GZIP
 			i += 19;
 			while (request[i] && request[i] != '\n') {
 				r.add_transfer_encoding(request.substr(i, skip_word_request(request, i) - i));
@@ -103,7 +103,7 @@ Request parse_header(std::string request) {
 					i++;
 			}
 		}
-		else if (request.compare(i, 5, "Date:") == 0) {
+		else if (request.compare(i, 5, "date:") == 0) {
 			i += 5;
             int tmp = i;
             while (request[i] && request[i] != '\n')
