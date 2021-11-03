@@ -26,9 +26,11 @@ SRCS  =	main.cpp \
 		config/parser.cpp \
 		socket/request/parser.cpp \
 		socket/request/Request.cpp \
-		socket/response/cgi.cpp \
+		socket/response/autoindex.cpp \
+		socket/response/call_cgi.cpp \
 		socket/response/create.cpp \
 		socket/response/get.cpp \
+		socket/response/parse_cgi.cpp \
 		socket/response/post.cpp \
 		socket/response/header.cpp \
 		socket/response/utils.cpp \

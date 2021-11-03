@@ -8,6 +8,7 @@ bool file_exist(std::string filename) {
 		file.close();
 		return true;
 	}
+	file.close();
 	return false;
 }
 
@@ -24,7 +25,10 @@ std::string cut_filename(std::string path) {
 	int i = path.length();
 	while (i > 0 && path[i] != '/')
 		i--;
-	return path.substr(i + 1, path.length());
+	std::string filename = path.substr(i + 1, path.length() - (i + 1));
+	if (filename.empty() == true)
+		return "/";
+	return filename;
 }
 
 std::string cut_path(std::string path) {
@@ -32,6 +36,13 @@ std::string cut_path(std::string path) {
 	while (i > 0 && path[i] != '/')
 		i--;
 	return path.substr(0, i);
+}
+
+int remove_file(char const *path) {
+	int ret = remove(path);
+	if (ret == -1)
+		std::cerr << "Error: remove fail for path: " << path << std::endl;
+	return ret;
 }
 
 std::string path_in_common(std::string location, std::string & path) {
@@ -85,4 +96,16 @@ Location find_location(Request & request, Server const & server, int method) {
 		return location;
 	}
 	return location;
+}
+
+bool is_cgi(std::string & path, std::string extension_cgi) {
+	size_t path_len = path.length();
+	size_t ext_len = extension_cgi.length();
+
+	if (extension_cgi == "" || path_len <= ext_len)
+		return false;
+	std::string extension_path = path.substr(path_len - ext_len, ext_len);
+	if (extension_path == extension_cgi)
+		return true;
+	return false;
 }

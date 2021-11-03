@@ -20,6 +20,7 @@ std::string path_to_file(Request & request, Location location) {
 				std::cerr << "Error: is a directory + autoindex is off" << std::endl;
 				request.set_error(std::make_pair(404, "Not Found"));
 			}
+			std::cerr << "DEBUG: path autoindex " << path << std::endl;
 		}
 	}
 	else
@@ -28,30 +29,28 @@ std::string path_to_file(Request & request, Location location) {
 }
 
 std::string method_get(Request & request, Server const & server, int client_socket) {
-	std::string	html;
-	std::string	response;
+	std::pair<int, std::string> redirect;
+	std::string	html, response, path;
 	Location	location;
 
 	location = find_location(request, server, GET);
 	if (request.get_error().first != 200)
 		return "";
-	std::pair<int, std::string> redirect = location.get_return();
+	redirect = location.get_return();
 	if (redirect.first != -1) {
 		request.set_return(std::make_pair(redirect.first, redirect.second));
-		std::cerr << "Warning: redirection" << std::endl;
+		std::cerr << "Warning: redirection: [" + to_string(redirect.first) + "] " + redirect.second << std::endl;
 		return "";
 	}
-	std::string path = path_to_file(request, location);
-	if (request.get_error().first == 200)
+	path = path_to_file(request, location);
+	if (request.get_error().first != 200)
+		return "";
+	if (is_directory(path) && location.get_autoindex() == true) {
+		response = autoindex_on(path);
+	} else if (is_cgi(path, location.get_fastcgi_ext()) == true) {
+		response = call_cgi(request, client_socket, path, "GET", location.get_fastcgi());
+		response = parse_cgi(request, response);
+	} else
 		response = get_file_content(path);
-	std::string cgi_extension = location.get_fastcgi_ext();
-	if (cgi_extension.empty() == false) {
-		if (path.length() > cgi_extension.length()) {
-			size_t len = path.length() - cgi_extension.length();
-			if (len >= 0 && path.compare(len, cgi_extension.length(), cgi_extension) == 0)
-				response = call_cgi(request, location.get_fastcgi(), client_socket, response, "GET", path);
-		}
-	}
 	return response;
 }
-

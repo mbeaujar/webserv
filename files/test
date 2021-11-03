@@ -3,8 +3,7 @@ server {
 
 	location / {
 		root /var/www/html;
-		index index.html index.php index.nginx-debian.html;
-		fastcgi /usr/bin/php-cgi;
-		fastcgi_extension .php;
+		autoindex on;
+		index mamam;
 	}
 }

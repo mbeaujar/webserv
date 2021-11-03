@@ -24,12 +24,19 @@ int first_line(std::string & request, Request & r, int i)
     return i;
 }
 
+void lower_file(std::string & request) {
+    for (int i = 0; request[i]; i++)
+        if (isupper(request[i]))
+            request[i] += 32;
+}
+
 Request parse_header(std::string request) {
     int     i = 0;
 	int     host = 0;
 	int     method = 0;
     Request r;
 	
+    lower_file(request);
     while (request[i]) {
         if (request.compare(i, 3, "GET") == 0) {
 			if (method > 0) {
@@ -116,7 +123,7 @@ Request parse_header(std::string request) {
         return r;
 	}
 	if (r.get_path().length() > 2048) {
-		std::cerr << "Error: path to long (more than 2048 characters" << std::endl;
+		std::cerr << "Error: path to long (more than 2048 characters)" << std::endl;
         r.set_error(std::make_pair(400, "Bad request"));
         return r;
 	}

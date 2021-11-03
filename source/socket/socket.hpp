@@ -44,20 +44,24 @@ Request 	parse_header(std::string request);
 
 // ------------------------------- socket/response
 
+std::string autoindex_on(std::string path);
 bool		file_exist(std::string filename);
-std::string call_cgi(Request & request, std::string fastcgi, int client_socket, std::string body, std::string method, std::string path);
+std::string call_cgi(Request & request, int client_socket, std::string path_to_file, std::string method, std::string path_to_cgi);
 std::string	get_file_content(std::string filename);
 std::string method_get(Request & request, Server const & server, int client_socket);
 void        method_delete(Request & request, Server const & server);
 void 		*method_post(void *arg);
 std::string	search_root(std::string path, Server const & server);
 Location	search_location(std::string path, Server const & server);
-Location find_location(Request & request, Server const & server, int method);
-void create_response(Request & request, Server const & server, int client_socket, int current_reading);
+Location    find_location(Request & request, Server const & server, int method);
+void        create_response(Request & request, Server const & server, int client_socket, int current_reading);
 std::string header(Request & request);
-char    *read_body(int client_socket, int limit, int buffersize);
+char        *read_body(int client_socket, int limit, int buffersize);
 std::string cut_filename(std::string path);
 std::string cut_path(std::string path);
+int 		remove_file(char const *path);
+bool 		is_cgi(std::string & path, std::string extension_cgi);
+std::string parse_cgi(Request & request, std::string response);
 
 
 #endif

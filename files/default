@@ -5,10 +5,12 @@ server {
 
 	location / {
 		method GET;
-		root /home/user42/Bureau/webserv/YoupiBanane;
-		index youpi.bad_extension;
-		fastcgi /;
-		fastcgi_extension .php;
+		root /var/www/html;
+		index index.php;
+		fastcgi /home/user42/Bureau/webserv/ubuntu_cgi_tester;
+		fastcgi_extension .html;
+		#fastcgi /usr/bin/php-cgi;
+		#fastcgi_extension .php;
 	}
 
 	location /directory/ {
