@@ -57,7 +57,6 @@ Location	search_location(std::string path, Server const & server);
 Location    find_location(Request & request, Server const & server, int method);
 void create_response(Request & request, Server const & server, int client_socket, int current_reading, std::vector<pthread_t> & threads);
 std::string header(Request & request);
-char        *read_body(int client_socket, int limit, int buffersize);
 std::string cut_filename(std::string path);
 std::string cut_path(std::string path);
 int 		remove_file(char const *path);

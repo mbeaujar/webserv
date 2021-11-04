@@ -4,9 +4,7 @@
 void send_response(Request & request, std::string body, int client_socket) {
 	request.set_content_length(body.length());
 	std::string response = header(request);
-	response += body;
-	// std::cout << "> response" << std::endl;
-	// std::cout << response << std::endl;
+	response.append(body);
 	write(client_socket, response.c_str(), response.length());
 	close(client_socket);
 }

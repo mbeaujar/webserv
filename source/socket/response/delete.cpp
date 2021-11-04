@@ -11,7 +11,3 @@ void    method_delete(Request & request, Server const & server) {
         remove_file(path.c_str());
     }
 }
-// allez bonhomme
-// allez bonhomme
-// allez bonhomme
-// allez bonhomme tes la ?

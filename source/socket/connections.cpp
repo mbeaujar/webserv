@@ -62,16 +62,8 @@ int handle_connections(int client_socket, Server & server, std::vector<pthread_t
 		delete [] buffer;
 		return 1;
 	}
-	// std::cout << "request: " << std::endl;
-	// std::cout << buffer << std::endl;
-
-	// std::cout << "-----------------------------------------------------------------" << std::endl;
-	Request r = parse_header(buffer); // si il casse buffer n'est pas free
-	// std::cout << "> Request" << std::endl;
-	// std::cout << buffer << std::endl;
+	Request r = parse_header(buffer);
  	delete [] buffer;
-
-	// print_request(r);
 	create_response(r, server, client_socket, current_reading, threads);
 	return 0;
 }

@@ -45,7 +45,7 @@ SRCS_DIRECTORY=source/
 OBJS_DIRECTORY=.objs/
 
 $(OBJS_DIRECTORY)%.o : $(SRCS_DIRECTORY)%.cpp
-	@$(CC) $(CFLAGS) $< -c -o $@
+	@$(CC) $(CFLAGS) $< -D LIMIT=1 -c -o $@
 
 
 all : $(OBJS_DIRECTORY) $(NAME)

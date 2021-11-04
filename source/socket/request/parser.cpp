@@ -37,6 +37,7 @@ Request parse_header(std::string request) {
     Request r;
 	
     lower_file(request);
+    r.set_content_length(-1);
     while (request[i]) {
         if (request.compare(i, 3, "get") == 0) {
 			if (method > 0) {
@@ -84,7 +85,7 @@ Request parse_header(std::string request) {
         }
         else if (request.compare(i, 15, "content-Length:") == 0) {
             i += 16;
-            atoi(request, i);
+            r.set_content_length((request, i));
             i = skip_word_request(request, i);
         }
         else if (request.compare(i, 13, "content-Type:") == 0) {
