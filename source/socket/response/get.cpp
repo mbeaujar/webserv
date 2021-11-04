@@ -67,7 +67,6 @@ void *method_get(void *arg) {
 	if (error.first != 200)
 		body = create_error(to_string(error.first) + " " + error.second);
 	send_response(a->request, body, a->client_socket);
-	close(a->client_socket);
 	delete a;
 	return NULL;
 }

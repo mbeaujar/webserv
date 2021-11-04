@@ -19,6 +19,7 @@ char	*dupnormi(const char *s1)
 	try {
 		s2 = new char[i + 1];
 	} catch (std::bad_alloc) {
+		std::cerr << "Error: bad_alloc dupnormi" << std::endl;
 		return NULL;
 	}
 	i = 0;
@@ -64,7 +65,14 @@ int create_temporary_file(std::string filename) {
 }
 
 char **create_envp(Request & request, std::string & method, std::string & path_to_cgi, std::string & path) {
-	char **envp = new char*[7];
+	char **envp;
+	
+	try {
+		envp = new char*[7];
+	} catch(std::bad_alloc) {
+		std::cerr << "Error: bad_alloc in create_envp" << std::endl;
+		return NULL;
+	}
 	std::string only_path_cgi = cut_path(path_to_cgi);
 
 	envp[0] = dupnormi(std::string("REQUEST_METHOD=" + method).c_str());
@@ -84,8 +92,14 @@ char **create_envp(Request & request, std::string & method, std::string & path_t
 }
 
 char **create_argv(std::string & path_to_cgi, std::string & path) {
-	char **argv = new char*[3];
-
+	char **argv;
+	
+	try {
+		argv = new char*[3];
+	} catch (std::bad_alloc) {
+		std::cerr << "Error: bad_alloc in create_argv" << std::endl;
+		return NULL; 
+	}
 	argv[0] = dupnormi(cut_filename(path_to_cgi).c_str());
 	if (argv[0] == NULL) {
 		delete [] argv;

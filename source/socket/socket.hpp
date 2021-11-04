@@ -21,7 +21,7 @@
 # define SA_IN	struct sockaddr_in
 # define SA		struct sockaddr
 # define BUFFERSIZE 1024
-# define BACKLOG	10
+# define BACKLOG	10000
 
 # ifndef __APPLE__
 #  define __APPLE__ 0

@@ -119,6 +119,7 @@ Request parse_header(std::string request) {
     }
     if (r.get_host().empty() || host > 1) {
 		std::cerr << "Error: none or too many Host field" << std::endl;
+		std::cerr << request << std::endl;
         r.set_error(std::make_pair(400, "Bad request"));
         return r;
 	}
