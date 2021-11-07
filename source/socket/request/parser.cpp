@@ -85,7 +85,7 @@ Request parse_header(std::string request) {
         }
         else if (request.compare(i, 15, "content-Length:") == 0) {
             i += 16;
-            r.set_content_length((request, i));
+            // r.set_content_length();
             i = skip_word_request(request, i);
         }
         else if (request.compare(i, 13, "content-Type:") == 0) {

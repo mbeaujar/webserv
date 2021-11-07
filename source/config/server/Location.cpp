@@ -94,11 +94,15 @@ void Location::set_return(int const & code, std::string const & path) {
 	}
 }
 
+void Location::set_upload(std::string const & upload) { _upload = upload; }
+
 void Location::set_fastcgi(std::string const & fastcgi) { _fastcgi = fastcgi; }
 
 void Location::set_fastcgi_ext(std::string const & fastcgi_ext) { _fastcgi_ext = fastcgi_ext; }
 
 bool Location::get_autoindex() const { return _autoindex; }
+
+std::string Location::get_upload() const { return _upload; }
 
 std::string Location::get_fastcgi() const { return _fastcgi; }
 

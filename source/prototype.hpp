@@ -41,6 +41,7 @@ int                 parse_method(std::string file, int i, Location &a);
 int 				parse_index(std::string file, int i, Location &a);
 int 				parse_listen(std::string file, int i, Server &a);
 int 				parse_root(std::string file, int i, Location &a);
+int 				parse_upload(std::string file, int i, Location &a);
 int 				parse_fastcgi(std::string file, int i, Location &a);
 int 				parse_fastcgi_extension(std::string file, int i, Location &a);
 int					recup_nb(std::string file, int & i);

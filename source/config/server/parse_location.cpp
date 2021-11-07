@@ -49,6 +49,9 @@ Location parse_location(std::string file)
 			i += 17;
 			i = parse_fastcgi_extension(file, i, a);
 			cgi_ext++;
+		} else if (file.compare(i, 6, "upload") == 0) {
+			i += 6;
+			i = parse_upload(file, i ,a);
 		} else if (file[i] && !isspace(file[i]) && file[i] != '#' && file[i] != '}')
 			throw std::invalid_argument("unknow directive \"" + file.substr(i, skip_word_exception(file, i) - i) + "\"");
 	}

@@ -1,6 +1,10 @@
 #include "../socket.hpp"
 
-// https://stackoverflow.com/questions/1226810/is-http-post-request-allowed-to-send-back-a-response-body
+// response body ? : https://stackoverflow.com/questions/1226810/is-http-post-request-allowed-to-send-back-a-response-body
+
+// RFC post : https://datatracker.ietf.org/doc/html/rfc7231#section-4.3.3
+
+// multipart/form-data
 
 int	read_body(int client_socket, int client_max_body_size, int file_fd, int content_length, int current_reading) {
 	int     bytes_read;
@@ -33,7 +37,6 @@ int	read_body(int client_socket, int client_max_body_size, int file_fd, int cont
 	return 0;
 }
 
-// multipart/form-data
 
 // read chuncked
 
