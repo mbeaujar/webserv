@@ -21,7 +21,7 @@ std::string path_to_file(Request & request, Location & location, int method) {
 			}
 		}
 	}
-	else
+	else if (method == GET)
 		request.set_error(std::make_pair(404, "Not Found"));
 	return path;
 }

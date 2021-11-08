@@ -1,6 +1,8 @@
-GET / HTTP/1.1
+POST /index.blabla HTTP/1.1
 Host: localhost
+User-Agent: curl/7.58.0
 Accept: */*
-Accept-Encoding: gzip, deflate
-User-Agent: Mozilla/5.0 (pc-x86_64-linux-gnu) Siege/4.0.4
-Connection: close
+Content-Length: 22
+Content-Type: application/x-www-form-urlencoded
+
+on est les meileur ami

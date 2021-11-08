@@ -13,6 +13,8 @@
 # include <errno.h>
 # include <cstdio>
 # include <fstream>
+# include <iomanip>
+# include <sstream>
 # include <cstring>
 # include <sys/stat.h>
 # include <time.h>
@@ -64,6 +66,7 @@ bool 		is_cgi(std::string & path, std::string extension_cgi);
 std::string parse_cgi(Request & request, std::string response);
 void send_response(Request & request, std::string body, int client_socket);
 std::string create_error(std::string status);
+std::string path_to_file(Request & request, Location & location, int method);
 
 
 #endif

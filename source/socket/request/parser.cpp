@@ -2,8 +2,6 @@
 #include "../socket.hpp"
 #include <algorithm>
 
-int atoi(std::string str, int index);
-
 int find_query_string(std::string & request, int i) {
 	while (request[i] && request[i] != '?')
 		i++;
@@ -83,10 +81,9 @@ Request parse_header(std::string request) {
             }
 			host++;
         }
-        else if (request.compare(i, 15, "content-Length:") == 0) {
+        else if (request.compare(i, 15, "content-length:") == 0) {
             i += 16;
-            // r.set_content_length();
-            i = skip_word_request(request, i);
+            r.set_content_length(recup_nb(request, i));
         }
         else if (request.compare(i, 13, "content-Type:") == 0) {
             i += 14;
@@ -95,7 +92,7 @@ Request parse_header(std::string request) {
                 i++;
             r.set_content_type(request.substr(tmp, i - tmp));
         } 
-		else if (request.compare(i, 18, "transfer-Encoding:") == 0) {  // CHUNKED GZIP
+		else if (request.compare(i, 18, "transfer-encoding:") == 0) {  // CHUNKED GZIP
 			i += 19;
 			while (request[i] && request[i] != '\n') {
 				r.add_transfer_encoding(request.substr(i, skip_word_request(request, i) - i));
@@ -131,18 +128,6 @@ Request parse_header(std::string request) {
 	}
 	return r;
 }
-
-int     atoi(std::string str, int index) {
-    
-    int i = 0;
-    int res = 0;
-    while (isdigit(str[index + i])) {
-        res *= 10;
-        res += str[index + i] - 48;
-        i++;
-    }
-    return res;
-} 
 
 void    print_request(Request & a) {
 
