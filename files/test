@@ -3,7 +3,6 @@ server {
 
 	location / {
 		root /var/www/html;
-		autoindex on;
-		index mamam;
+		index index.html;
 	}
 }

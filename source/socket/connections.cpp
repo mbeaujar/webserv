@@ -25,8 +25,14 @@ int accept_new_connection(int server_socket) {
  */
 char *read_header(int client_socket, int limit, int & msgsize) {
 	int bytes_read;
-	char *buffer = new char[BUFFERSIZE];
+	char *buffer;
 
+	try {
+		buffer = new char[BUFFERSIZE];
+	} catch(std::bad_alloc) {
+		std::cerr << "Error: bad_alloc in read_header" << std::endl;
+		return NULL;
+	}
 	memset(buffer, 0, BUFFERSIZE);
 	if (limit == 0)
 		limit = BUFFERSIZE;
@@ -50,16 +56,14 @@ char *read_header(int client_socket, int limit, int & msgsize) {
 int handle_connections(int client_socket, Server & server, std::vector<pthread_t> & threads) {
 	int current_reading = 0;
 	char *buffer = read_header(client_socket, server.get_client_size(), current_reading);
-	std::cout << "request: " << std::endl;
-	std::cout << buffer << std::endl;
-
-	std::cout << "---------------------------------------" << std::endl;
-	Request r = parse_header(buffer); // si il casse buffer n'est pas free
-	std::cout << "> Request" << std::endl;
-	std::cout << buffer << std::endl;
+	if (buffer == NULL)
+		return 1;
+	if (strlen(buffer) == 0) {
+		delete [] buffer;
+		return 1;
+	}
+	Request r = parse_header(buffer);
  	delete [] buffer;
-
-	print_request(r);
 	create_response(r, server, client_socket, current_reading, threads);
 	return 0;
 }

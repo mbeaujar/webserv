@@ -18,6 +18,7 @@ SRCS  =	main.cpp \
 		config/directives/return.cpp \
 		config/directives/root.cpp \
 		config/directives/skip_utils.cpp \
+		config/directives/upload.cpp \
 		config/server/Location.cpp \
 		config/server/s_method.cpp \
 		config/server/parse_location.cpp \
@@ -45,7 +46,7 @@ SRCS_DIRECTORY=source/
 OBJS_DIRECTORY=.objs/
 
 $(OBJS_DIRECTORY)%.o : $(SRCS_DIRECTORY)%.cpp
-	@$(CC) $(CFLAGS) $< -c -o $@
+	@$(CC) $(CFLAGS) $< -D LIMIT=-1 -c -o $@
 
 
 all : $(OBJS_DIRECTORY) $(NAME)

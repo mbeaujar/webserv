@@ -80,7 +80,8 @@ std::string header(Request & request) {
 	header += "Server: " + request.get_host() + "\r\n";
 	if (request.get_content_type().empty() == false)
 		header += "Content-Type: " + request.get_content_type() + "\r\n";
-	header += "Content-length: " + to_string(request.get_content_length()) + "\r\n";
+	if (request.get_method() == GET)
+		header += "Content-length: " + to_string(request.get_content_length()) + "\r\n";
 	header += "Last-Modified: " + get_last_modified() + "\r\n";
 	if (request.get_error().first == 405)
 		header += "Allow:" + allow_method(request) + "\r\n";

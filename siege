@@ -1,0 +1,8 @@
+POST /index.blabla HTTP/1.1
+Host: localhost
+User-Agent: curl/7.58.0
+Accept: */*
+Content-Length: 22
+Content-Type: application/x-www-form-urlencoded
+
+on est les meileur ami

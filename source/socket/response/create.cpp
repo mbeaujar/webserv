@@ -4,9 +4,7 @@
 void send_response(Request & request, std::string body, int client_socket) {
 	request.set_content_length(body.length());
 	std::string response = header(request);
-	response += body;
-	std::cout << "> response" << std::endl;
-	std::cout << response << std::endl;
+	response.append(body);
 	write(client_socket, response.c_str(), response.length());
 	close(client_socket);
 }
@@ -22,12 +20,24 @@ void create_response(Request & request, Server const & server, int client_socket
 	if (error.first != 200) 
 		return send_response(request, create_error(to_string(error.first) + " " + error.second), client_socket);
 	if (method == POST) {
-		t = new Thread;
+		try {
+			t = new Thread;
+		} catch (std::bad_alloc) {
+			std::cerr << "Error: bad_alloc thread in create_response";
+			close(client_socket);
+			return;
+		}
 		t->init(request, server, client_socket, current_reading);
 		pthread_create(&id, NULL, method_post, t);
 		threads.push_back(id);
 	} else if (method == GET) {
-		t = new Thread;
+		try {
+			t = new Thread;
+		} catch (std::bad_alloc) {
+			std::cerr << "Error: bad_alloc thread in create_response";
+			close(client_socket);
+			return;
+		}
 		t->init(request, server, client_socket, current_reading);
 		pthread_create(&id, NULL, method_get, t);
 		threads.push_back(id);

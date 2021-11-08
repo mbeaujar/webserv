@@ -1,8 +1,7 @@
 #include "../socket.hpp"
 
-std::string path_to_file(Request & request, Location location) {
-	std::string r_root = location.get_root();
-	std::string path = r_root + request.get_path();
+std::string path_to_file(Request & request, Location & location, int method) {
+	std::string path = location.get_root() + request.get_path();
 
 	if (file_exist(path)) {
 		if (is_directory(path)) {
@@ -16,14 +15,13 @@ std::string path_to_file(Request & request, Location location) {
 					return path_index;
 				++it;
 			}
-			if (location.get_autoindex() == false) {
-				std::cerr << "Error: is a directory + autoindex is off" << std::endl;
+			if (location.get_autoindex() == false && method == GET) {
+				std::cerr << "Error: Request path is a directory + autoindex off in config file" << std::endl;
 				request.set_error(std::make_pair(404, "Not Found"));
 			}
-			std::cerr << "DEBUG: path autoindex " << path << std::endl;
 		}
 	}
-	else
+	else if (method == GET)
 		request.set_error(std::make_pair(404, "Not Found"));
 	return path;
 }
@@ -42,7 +40,7 @@ std::string parse_get(Request & request, Server const & server, int client_socke
 		std::cerr << "Warning: redirection: [" + to_string(redirect.first) + "] " + redirect.second << std::endl;
 		return "";
 	}
-	path = path_to_file(request, location);
+	path = path_to_file(request, location, GET);
 	if (request.get_error().first != 200)
 		return "";
 	if (is_directory(path) && location.get_autoindex() == true) {
@@ -67,7 +65,6 @@ void *method_get(void *arg) {
 	if (error.first != 200)
 		body = create_error(to_string(error.first) + " " + error.second);
 	send_response(a->request, body, a->client_socket);
-	close(a->client_socket);
 	delete a;
 	return NULL;
 }
