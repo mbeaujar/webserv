@@ -36,7 +36,7 @@ std::string hour_date() {
 	return date;
 }
 
-std::string get_last_modified() 
+std::string get_last_modified(std::string path) 
 {
 	std::string 	date;
 	struct stat		stats;
@@ -44,6 +44,7 @@ std::string get_last_modified()
 	char 			buf[1000];
 	
 	memset(&stats, 0, sizeof(stats));
+	stat(path.c_str(), &stats);
 	tm = gmtime(&stats.st_mtime);
 	strftime(buf, 100, "%a, %d %b %Y %H:%M:%S GMT", tm);
 	date = std::string(buf);
@@ -82,7 +83,7 @@ std::string header(Request & request) {
 		header += "Content-Type: " + request.get_content_type() + "\r\n";
 	if (request.get_method() == GET)
 		header += "Content-length: " + to_string(request.get_content_length()) + "\r\n";
-	header += "Last-Modified: " + get_last_modified() + "\r\n";
+	header += "Last-Modified: " + get_last_modified(request.get_path()) + "\r\n";
 	if (request.get_error().first == 405)
 		header += "Allow:" + allow_method(request) + "\r\n";
 	if (redirect.first != -1)
