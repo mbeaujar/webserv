@@ -47,8 +47,9 @@ int	read_body(int client_socket, int client_max_body_size, int file_fd, int cont
 					else
 						size = content_length - total_size;
 	
+					std::cerr << "size : " << size << std::endl;
 					msgsize = read(client_socket, buffer, size);
-					std::cerr << strerror(errno) << std::endl;;
+					std::cerr << strerror(errno) << std::endl;
 					std::cerr << "msgsize : " << msgsize << " read 4" << std::endl;
 				}
 			}

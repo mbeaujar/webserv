@@ -40,10 +40,11 @@ char *read_header(int client_socket, int limit, int & msgsize) {
 		msgsize += bytes_read;
 		if (msgsize > BUFFERSIZE - 1 || msgsize > limit - 1)
 			break;
-		if (msgsize - 1 > 3 && buffer[msgsize - 1] == '\n' && strcmp(buffer + msgsize - 4, "\r\n\r\n") == 0) { // stop at blank line
+		if (msgsize - 1 > 3 && strcmp(buffer + msgsize - 4, "\r\n\r\n") == 0) { // stop at blank line
 			break;
 		}
 	}
+	std::cerr << msgsize << std::endl;
 	return buffer;
 }
 
