@@ -45,7 +45,6 @@ char *read_header(int client_socket, int limit, int & msgsize) {
 			break;
 		}
 	}
-	std::cerr << msgsize << std::endl;
 	return buffer;
 }
 

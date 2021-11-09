@@ -24,21 +24,18 @@ int	read_body(int client_socket, int client_max_body_size, int file_fd, int cont
 		memset(buffer, 0, BUFFERSIZE);
 		if (total_size + BUFFERSIZE <= content_length && total_size + BUFFERSIZE <= client_max_body_size) {
 			msgsize = read(client_socket, buffer, BUFFERSIZE);
-			std::cerr << "msgsize : " << msgsize << " read 1" << std::endl;
 		} else {
 
 			if (total_size + BUFFERSIZE <= content_length) { 					// si on depasse client max
 				int size = client_max_body_size - total_size;
 	
 				msgsize = read(client_socket, buffer, size);
-				std::cerr << "msgsize : " << msgsize << " read 2" << std::endl;
 			}
 			else {
 				if (total_size + BUFFERSIZE <= client_max_body_size) { 			// si on depasse content length
 					int size = content_length - total_size;
 	
 					msgsize = read(client_socket, buffer, size);
-					std::cerr << "msgsize : " << msgsize << " read 3" << std::endl;
 				}
 				else {
 					int size;													// on depasse les content-length et client max body size
@@ -47,20 +44,15 @@ int	read_body(int client_socket, int client_max_body_size, int file_fd, int cont
 					else
 						size = content_length - total_size;
 	
-					std::cerr << "size : " << size << std::endl;
 					msgsize = read(client_socket, buffer, size);
-					std::cerr << strerror(errno) << std::endl;
-					std::cerr << "msgsize : " << msgsize << " read 4" << std::endl;
 				}
 			}
 		}
-		std::cerr << "msgsize : " << msgsize << std::endl;
 		if (msgsize == 0)
 			break ;
 		if (msgsize == -1)
 			msgsize = 0;
 		buffer[msgsize] = 0;
-		std::cerr << "buffer : " << buffer << std::endl;
 		write(file_fd, buffer, msgsize);
 	}
 	delete [] buffer;
@@ -137,9 +129,8 @@ void	*method_post(void *arg) {
 	close(fd);
 
 	std::ofstream		file;
-
-	std::cerr << "response : " << response << std::endl;
-	file.open(path);
+	// std::cerr << "response: " << response << std::endl;
+	file.open(path.c_str());
 	if (file.is_open() == false)
 	{
 		std::cerr << "Error: can't open this sheet : " << path << std::endl;

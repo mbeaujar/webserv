@@ -8,6 +8,8 @@ int header_size(std::string response) {
 	while (response[i]) {
 		if (response.compare(i, 4, "\r\n\r\n") == 0)
 			return i + 4;
+		if (response.compare(i, 2, "\n\n") == 0)
+			return i + 2;
 		i++;
 	}
 	return i;
