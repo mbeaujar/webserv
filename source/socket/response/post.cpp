@@ -65,7 +65,6 @@ int	read_body(int client_socket, int client_max_body_size, int file_fd, int cont
 void	*method_post(void *arg) {
 	Thread *a = reinterpret_cast<Thread*>(arg);
 	std::string tmp_file = ".post_" + to_string(a->client_socket), path, response;
-	std::pair<int, std::string> error;
 	Location location;
 	int fd;
 	
@@ -110,11 +109,20 @@ void	*method_post(void *arg) {
 		}
 	}
 	else { // chunked request
-		; 
+		;
 	}
 
-
 	if (is_cgi(path, location.get_fastcgi_ext()) == true) {
+		if (file_exist(location.get_fastcgi()) == false)
+		{
+			a->request.set_error(std::make_pair(502, "Bad Gateway")); // pas sur de l'hortographe
+			std::cerr << "Error: no cgi man click !" << std::endl;
+			send_response(a->request, "", a->client_socket);
+			remove_file(tmp_file.c_str());
+			close(fd);
+			delete a;
+			return NULL;
+		}
 		response = call_cgi(a->request, a->client_socket, tmp_file, "POST", location.get_fastcgi());
 		if (response.empty() == true)
 			a->request.set_error(std::make_pair(502, "Bad Gateway"));
