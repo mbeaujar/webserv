@@ -23,21 +23,20 @@ std::string hour_date() {
 	std::string	date;
 
 	char 		buf[1000];
-	char 		savedlocale[256];
+	//char 		savedlocale[256];
 	time_t		now = time(0);
 	struct tm tm = *gmtime(&now);
 
-	strcpy(savedlocale,  setlocale(LC_ALL, NULL));
-	setlocale(LC_ALL, "C");
-	strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %Z", &tm);
-	setlocale(LC_ALL, savedlocale);
+	//strcpy(savedlocale,  setlocale(LC_ALL, NULL));
+	//setlocale(LC_ALL, "C");
+	strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S GMT", &tm);
+	//setlocale(LC_ALL, savedlocale);
 
 	date = buf;
 	return date;
 }
 
-std::string get_last_modified(std::string path) 
-{
+std::string get_last_modified(std::string path) {
 	std::string 	date;
 	struct stat		stats;
 	struct tm		*tm;
@@ -51,8 +50,7 @@ std::string get_last_modified(std::string path)
 	return date;
 }
 
-std::string get_file_content(std::string filename) 
-{
+std::string get_file_content(std::string filename) {
     std::string	    content, line;
     std::ifstream	file;
 
@@ -91,4 +89,3 @@ std::string header(Request & request) {
 	header += "\r\n"; // blank line
 	return header;
 }
-

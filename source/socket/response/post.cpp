@@ -112,7 +112,7 @@ int read_body_chunked(int client_socket, int client_max_body_size, int file_fd)
 			break;
 		
 		int client_max = client_max_body_size;
-		if (client_max == 0) // marche pas
+		if (client_max == 0)
 			client_max = nb;
 			
 		for (int total_size = 0; total_size < nb; total_size += msgsize)
@@ -264,3 +264,4 @@ void	*method_post(void *arg) {
 	delete a;
 	return NULL;
 }
+
