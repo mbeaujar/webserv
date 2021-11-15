@@ -1,8 +1,12 @@
-POST /index.blabla HTTP/1.1
+POST /index.lalala HTTP/1.1
 Host: localhost
-User-Agent: curl/7.58.0
-Accept: */*
-Content-Length: 22
-Content-Type: application/x-www-form-urlencoded
+Content-Type: text/plain
+Transfer-Encoding: chunked
 
-on est les meileur ami
+5
+Media
+8
+Services
+4
+Live
+0

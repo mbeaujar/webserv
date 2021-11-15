@@ -94,6 +94,7 @@ Location find_location(Request & request, Server const & server, int method) {
 		std::cerr << "Error: Method not allowed" << std::endl;
 		return location;
 	}
+	request.set_path(location.get_root() + request.get_path());
 	return location;
 }
 

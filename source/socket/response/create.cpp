@@ -4,6 +4,7 @@
 void send_response(Request & request, std::string body, int client_socket) {
 	request.set_content_length(body.length());
 	std::string response = header(request);
+	std::cout << "header response: " << response << std::endl;
 	response.append(body);
 	write(client_socket, response.c_str(), response.length());
 	close(client_socket);
@@ -44,7 +45,7 @@ void create_response(Request & request, Server const & server, int client_socket
 	}
 	else{
 		std::string response, body;
-			;// method_delete(request, server);
+		// method_delete(request, server);
 		error = request.get_error();
 		if (error.first != 200) // check si il n'y a pas de error_page definis
 			body = create_error(to_string(error.first) + " " + error.second);

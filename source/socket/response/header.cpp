@@ -23,35 +23,34 @@ std::string hour_date() {
 	std::string	date;
 
 	char 		buf[1000];
-	char 		savedlocale[256];
+	//char 		savedlocale[256];
 	time_t		now = time(0);
 	struct tm tm = *gmtime(&now);
 
-	strcpy(savedlocale,  setlocale(LC_ALL, NULL));
-	setlocale(LC_ALL, "C");
-	strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %Z", &tm);
-	setlocale(LC_ALL, savedlocale);
+	//strcpy(savedlocale,  setlocale(LC_ALL, NULL));
+	//setlocale(LC_ALL, "C");
+	strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S GMT", &tm);
+	//setlocale(LC_ALL, savedlocale);
 
 	date = buf;
 	return date;
 }
 
-std::string get_last_modified() 
-{
+std::string get_last_modified(std::string path) {
 	std::string 	date;
 	struct stat		stats;
 	struct tm		*tm;
 	char 			buf[1000];
 	
 	memset(&stats, 0, sizeof(stats));
+	stat(path.c_str(), &stats);
 	tm = gmtime(&stats.st_mtime);
 	strftime(buf, 100, "%a, %d %b %Y %H:%M:%S GMT", tm);
 	date = std::string(buf);
 	return date;
 }
 
-std::string get_file_content(std::string filename) 
-{
+std::string get_file_content(std::string filename) {
     std::string	    content, line;
     std::ifstream	file;
 
@@ -82,7 +81,7 @@ std::string header(Request & request) {
 		header += "Content-Type: " + request.get_content_type() + "\r\n";
 	if (request.get_method() == GET)
 		header += "Content-length: " + to_string(request.get_content_length()) + "\r\n";
-	header += "Last-Modified: " + get_last_modified() + "\r\n";
+	header += "Last-Modified: " + get_last_modified(request.get_path()) + "\r\n";
 	if (request.get_error().first == 405)
 		header += "Allow:" + allow_method(request) + "\r\n";
 	if (redirect.first != -1)
@@ -90,4 +89,3 @@ std::string header(Request & request) {
 	header += "\r\n"; // blank line
 	return header;
 }
-

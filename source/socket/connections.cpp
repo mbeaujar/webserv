@@ -1,5 +1,5 @@
 #include "socket.hpp"
-
+#include <string.h>
 /**
  * @brief accept a new connection (wait until there is a new connection)
  * 
@@ -40,7 +40,8 @@ char *read_header(int client_socket, int limit, int & msgsize) {
 		msgsize += bytes_read;
 		if (msgsize > BUFFERSIZE - 1 || msgsize > limit - 1)
 			break;
-		if (msgsize - 1 > 3 && buffer[msgsize - 1] == '\n' && strcmp(buffer + msgsize - 4, "\r\n\r\n") == 0) { // stop at blank line
+		if (msgsize > 4 && buffer[msgsize - 1] == '\n' && (strcmp(buffer + (msgsize - 1) - 1, "\n\n") == 0
+				|| strcmp(buffer+ (msgsize - 1) - 3, "\r\n\r\n") == 0)){ // stop at blank line
 			break;
 		}
 	}

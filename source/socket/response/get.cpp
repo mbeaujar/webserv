@@ -1,7 +1,7 @@
 #include "../socket.hpp"
 
 std::string path_to_file(Request & request, Location & location, int method) {
-	std::string path = location.get_root() + request.get_path();
+	std::string path = request.get_path();
 
 	if (file_exist(path)) {
 		if (is_directory(path)) {

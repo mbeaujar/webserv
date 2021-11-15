@@ -122,14 +122,10 @@ std::string call_cgi(Request & request, int client_socket, std::string path_to_f
 	int fd_in, fd_out;
 	char **argv = NULL, **envp = NULL;
 	int pid, status;
-	std::string path_in, path_out;
+	std::string path_out;
 	
-	if (method == "GET")
-		path_in = path_to_file;
-	else 
-		path_in = ".in_" + to_string(client_socket);
 	path_out = ".out_" + to_string(client_socket);
-	fd_in = create_temporary_file(path_in);
+	fd_in = create_temporary_file(path_to_file);
 	fd_out = create_temporary_file(path_out);
 	if (fd_in == -1 || fd_out == -1)
 		return clean_cgi(fd_in, fd_out);
@@ -150,8 +146,6 @@ std::string call_cgi(Request & request, int client_socket, std::string path_to_f
 	waitpid(pid, &status, 0);
 	body = get_file_content(path_out);
 	clean_cgi(fd_in, fd_out, argv, envp);
-	if (method == "POST")
-		remove_file(path_in.c_str());
 	remove_file(path_out.c_str());
 	return body;
 }

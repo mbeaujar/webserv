@@ -5,9 +5,8 @@ void    method_delete(Request & request, Server const & server) {
     Location location;
 
     location = find_location(request, server, DELETE);
-	// verifie si delete sup aussi les directory si oui implemanter !
-	path = location.get_root() + request.get_path();
-    if (file_exist(path) && is_directory(path) == false) {
+	path = request.get_path();
+    if (file_exist(path)) {
         remove_file(path.c_str());
     }
 }

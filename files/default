@@ -1,16 +1,15 @@
 
 server {
 	listen 8080;
-	listen [::]:8080;
+	#listen [::]:8080;
 
 	location / {
-		method GET;
 		root /var/www/html;
 		index index.php;
-		fastcgi /home/user42/Bureau/webserv/ubuntu_cgi_tester;
-		fastcgi_extension .html;
-		#fastcgi /usr/bin/php-cgi;
-		#fastcgi_extension .php;
+		#fastcgi /home/user42/Bureau/webserv/ubuntu_cgi_tester;
+		#fastcgi_extension .html;
+		fastcgi /usr/bin/php-cgi;
+		fastcgi_extension .php;
 	}
 
 	location /directory/ {
