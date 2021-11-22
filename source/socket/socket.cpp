@@ -3,21 +3,21 @@
 // #include <libexplain/select.h>
 #include <sys/select.h>
 
-/**
- * @brief close all the fds
- * 
- * @param fds list of fds
- * @return int 
- */
-int release_fds(std::map<int, Server> & fds) {
-	std::map<int, Server>::iterator it = fds.begin(), ite = fds.end();
-	while (it != ite) {
-		if (it->first != -1)
-			close(it->first);
-		++it;
-	}
-	return 0;
-}
+// /**
+//  * @brief close all the fds
+//  * 
+//  * @param fds list of fds
+//  * @return int 
+//  */
+// int release_fds(std::map<int, Server> & fds) {
+// 	std::map<int, Server>::iterator it = fds.begin(), ite = fds.end();
+// 	while (it != ite) {
+// 		if (it->first != -1)
+// 			close(it->first);
+// 		++it;
+// 	}
+// 	return 0;
+// }
 
 /**
  * @brief Create a map of fd (fd = servers port)
@@ -38,6 +38,7 @@ std::map<int, Server> config_socket(std::vector<Server> & servers) {
 				server_socket = create_socket_ipv4(begin->port, BACKLOG);
 			else
 				server_socket = create_socket_ipv6(begin->port, BACKLOG);
+			it->set_current_port(begin->port);
 			sockets.insert(std::make_pair(server_socket, *it));
 			++begin;
 		}  
@@ -47,7 +48,7 @@ std::map<int, Server> config_socket(std::vector<Server> & servers) {
 }
 
 
-void wait_finish(std::map<int, Server> & sockets, std::map<int, Server> & clients, std::vector<pthread_t> & threads) {
+void wait_finish(std::map<int, Server> & sockets, std::map<int, Server*> & clients, std::vector<pthread_t> & threads) {
 	std::vector<pthread_t>::iterator it = threads.begin(), ite = threads.end();
 	while (it != ite) {
 		pthread_join(*it, NULL);
@@ -70,7 +71,7 @@ int handle_socket(std::vector<Server> & servers) {
 	std::vector<pthread_t> threads;
 	std::map<int, Server> sockets = config_socket(servers);
 	std::map<int, Server>::iterator search;
-	std::map<int, Server>  clients;
+	std::map<int, Server*>  clients;
 
 	FD_ZERO(&current_sockets);
 	FD_ZERO(&current_clients);
@@ -103,15 +104,15 @@ int handle_socket(std::vector<Server> & servers) {
 								fcntl(client_socket, F_SETFL, O_NONBLOCK);
 								if (client_socket > max_fd)
 									max_fd = client_socket;
-								clients.insert(std::make_pair(client_socket, search->second));
+								clients.insert(std::make_pair(client_socket, &search->second));
 								FD_SET(client_socket, &current_sockets);
 								FD_SET(client_socket, &current_clients);
 							}
 						}
 						else if (FD_ISSET(i, &ready_clients)) {
-							std::map<int, Server>::iterator find = clients.find(i);
+							std::map<int, Server*>::iterator find = clients.find(i);
 							if (find != clients.end()) {
-								handle_connections(i, find->second, threads);
+								handle_connections(i, *find->second, threads);
 								clients.erase(i);
 								FD_CLR(i, &current_sockets);
 								FD_CLR(i, &current_clients);

@@ -1,0 +1,29 @@
+
+-- check config file
+	- check les parties obligatoires
+	- check mauvaise utilisation
+	- si il y a un chemin check si il existe - mael
+
+-- check cgi
+	- Si il manque des variables d'environnements
+	- Si il a une boucle infinie
+
+-- check return si tout est bon 
+
+-- test DELETE - ali
+
+-- check si PUT comme methode dans la requete
+
+-- check try catch si jamais une fct throw (leak de fd ?) - mael
+
+-- limite de clients en simultanés (fct listen()) ?
+
+// -------------- FINIS
+
+-- post si le dossier d'upload n'est pas le bon - ramzi 
+
+-- FD faire attention au leak (fd close) si jamais un thread a un probleme - mael
+
+-- prendre en compte error_page - mael
+
+-- check autoindex on (quand on clique sur les ..) - ramzi

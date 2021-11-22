@@ -57,6 +57,7 @@ char *read_header(int client_socket, int limit, int & msgsize) {
 int handle_connections(int client_socket, Server & server, std::vector<pthread_t> & threads) {
 	int current_reading = 0;
 	char *buffer = read_header(client_socket, server.get_client_size(), current_reading);
+	std::cerr << "REQUEST: " << std::endl << buffer << std::endl;
 	if (buffer == NULL)
 		return 1;
 	if (strlen(buffer) == 0) {
@@ -65,6 +66,8 @@ int handle_connections(int client_socket, Server & server, std::vector<pthread_t
 	}
 	Request r = parse_header(buffer);
  	delete [] buffer;
+	if (current_reading > BUFFERSIZE - 1)
+		r.set_error(std::make_pair(413, "Request Entity Too Large"));
 	create_response(r, server, client_socket, current_reading, threads);
 	return 0;
 }

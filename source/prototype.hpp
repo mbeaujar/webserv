@@ -14,6 +14,8 @@
 #  define LIMIT -1
 # endif
 
+std::string get_last_modified(std::string path);
+
 // -------------------------------- config
 
 std::vector<Server>	parser(const char *filename);
@@ -50,6 +52,8 @@ int					recup_nb(std::string file, int & i);
 // -------------------------------- socket 
 
 int 				handle_socket(std::vector<Server> & servers);
+bool		is_directory(std::string path);
+bool		file_exist(std::string filename);
 
 
 

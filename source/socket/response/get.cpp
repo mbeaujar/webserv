@@ -40,11 +40,14 @@ std::string parse_get(Request & request, Server const & server, int client_socke
 		std::cerr << "Warning: redirection: [" + to_string(redirect.first) + "] " + redirect.second << std::endl;
 		return "";
 	}
+	std::cerr << "before: " << request.get_path() << std::endl;
 	path = path_to_file(request, location, GET);
-	if (request.get_error().first != 200)
+	if (request.get_error().first != 200) {
+		std::cerr << "Probleme: " << path << std::endl;
 		return "";
+	}
 	if (is_directory(path) && location.get_autoindex() == true) {
-		response = autoindex_on(path);
+		response = autoindex_on(path, location.get_root(), request.get_host(), server.get_current_port());
 	} else if (is_cgi(path, location.get_fastcgi_ext()) == true) {
 		response = call_cgi(request, client_socket, path, "GET", location.get_fastcgi());
 		if (response.empty() == true) 
@@ -63,7 +66,7 @@ void *method_get(void *arg) {
 	std::string body = parse_get(a->request, a->server, a->client_socket);
 	error = a->request.get_error();
 	if (error.first != 200)
-		body = create_error(to_string(error.first) + " " + error.second);
+		body = create_error(to_string(error.first) + " " + error.second, a->server, error.first);
 	send_response(a->request, body, a->client_socket);
 	delete a;
 	return NULL;

@@ -1,7 +1,8 @@
 server {
-	listen 8080;
+	listen 8081;
 
 	location / {
+		autoindex on;
 		root /var/www/html;
 		index index.html;
 	}

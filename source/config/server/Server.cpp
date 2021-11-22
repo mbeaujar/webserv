@@ -1,8 +1,19 @@
 #include "Server.hpp"
 
+bool Port::operator==(Port const & rhs) { return port == rhs.port && ipv4 == rhs.ipv4; }
+
+bool Port::operator<(Port const & rhs) { // true nothing / false change
+	if (port != rhs.port)
+		return port < rhs.port;
+	if (ipv4 == rhs.ipv4)
+		return true;
+	return ipv4 < rhs.ipv4;
+}
+
 Server::Server()
 	: _client_size(0),
 	  _default_server(false),
+	  _current_port(),
 	  _port(),
 	  _error_page(),
 	  _location() {}
@@ -10,6 +21,7 @@ Server::Server()
 Server::Server(Server const &copy)
 	: _client_size(copy._client_size) ,
 	  _default_server(copy._default_server),
+	  _current_port(copy._current_port),
 	  _port(copy._port),
 	  _error_page(copy._error_page),
 	  _location(copy._location) {}
@@ -21,6 +33,7 @@ Server& Server::operator=(Server const &copy) {
 		return *this;
 	_client_size = copy._client_size;
 	_default_server = copy._default_server;
+	_current_port = copy._current_port;
 	_port = copy._port;
 	_error_page = copy._error_page;
 	_location = copy._location;
@@ -46,6 +59,10 @@ void Server::set_client_size(int const & client_size) {
 	_client_size = client_size;
 }
 
+void Server::set_current_port(int const & port) { _current_port = port; }
+
+int Server::get_current_port() const { return _current_port; }
+
 int Server::get_client_size() const { return _client_size; }
 
 void Server::set_default_server(bool const & default_server) {
@@ -58,7 +75,7 @@ int Server::get_number_of_port() const { return _port.size(); }
 
 bool Server::get_default_server() const { return _default_server; }
 
-std::vector<Port> Server::get_port() const { return _port; }
+std::vector<Port>& Server::get_port() { return _port; }
 
 bool Server::find_port(int const & port, bool const & ipv4) const {
 	std::vector<Port>::const_iterator it = _port.begin(), ite = _port.end();

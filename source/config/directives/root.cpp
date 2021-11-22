@@ -19,6 +19,8 @@ int parse_root(std::string file, int i, Location &a)
 			std::string word = file.substr(i, skip - i);
 			if (word[word.length()-1] == '/')
 				word.erase(word.end());
+			if (file_exist(word) == false)
+				throw std::invalid_argument("invalid argument in \"root\" directive, path does not exist");
 			a.set_root(word);
 			i = skip;
 			count++;

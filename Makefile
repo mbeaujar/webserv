@@ -34,6 +34,7 @@ SRCS  =	main.cpp \
 		socket/response/parse_cgi.cpp \
 		socket/response/post.cpp \
 		socket/response/header.cpp \
+		socket/response/delete.cpp \
 		socket/response/utils.cpp \
 		socket/connections.cpp \
 		socket/create.cpp \
@@ -46,7 +47,7 @@ SRCS_DIRECTORY=source/
 OBJS_DIRECTORY=.objs/
 
 $(OBJS_DIRECTORY)%.o : $(SRCS_DIRECTORY)%.cpp
-	@$(CC) $(CFLAGS) $< -D LIMIT=2 -c -o $@
+	@$(CC) $(CFLAGS) $< -D LIMIT=-1 -c -o $@
 
 
 all : $(OBJS_DIRECTORY) $(NAME)

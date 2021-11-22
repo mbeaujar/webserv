@@ -15,6 +15,10 @@ int parse_upload(std::string file, int i, Location &a)
 			
 			int skip = skip_word(file, i);
 			std::string word = file.substr(i, skip - i);
+			if (word[word.length()-1] == '/')
+				word.erase(word.end());
+			if (file_exist(word) == false || is_directory(word) == false)
+				throw std::invalid_argument("invalid argument in \"upload\" directive, path does not exist");
 			a.set_upload(word);
 			i = skip;
 			count++;

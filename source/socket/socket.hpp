@@ -22,8 +22,8 @@
 # define SA_IN6	struct sockaddr_in6
 # define SA_IN	struct sockaddr_in
 # define SA		struct sockaddr
-# define BUFFERSIZE 1024
-# define BACKLOG	10000
+# define BUFFERSIZE 8192
+# define BACKLOG SOMAXCONN
 
 # ifndef __APPLE__
 #  define __APPLE__ 0
@@ -39,7 +39,6 @@ int handle_connections(int client_socket, Server & server, std::vector<pthread_t
 
 // ------------------------------- socket/request
 
-bool		is_directory(std::string path);
 void    	print_request(Request & a);
 char		*read_header(int client_socket, int limit);
 Request 	parse_header(std::string request);
@@ -47,8 +46,7 @@ void 		lower_file(std::string & request);
 
 // ------------------------------- socket/response
 
-std::string autoindex_on(std::string path);
-bool		file_exist(std::string filename);
+std::string autoindex_on(std::string const & path, std::string const & root, std::string const & host, int const & port);
 std::string call_cgi(Request & request, int client_socket, std::string path_to_file, std::string method, std::string path_to_cgi);
 std::string	get_file_content(std::string filename);
 void 		*method_get(void *arg);
@@ -65,8 +63,28 @@ int 		remove_file(char const *path);
 bool 		is_cgi(std::string & path, std::string extension_cgi);
 std::string parse_cgi(Request & request, std::string response);
 void send_response(Request & request, std::string body, int client_socket);
-std::string create_error(std::string status);
+std::string create_error(std::string status, Server const & server, int & error);
 std::string path_to_file(Request & request, Location & location, int method);
+
+// ---------------------- Template
+
+/**
+ * @brief close all the fds
+ * 
+ * @param fds list of fds
+ * @return int 
+ */
+template <typename T>
+int release_fds(std::map<int, T> & fds) {
+	typename std::map<int, T>::iterator it = fds.begin(), ite = fds.end();
+	while (it != ite) {
+		if (it->first != -1)
+			close(it->first);
+		++it;
+	}
+	return 0;
+}
+
 
 
 #endif

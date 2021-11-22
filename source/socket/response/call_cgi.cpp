@@ -143,9 +143,11 @@ std::string call_cgi(Request & request, int client_socket, std::string path_to_f
 		clean_cgi(fd_in, fd_out, argv, envp);
 		exit(EXIT_SUCCESS);
 	}
+	close(fd_in);
+	close(fd_out);
 	waitpid(pid, &status, 0);
+	clean_cgi(-1, -1, argv, envp);
 	body = get_file_content(path_out);
-	clean_cgi(fd_in, fd_out, argv, envp);
 	remove_file(path_out.c_str());
 	return body;
 }

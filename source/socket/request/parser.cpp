@@ -23,9 +23,18 @@ int first_line(std::string & request, Request & r, int i)
 }
 
 void lower_file(std::string & request) {
-    for (int i = 0; request[i]; i++)
-        if (isupper(request[i]))
+    int i = 0;
+    int start_line = 1;
+    while (request[i] != '\0')
+    {
+        if (start_line == 1 && isupper(request[i]))
             request[i] += 32;
+        if (start_line == 1 && request[i] == ' ')
+            start_line = 0;
+        if (request[i] == '\n')
+            start_line = 1;
+        i++;    
+    }
 }
 
 Request parse_header(std::string request) {

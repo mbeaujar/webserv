@@ -26,7 +26,7 @@ int parse_return(std::string file, int i, Location &a)
 			i = skip; 
 			nb_word++;
 		} else if (file[i] && file[i] != ';' && !isspace(file[i]) && file[i] != '#')
-			throw std::invalid_argument("pourquoi pas");
+			throw std::invalid_argument("invalid number of arguments in \"return\" directive");
 	}
 	if (nb_word != 1 || code == -1)
 		throw std::invalid_argument("invalid number of arguments");

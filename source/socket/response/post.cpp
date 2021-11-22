@@ -164,6 +164,21 @@ int read_body_chunked(int client_socket, int client_max_body_size, int file_fd)
 	return 0;
 }
 
+// path : 	/var/www/html/doc/test.html
+
+// ulpoad : /var/www/html/doc
+
+bool	path_upload(std::string path, std::string upload) {
+	if (path.length() < upload.length())
+		return false;
+	int i = 0;
+	while (upload[i] && upload[i] == path[i])
+		i++;
+	if (upload[i])
+		return false;
+	return true;
+}
+
 void	*method_post(void *arg) {
 	Thread *a = reinterpret_cast<Thread*>(arg);
 	std::string tmp_file = ".post_" + to_string(a->client_socket), path, response;
@@ -178,8 +193,6 @@ void	*method_post(void *arg) {
 		return NULL;
 	}
 
-	// quoi faire si il y a une redirection ???
-
 	// recup le path
 	path = path_to_file(a->request, location, POST);
 	if (a->request.get_error().first != 200) {
@@ -187,6 +200,18 @@ void	*method_post(void *arg) {
 		delete a;
 		return NULL;
 	}
+
+	// si le chemin existe pas
+	if (file_exist(path) == false) {
+		// on upload ??
+		if (path_upload(path, location.get_upload()) == false) {
+			// code erreur si on peux pas upload ??
+			send_response(a->request, "", a->client_socket);
+			delete a;
+			return NULL;
+		}
+	}
+	
 	if (is_directory(path)) {
 		if (path[path.length() - 1] != '/')
 			path.insert(path.end(), '/');
@@ -244,7 +269,6 @@ void	*method_post(void *arg) {
 	close(fd);
 
 	std::ofstream		file;
-	// std::cerr << "response: " << response << std::endl;
 	file.open(path.c_str());
 	if (file.is_open() == false)
 	{
@@ -253,15 +277,11 @@ void	*method_post(void *arg) {
 		delete a;
 		return NULL;
 	}
-	
 	file << response;
-
 	file.close();
 	
-	// send_response();
 	send_response(a->request, "", a->client_socket);
-	
+
 	delete a;
 	return NULL;
 }
-
