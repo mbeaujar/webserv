@@ -84,8 +84,8 @@ Request parse_header(std::string request) {
             r.set_host(request.substr(i, skip_word_request(request, i) - i));
             i = skip_word_request(request, i);
 			if (method != 1) {
-		        std::cerr << "Error: host before method" << std::endl;
-				r.set_error(std::make_pair(400, "Bad request"));
+		        std::cerr << "webserv: [warn]: parse_headder: Host before method" << std::endl;
+				r.set_error(std::make_pair(400, "Bad request")); 
                 return r;
             }
 			host++;

@@ -10,13 +10,12 @@
 
 -- check return (redirection) si tout est bon 
 
--- test error_page 
-
 -- test redirection ( body dans la reponse ?)
 
--- check si PUT comme methode dans la requete
 
 // -------------- FINIS
+
+-- check si PUT comme methode dans la requete - mael
 
 -- limite de clients en simultanés (fct listen()) ? - mael
 
@@ -31,3 +30,5 @@
 -- FD faire attention au leak (fd close) si jamais un thread a un probleme - mael
 
 -- prendre en compte error_page - mael
+
+-- test error_page - mael
