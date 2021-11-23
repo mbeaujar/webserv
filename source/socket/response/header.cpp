@@ -50,6 +50,7 @@ std::string get_last_modified(std::string path) {
 	return date;
 }
 
+
 std::string get_file_content(std::string filename) {
     std::string	    content, line;
     std::ifstream	file;
@@ -59,13 +60,10 @@ std::string get_file_content(std::string filename) {
 		std::cerr << "Error: can't open the file: " << filename << std::endl;
 		return "";
 	}
-    while (std::getline(file, line)) {
-        content.append(line);
-		if (!file.eof())
-			content.append("\n");
-	}
-	file.close();
-    return content;
+   	std::ostringstream contents;
+    contents << file.rdbuf();
+    file.close();
+    return(contents.str());
 }
 
 std::string header(Request & request) {

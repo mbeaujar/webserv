@@ -6,9 +6,9 @@
 
 -- check cgi
 	- Si il manque des variables d'environnements
-	- Si il a une boucle infinie
+	- Si il a une boucle infinie - mael
 
--- check return si tout est bon 
+-- check return (redirection) si tout est bon 
 
 -- test DELETE - ali
 

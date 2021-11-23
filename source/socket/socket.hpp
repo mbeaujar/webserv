@@ -62,7 +62,7 @@ std::string cut_path(std::string path);
 int 		remove_file(char const *path);
 bool 		is_cgi(std::string & path, std::string extension_cgi);
 std::string parse_cgi(Request & request, std::string response);
-void send_response(Request & request, std::string body, int client_socket);
+void send_response(Request & request, std::string body, int client_socket, Server const & server);
 std::string create_error(std::string status, Server const & server, int & error);
 std::string path_to_file(Request & request, Location & location, int method);
 
@@ -82,7 +82,7 @@ int release_fds(std::map<int, T> & fds) {
 			close(it->first);
 		++it;
 	}
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 

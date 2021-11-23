@@ -36,29 +36,32 @@ void	check_doublon_port(std::vector<Server> & servers) {
 	}
 }
 
+void debug(std::vector<Server> & servers) {
+	std::vector<Server>::iterator it = servers.begin(), ite = servers.end();
+	while (it != ite) {
+		printserver(*it);
+		++it;
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	if (argc != 2) {
-		std::cout << "number of arguments invalid" << "\n";
-		return 1;
+		std::cerr << "number of arguments invalid" << "\n";
+		return EXIT_FAILURE;
 	}
 	std::vector<Server> servers;
-	// parsing 
 	try {
 		servers = parser(argv[1]);
 		check_doublon_port(servers);
+		// debug(servers);
+		handle_socket(servers);
 	}
     catch (std::exception &e) {
-		std::cout << "webserv: [emerg] " << e.what() << std::endl;
-		return 1;
+		std::cerr << "webserv: [emerg] " << e.what() << std::endl;
+		return EXIT_FAILURE;
 	}
-	// debug
-	// std::vector<Server>::iterator it = servers.begin(), ite = servers.end();
-	// while (it != ite) {
-	// 	printserver(*it);
-	// 	++it;
-	// }
-	return handle_socket(servers);
+	return EXIT_SUCCESS;
 }
 
 

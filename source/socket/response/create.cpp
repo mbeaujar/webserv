@@ -1,11 +1,25 @@
 #include "../socket.hpp"
 #include <pthread.h>
 
-void send_response(Request & request, std::string body, int client_socket) {
+void send_response(Request & request, std::string body, int client_socket, Server const & server) {
 	request.set_content_length(body.length());
-	std::string response = header(request);
-	std::cout << "header response: " << response << std::endl;
-	response.append(body);
+	std::pair<int, std::string> error;
+	std::string response;
+
+	error = request.get_error();
+	if (error.first == 200) {
+		try {
+			response = header(request);
+		} catch (std::exception &e) {
+			std::cerr << "webserv: [warn]: send_response: " << e.what() << std::endl;
+			request.set_error(std::make_pair(500, "Internal Server Error"));
+		}
+		response.append(body);
+		error = request.get_error();
+		if (error.first != 200)
+			response = create_error(to_string(error.first) + " " + error.second, server, error.first);
+	}
+	
 	write(client_socket, response.c_str(), response.length());
 	close(client_socket);
 }
@@ -25,12 +39,12 @@ void create_response(Request & request, Server const & server, int client_socket
 	Thread *t;
 
 	if (error.first != 200) 
-		return send_response(request, create_error(to_string(error.first) + " " + error.second, server, error.first), client_socket);
+		return send_response(request, create_error(to_string(error.first) + " " + error.second, server, error.first), client_socket, server);
 	if (method == POST) {
 		try {
 			t = new Thread;
-		} catch (std::bad_alloc) {
-			std::cerr << "Error: bad_alloc thread in create_response";
+		} catch (std::exception &e) {
+			std::cerr << "webserv: [warn]: create_response POST: " << e.what() << std::endl;
 			close(client_socket);
 			return;
 		}
@@ -40,8 +54,8 @@ void create_response(Request & request, Server const & server, int client_socket
 	} else if (method == GET) {
 		try {
 			t = new Thread;
-		} catch (std::bad_alloc) {
-			std::cerr << "Error: bad_alloc thread in create_response";
+		} catch (std::exception &e) {
+			std::cerr << "webserv: [warn]: create_response GET: " << e.what() << std::endl;
 			close(client_socket);
 			return;
 		}
@@ -53,9 +67,9 @@ void create_response(Request & request, Server const & server, int client_socket
 		std::string body;
 		method_delete(request, server);
 		error = request.get_error();
-		if (error.first != 200) // check si il n'y a pas de error_page definis
+		if (error.first != 200)
 			body = create_error(to_string(error.first) + " " + error.second, server, error.first);
-		send_response(request, body, client_socket);
+		send_response(request, body, client_socket, server);
 	}	
 	else {
 		//ERREUR : methode inconnu le programme doit exit (return un code d'erreur logique)

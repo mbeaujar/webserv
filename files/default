@@ -12,9 +12,9 @@ server {
 		fastcgi_extension .php;
 	}
 
-	location /directory/ {
-		method GET;
-		root /home/user42/Bureau/webserv/YoupiBanane;
-		index youpi.bad_extension;
+	location / {
+		method DELETE;
+		root /var/www/html;
+		index dubaienvue;
 	}
 }

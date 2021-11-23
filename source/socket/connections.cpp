@@ -29,8 +29,8 @@ char *read_header(int client_socket, int limit, int & msgsize) {
 
 	try {
 		buffer = new char[BUFFERSIZE];
-	} catch(std::bad_alloc) {
-		std::cerr << "Error: bad_alloc in read_header" << std::endl;
+	} catch(std::exception &e) {
+		std::cerr << "webserv: [warn]: read_header: " << e.what() << std::endl;
 		return NULL;
 	}
 	memset(buffer, 0, BUFFERSIZE);
@@ -45,7 +45,23 @@ char *read_header(int client_socket, int limit, int & msgsize) {
 			break;
 		}
 	}
+	buffer[msgsize] = 0; // a test
 	return buffer;
+}
+
+/**
+ * @brief Respond error 500 to the client
+ * 
+ * @param r  request
+ * @param server server
+ * @param client_socket fd client 
+ * @return int  EXIT_FAILURE
+ */
+int connections_error(Request & r, Server & server, int client_socket) {
+	if (r.get_error().first == 200)
+		r.set_error(std::make_pair(500, "Internal Server Error"));
+	send_response(r, "", client_socket, server);
+	return EXIT_FAILURE;
 }
 
 /**
@@ -56,20 +72,39 @@ char *read_header(int client_socket, int limit, int & msgsize) {
  */
 int handle_connections(int client_socket, Server & server, std::vector<pthread_t> & threads) {
 	int current_reading = 0;
-	char *buffer = read_header(client_socket, server.get_client_size(), current_reading);
-	std::cerr << "REQUEST: " << std::endl << buffer << std::endl;
-	if (buffer == NULL)
-		return 1;
+	char *buffer;
+	Request r;
+
+	buffer = read_header(client_socket, server.get_client_size(), current_reading);
+	if (buffer == NULL) 
+		return connections_error(r, server, client_socket);
+
 	if (strlen(buffer) == 0) {
+		std::cerr << "Error: empty header in the request" << std::endl;
 		delete [] buffer;
-		return 1;
+		return connections_error(r, server, client_socket);
 	}
-	Request r = parse_header(buffer);
+
+	try {
+		r = parse_header(buffer);
+	} catch (std::exception &e) {
+		std::cerr << "webserv: [warn]: handle_connections: " << e.what() << std::endl;
+ 		delete [] buffer;
+		return connections_error(r, server, client_socket);
+	}
  	delete [] buffer;
-	if (current_reading > BUFFERSIZE - 1)
+
+	if (current_reading > BUFFERSIZE - 1) {
 		r.set_error(std::make_pair(413, "Request Entity Too Large"));
-	create_response(r, server, client_socket, current_reading, threads);
-	return 0;
+		return connections_error(r, server, client_socket);
+	}
+		
+	try {
+		create_response(r, server, client_socket, current_reading, threads);
+	} catch (std::exception &e) {
+		std::cerr << "webserv: [warn]: " << e.what() << std::endl;
+	}
+	return EXIT_SUCCESS;
 }
 
 // si la requete n'est pas supporté 405

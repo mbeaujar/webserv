@@ -16,7 +16,7 @@ std::string path_to_file(Request & request, Location & location, int method) {
 				++it;
 			}
 			if (location.get_autoindex() == false && method == GET) {
-				std::cerr << "Error: Request path is a directory + autoindex off in config file" << std::endl;
+				std::cerr << "webserv: [warn]: Request path is a directory and autoindex is off in the config file" << std::endl;
 				request.set_error(std::make_pair(404, "Not Found"));
 			}
 		}
@@ -32,18 +32,21 @@ std::string parse_get(Request & request, Server const & server, int client_socke
 	Location	location;
 
 	location = find_location(request, server, GET);
-	if (request.get_error().first != 200)
+	if (request.get_error().first != 200) {
+		request.set_error(std::make_pair(500, "Internal Server Error"));
+		std::cerr << "webserv: [warn]: parse_get: can't find location" << std::endl;
 		return "";
+	}
 	redirect = location.get_return();
 	if (redirect.first != -1) {
 		request.set_return(std::make_pair(redirect.first, redirect.second));
-		std::cerr << "Warning: redirection: [" + to_string(redirect.first) + "] " + redirect.second << std::endl;
+		std::cerr << "webserv: [warn]: redirection: [" + to_string(redirect.first) + "] " + redirect.second << std::endl;
 		return "";
 	}
-	std::cerr << "before: " << request.get_path() << std::endl;
 	path = path_to_file(request, location, GET);
 	if (request.get_error().first != 200) {
-		std::cerr << "Probleme: " << path << std::endl;
+		std::cerr << "webserv: [warn]: parse_get: path: " << path << " does not exist" << std::endl;
+		request.set_error(std::make_pair(500, "Internal Server Error"));
 		return "";
 	}
 	if (is_directory(path) && location.get_autoindex() == true) {
@@ -61,13 +64,15 @@ std::string parse_get(Request & request, Server const & server, int client_socke
 
 void *method_get(void *arg) {
 	Thread *a = reinterpret_cast<Thread*>(arg);
-	std::pair<int, std::string> error;
+	std::string body;
 
-	std::string body = parse_get(a->request, a->server, a->client_socket);
-	error = a->request.get_error();
-	if (error.first != 200)
-		body = create_error(to_string(error.first) + " " + error.second, a->server, error.first);
-	send_response(a->request, body, a->client_socket);
+	try {
+		body = parse_get(a->request, a->server, a->client_socket);
+	} catch (std::exception &e) {
+		std::cerr << "webserv: [warn]: method_get: " << e.what() << std::endl;
+		a->request.set_error(std::make_pair(500, "Internal Server Error"));
+	}
+	send_response(a->request, body, a->client_socket, a->server);
 	delete a;
 	return NULL;
 }

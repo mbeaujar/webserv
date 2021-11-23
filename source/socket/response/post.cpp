@@ -12,9 +12,9 @@ int	read_body(int client_socket, int client_max_body_size, int file_fd, int cont
 	
 	try  {
 		buffer = new char[BUFFERSIZE];
-	} catch (std::bad_alloc) {
-		std::cerr << "Error: bad_alloc in read_body" << std::endl;
-		return 1;
+	} catch (std::exception &e) {
+		std::cerr << "webserv: [warn]: read_body: " << e.what() << std::endl;
+		return EXIT_FAILURE;
 	}
 	if (client_max_body_size == 0)
 		client_max_body_size = content_length;
@@ -56,7 +56,7 @@ int	read_body(int client_socket, int client_max_body_size, int file_fd, int cont
 		write(file_fd, buffer, msgsize);
 	}
 	delete [] buffer;
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 int	convert_hexa(std::string str) {
@@ -98,9 +98,9 @@ int read_body_chunked(int client_socket, int client_max_body_size, int file_fd)
 	try {
 		buffer = new char[BUFFERSIZE];
 	}
-	catch (std::bad_alloc) {
-		std::cerr << "Error: bad_alloc in read_body" << std::endl;
-		return 1;
+	catch (std::exception &e) {
+		std::cerr << "webserv: [warn]: read_body_chunked: " << e.what() << std::endl;
+		return EXIT_FAILURE;
 	}
 	while (true)
 	{
@@ -158,10 +158,10 @@ int read_body_chunked(int client_socket, int client_max_body_size, int file_fd)
 		char c;
 		read(client_socket, &c, 1);
 		if (c != '\n')
-			std::cerr << "LA GROSSE MERDE" << std::endl;
+			std::cerr << "webserv: [warn]: read_body_chunked: no '\n' at the end of the line (read header request)" << std::endl;
 	}
 	delete[] buffer;
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 // path : 	/var/www/html/doc/test.html
@@ -179,8 +179,7 @@ bool	path_upload(std::string path, std::string upload) {
 	return true;
 }
 
-void	*method_post(void *arg) {
-	Thread *a = reinterpret_cast<Thread*>(arg);
+void *parse_post(Thread *a) {
 	std::string tmp_file = ".post_" + to_string(a->client_socket), path, response;
 	Location location;
 	int fd;
@@ -188,16 +187,12 @@ void	*method_post(void *arg) {
 	// check la location
 	location = find_location(a->request, a->server, POST);
 	if (a->request.get_error().first != 200) {
-		send_response(a->request, "", a->client_socket);
-		delete a;
 		return NULL;
 	}
 
 	// recup le path
 	path = path_to_file(a->request, location, POST);
 	if (a->request.get_error().first != 200) {
-		send_response(a->request, "", a->client_socket);
-		delete a;
 		return NULL;
 	}
 
@@ -206,8 +201,6 @@ void	*method_post(void *arg) {
 		// on upload ??
 		if (path_upload(path, location.get_upload()) == false) {
 			// code erreur si on peux pas upload ??
-			send_response(a->request, "", a->client_socket);
-			delete a;
 			return NULL;
 		}
 	}
@@ -219,27 +212,24 @@ void	*method_post(void *arg) {
 	}
 
 	if ((fd = open(tmp_file.c_str(), O_CREAT | O_RDWR, S_IRWXU)) == -1) {
-		std::cerr << "Error: can't open file: " << tmp_file << std::endl;
-		send_response(a->request, "", a->client_socket);
-		delete a;
+		std::cerr << "webserv: [warn]: parse_post: can't open: " << tmp_file << std::endl;
+		a->request.set_error(std::make_pair(500, "Internal Server Error"));
 		return NULL;
 	}
 
 	if (a->request.get_content_length() >= 0) {
 		if (read_body(a->client_socket, a->server.get_client_size(), fd, a->request.get_content_length())) {
-			send_response(a->request, "", a->client_socket);
+			a->request.set_error(std::make_pair(500, "Internal Server Error"));
 			remove_file(tmp_file.c_str());
 			close(fd);
-			delete a;
 			return NULL;
 		}
 	}
 	else { // chunked request
 		if (read_body_chunked(a->client_socket, a->server.get_client_size(), fd)) {
-			send_response(a->request, "", a->client_socket);
+			a->request.set_error(std::make_pair(500, "Internal Server Error"));
 			remove_file(tmp_file.c_str());
 			close(fd);
-			delete a;
 			return NULL;
 		}
 	}
@@ -247,12 +237,10 @@ void	*method_post(void *arg) {
 	if (is_cgi(path, location.get_fastcgi_ext()) == true) {
 		if (file_exist(location.get_fastcgi()) == false)
 		{
-			a->request.set_error(std::make_pair(502, "Bad Gateway")); // pas sur de l'hortographe
-			std::cerr << "Error: no cgi man click !" << std::endl;
-			send_response(a->request, "", a->client_socket);
+			a->request.set_error(std::make_pair(502, "Bad Gateway"));
+			// std::cerr << "Error: no cgi man click !" << std::endl;
 			remove_file(tmp_file.c_str());
 			close(fd);
-			delete a;
 			return NULL;
 		}
 		response = call_cgi(a->request, a->client_socket, tmp_file, "POST", location.get_fastcgi());
@@ -270,18 +258,27 @@ void	*method_post(void *arg) {
 
 	std::ofstream		file;
 	file.open(path.c_str());
-	if (file.is_open() == false)
-	{
-		std::cerr << "Error: can't open this sheet : " << path << std::endl;
-		send_response(a->request, "", a->client_socket);
-		delete a;
+	if (file.is_open() == false) {
+		std::cerr << "webserv: [warn]: parse_post: can't open: " << path << std::endl;
+		a->request.set_error(std::make_pair(500, "Internal Server Error"));
 		return NULL;
 	}
 	file << response;
 	file.close();
-	
-	send_response(a->request, "", a->client_socket);
 
+	return NULL;
+}
+
+void	*method_post(void *arg) {
+	Thread *a = reinterpret_cast<Thread*>(arg);
+	
+	try {
+		parse_post(a);		
+	} catch (std::exception &e) {
+		std::cerr << "webserv: [warn]: method_post: " << e.what() << std::endl;
+		a->request.set_error(std::make_pair(500, "Internal Server Error"));
+	}
+	send_response(a->request, "", a->client_socket, a->server);
 	delete a;
 	return NULL;
 }

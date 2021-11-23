@@ -2,7 +2,11 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <algorithm>
-
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <string.h>
+#include <stdio.h>
+#include <errno.h>
 // opendir readir
 
 // echange si a < b
@@ -28,14 +32,15 @@ std::string clear_dirname(std::string const & dirname, std::string const & root)
 		i++;
 	return dirname.substr(i, dirname.length() - i);
 }
+
  
-std::string get_data(std::string const & path_to_file, std::string const & filename) {
+std::string get_data(std::string const & path_to_file, std::string const & filename, std::string const & file) {
     std::vector<std::string> words;
 	int x = 0, pos = 0;
 
-	if (filename == "..")
+	if (filename == "../")
 		return "";
-	std::string path = get_last_modified(path_to_file + filename);
+	std::string path = get_last_modified(path_to_file + file);
 	while (path[pos] && isdigit(path[pos]) == false)
 		pos++;
     for (x = pos; path[pos]; pos++) {
@@ -50,29 +55,50 @@ std::string get_data(std::string const & path_to_file, std::string const & filen
     return words[0] + "-" + words[1] + "-" + words[2] + " " + words[3];
 }
 
-std::string put_file_name(std::string file) {
-    for (int i = 0; file[i]; i++)
+std::string put_file_name(std::string file, bool const & is_dir) {
+    file += (is_dir == true ? "/" : "");
+    if (file.length() > 49)
     {
-        if (i == 47 || i == 48)
-            file[i] = '.';
-        if (i == 49)
-            file[i] = '>';
-        if (i > 49)
-            file[i] = 0;
+        file[47] = '.';
+        file[48] = '.';
+        file[49] = '>';
+        return (file.substr(0, 50));
     }
-    int len = 50 - file.length();
-    while (len--)
-        file.push_back(' ');
     return file;
 }
 
-std::string put_space_data(std::string const & path_to_file, std::string const & filename) {
-    return get_data(path_to_file, filename) + "\n";
+int file_size(const char *filename) {
+    struct stat st; 
+
+    if (stat(filename, &st) == 0)
+        return st.st_size;
+
+    std::cerr << "Cannot determine size of " << filename << " : " << strerror(errno) << std::endl;
+    return -1; 
+}
+
+std::string get_file_size(std::string const & path_to_file, std::string const & file, bool const & is_dir) {
+    (void)path_to_file;
+    (void)file;
+    if (is_dir == true)
+        return "-";    
+    return "";//file_size(path_to_file + file);
+}
+
+std::string put_space_data(std::string const & path_to_file, std::string const & filename, std::string const & file, bool const & is_dir) {
+    std::string space, size;
+    int len = 51 - filename.length();
+    while (len-- > 0 && filename != "../")
+        space.push_back(' ');
+    if (filename == "../")
+        return "\n";
+    size = get_file_size(path_to_file, file, is_dir);
+    return space + get_data(path_to_file, filename, file) + "                   " + size + "\n";
 }
 
 std::string create_element(struct dirent *file, std::string const & dir_name, std::string const & root, bool const & is_dir, std::string const & host, int const & port)
 {
-	return "<a href= \"http://" + current_host(host, port) + clear_dirname(dir_name, root) + file->d_name + "\">" + put_file_name(file->d_name) + (is_dir == true ? "/" : "") + "</a>" + put_space_data(dir_name, file->d_name);
+	return "<a href= \"http://" + current_host(host, port) + clear_dirname(dir_name, root) + file->d_name + "\">" + put_file_name(file->d_name, is_dir) + "</a>" + put_space_data(dir_name, put_file_name(file->d_name, is_dir), file->d_name, is_dir);
 }
 
 std::string create_list_element(std::vector<struct dirent*> & list, std::string const & dir_name, std::string const & root, bool const & is_dir, std::string const & host, int const & port) {

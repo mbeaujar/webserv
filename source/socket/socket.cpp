@@ -79,7 +79,7 @@ int handle_socket(std::vector<Server> & servers) {
 	while (it != ite) {
 		if (it->first == -1) {
 			release_fds(sockets);
-			return 1;
+			return EXIT_FAILURE;
 		}
 		fcntl(it->first, F_SETFL, O_NONBLOCK);
 		if (it->first > max_fd)
@@ -90,9 +90,9 @@ int handle_socket(std::vector<Server> & servers) {
 	while (true) { 
 		ready_sockets = current_sockets;
 		ready_clients = current_clients;
-		size_t fds = 0;
+		int fds = 0;
 		if ((fds = select(max_fd + 1, &ready_sockets, &ready_clients, NULL, NULL)) < 0) // max_fd 1024 
-			std::cerr << "Error: Failed to select: " << strerror(errno) << std::endl;
+			std::cerr << "webserv: [warn]: handle_socket: Failed to select: " << strerror(errno) << std::endl;
 		if (fds > 0) {
 			try {
 				for (int i = 0; i < max_fd + 1; i++) {
@@ -122,13 +122,13 @@ int handle_socket(std::vector<Server> & servers) {
 					}
 				}
 			} catch (std::exception &e) {
-				std::cerr << "webserv: [warn]: " << e.what() << std::endl;
+				std::cerr << "webserv: [warn]: handle_socket: " << e.what() << std::endl;
 			}
 		}
 		if (LIMIT != -1 && loop >= LIMIT)
 			break;
 	}
 	wait_finish(sockets, clients, threads);
-	return 0;
+	return EXIT_SUCCESS;
 }
 //  siege localhost -r100 -c100

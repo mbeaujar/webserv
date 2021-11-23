@@ -5,7 +5,7 @@
  * 
  * @param port 	port to bind
  * @param backlog number of connections 
- * @return int fd of the object
+ * @return int fd of the socket
  */
 int create_socket_ipv4(int port, int backlog = 1) {
 	SA_IN server_addr;
@@ -46,7 +46,7 @@ int create_socket_ipv4(int port, int backlog = 1) {
  * 
  * @param port  port to bind
  * @param backlog number of connections
- * @return int fd of the object 
+ * @return int fd of the socket
  */
 int create_socket_ipv6(int port, int backlog = 1) {
 	SA_IN6 server_addr;

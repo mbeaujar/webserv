@@ -19,7 +19,7 @@ char	*dupnormi(const char *s1)
 	try {
 		s2 = new char[i + 1];
 	} catch (std::bad_alloc) {
-		std::cerr << "Error: bad_alloc dupnormi" << std::endl;
+		std::cerr << "webserv: [warn]: can't allocate dupnormi" << std::endl;
 		return NULL;
 	}
 	i = 0;
@@ -70,7 +70,7 @@ char **create_envp(Request & request, std::string & method, std::string & path_t
 	try {
 		envp = new char*[7];
 	} catch(std::bad_alloc) {
-		std::cerr << "Error: bad_alloc in create_envp" << std::endl;
+		std::cerr << "webserv: [warn]: can't allocate in create_envp" << std::endl;
 		return NULL;
 	}
 	std::string only_path_cgi = cut_path(path_to_cgi);
@@ -97,7 +97,7 @@ char **create_argv(std::string & path_to_cgi, std::string & path) {
 	try {
 		argv = new char*[3];
 	} catch (std::bad_alloc) {
-		std::cerr << "Error: bad_alloc in create_argv" << std::endl;
+		std::cerr << "webserv: [warn]: can't allocate in create_argv" << std::endl;
 		return NULL; 
 	}
 	argv[0] = dupnormi(cut_filename(path_to_cgi).c_str());
