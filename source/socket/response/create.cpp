@@ -2,24 +2,17 @@
 #include <pthread.h>
 
 void send_response(Request & request, std::string body, int client_socket, Server const & server) {
-	request.set_content_length(body.length());
 	std::pair<int, std::string> error;
 	std::string response;
 
+	request.set_content_length(body.length());
+	response = header(request);
 	error = request.get_error();
-	if (error.first == 200) {
-		try {
-			response = header(request);
-		} catch (std::exception &e) {
-			std::cerr << "webserv: [warn]: send_response: " << e.what() << std::endl;
-			request.set_error(std::make_pair(500, "Internal Server Error"));
-		}
+	if (error.first != 200)
+		response += create_error(to_string(error.first) + " " + error.second, server, error.first);
+	else
 		response.append(body);
-		error = request.get_error();
-		if (error.first != 200)
-			response = create_error(to_string(error.first) + " " + error.second, server, error.first);
-	}
-	
+	// std::cout << "RESPONSE: " << std::endl << response << std::endl;
 	write(client_socket, response.c_str(), response.length());
 	close(client_socket);
 }
@@ -64,12 +57,7 @@ void create_response(Request & request, Server const & server, int client_socket
 		threads.push_back(id);
 	}
 	else if (method == DELETE) {
-		std::string body;
-		method_delete(request, server);
-		error = request.get_error();
-		if (error.first != 200)
-			body = create_error(to_string(error.first) + " " + error.second, server, error.first);
-		send_response(request, body, client_socket, server);
+		method_delete(request, server, client_socket);
 	}	
 	else {
 		//ERREUR : methode inconnu le programme doit exit (return un code d'erreur logique)

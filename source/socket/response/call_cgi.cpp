@@ -18,8 +18,8 @@ char	*dupnormi(const char *s1)
 		i++;
 	try {
 		s2 = new char[i + 1];
-	} catch (std::bad_alloc) {
-		std::cerr << "webserv: [warn]: can't allocate dupnormi" << std::endl;
+	} catch (std::exception &e) {
+		std::cerr << "webserv: [warn]: dupnormi: " << e.what() << std::endl;
 		return NULL;
 	}
 	i = 0;
@@ -69,8 +69,8 @@ char **create_envp(Request & request, std::string & method, std::string & path_t
 	
 	try {
 		envp = new char*[7];
-	} catch(std::bad_alloc) {
-		std::cerr << "webserv: [warn]: can't allocate in create_envp" << std::endl;
+	} catch(std::exception &e) {
+		std::cerr << "webserv: [warn]: create_envp: " << e.what() << std::endl;
 		return NULL;
 	}
 	std::string only_path_cgi = cut_path(path_to_cgi);
@@ -96,21 +96,19 @@ char **create_argv(std::string & path_to_cgi, std::string & path) {
 	
 	try {
 		argv = new char*[3];
-	} catch (std::bad_alloc) {
-		std::cerr << "webserv: [warn]: can't allocate in create_argv" << std::endl;
+	} catch (std::exception &e) {
+		std::cerr << "webserv: [warn]: create_argv: " << e.what() << std::endl;
 		return NULL; 
 	}
 	argv[0] = dupnormi(cut_filename(path_to_cgi).c_str());
 	if (argv[0] == NULL) {
 		delete [] argv;
-		std::cerr << "Error: cgi malloc for argv" << std::endl;
 		return NULL;
 	}
 	argv[1] = dupnormi(path.c_str());
 	if (argv[1] == NULL) {
 		delete argv[0];
 		delete [] argv;
-		std::cerr << "Error: cgi malloc for argv" << std::endl;
 		return NULL;
 	}
 	argv[2] = 0;

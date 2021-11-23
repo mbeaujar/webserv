@@ -3,6 +3,8 @@
 	- check les parties obligatoires
 	- check mauvaise utilisation
 	- si il y a un chemin check si il existe - mael
+	
+-- check autoindex on (quand on clique sur les ..) - ramzi
 
 -- check cgi
 	- Si il manque des variables d'environnements
@@ -10,20 +12,20 @@
 
 -- check return (redirection) si tout est bon 
 
--- test DELETE - ali
 
 -- check si PUT comme methode dans la requete
 
--- check try catch si jamais une fct throw (leak de fd ?) - mael
-
--- limite de clients en simultanés (fct listen()) ?
 
 // -------------- FINIS
 
+-- limite de clients en simultanés (fct listen()) ? - mael
+
+-- check try catch si jamais une fct throw (leak de fd ?) - mael
+
 -- post si le dossier d'upload n'est pas le bon - ramzi 
+
+-- test DELETE - ali
 
 -- FD faire attention au leak (fd close) si jamais un thread a un probleme - mael
 
 -- prendre en compte error_page - mael
-
--- check autoindex on (quand on clique sur les ..) - ramzi

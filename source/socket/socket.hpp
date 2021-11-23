@@ -50,8 +50,8 @@ std::string autoindex_on(std::string const & path, std::string const & root, std
 std::string call_cgi(Request & request, int client_socket, std::string path_to_file, std::string method, std::string path_to_cgi);
 std::string	get_file_content(std::string filename);
 void 		*method_get(void *arg);
-void        method_delete(Request & request, Server const & server);
 void 		*method_post(void *arg);
+void    method_delete(Request & request, Server const & server, int client_socket);
 std::string	search_root(std::string path, Server const & server);
 Location	search_location(std::string path, Server const & server);
 Location    find_location(Request & request, Server const & server, int method);

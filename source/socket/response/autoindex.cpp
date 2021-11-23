@@ -67,23 +67,23 @@ std::string put_file_name(std::string file, bool const & is_dir) {
     return file;
 }
 
-int file_size(const char *filename) {
+off_t file_size(const char *filename) {
     struct stat st; 
 
     if (stat(filename, &st) == 0)
         return st.st_size;
-
-    std::cerr << "Cannot determine size of " << filename << " : " << strerror(errno) << std::endl;
-    return -1; 
+    std::cerr << "webserv: [warn]: file_size: Cannot determine size of " << filename << " : " << strerror(errno) << std::endl;
+    return 0; 
 }
 
 std::string get_file_size(std::string const & path_to_file, std::string const & file, bool const & is_dir) {
-    (void)path_to_file;
-    (void)file;
     if (is_dir == true)
-        return "-";    
-    return "";//file_size(path_to_file + file);
+        return "-";
+    std::string path = path_to_file + file;
+    return to_string(file_size(path.c_str()));
 }
+
+std::string put_space(std::string space) { return std::string(20 - space.length() < 0 ? 0 : 20 - space.length(), ' ') + space; }
 
 std::string put_space_data(std::string const & path_to_file, std::string const & filename, std::string const & file, bool const & is_dir) {
     std::string space, size;
@@ -93,7 +93,7 @@ std::string put_space_data(std::string const & path_to_file, std::string const &
     if (filename == "../")
         return "\n";
     size = get_file_size(path_to_file, file, is_dir);
-    return space + get_data(path_to_file, filename, file) + "                   " + size + "\n";
+    return space + get_data(path_to_file, filename, file) + put_space(size) + "\n";
 }
 
 std::string create_element(struct dirent *file, std::string const & dir_name, std::string const & root, bool const & is_dir, std::string const & host, int const & port)

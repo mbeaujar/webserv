@@ -33,7 +33,6 @@ std::string parse_get(Request & request, Server const & server, int client_socke
 
 	location = find_location(request, server, GET);
 	if (request.get_error().first != 200) {
-		request.set_error(std::make_pair(500, "Internal Server Error"));
 		std::cerr << "webserv: [warn]: parse_get: can't find location" << std::endl;
 		return "";
 	}
