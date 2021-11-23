@@ -1,6 +1,8 @@
 server {
 	listen 8081;
 
+	error_page 404 /home/user42/Bureau/webserv/files/index.html;
+
 	location / {
 		autoindex on;
 		root /var/www/html;

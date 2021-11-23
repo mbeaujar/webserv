@@ -45,7 +45,7 @@ std::string parse_get(Request & request, Server const & server, int client_socke
 	path = path_to_file(request, location, GET);
 	if (request.get_error().first != 200) {
 		std::cerr << "webserv: [warn]: parse_get: path: " << path << " does not exist" << std::endl;
-		request.set_error(std::make_pair(500, "Internal Server Error"));
+		// request.set_error(std::make_pair(500, "Internal Server Error"));
 		return "";
 	}
 	if (is_directory(path) && location.get_autoindex() == true) {

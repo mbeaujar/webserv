@@ -3,8 +3,6 @@
 	- check les parties obligatoires
 	- check mauvaise utilisation
 	- si il y a un chemin check si il existe - mael
-	
--- check autoindex on (quand on clique sur les ..) - ramzi
 
 -- check cgi
 	- Si il manque des variables d'environnements
@@ -12,13 +10,17 @@
 
 -- check return (redirection) si tout est bon 
 
+-- test error_page 
+
+-- test redirection ( body dans la reponse ?)
 
 -- check si PUT comme methode dans la requete
-
 
 // -------------- FINIS
 
 -- limite de clients en simultanés (fct listen()) ? - mael
+
+-- check autoindex on (quand on clique sur les ..) - ramzi
 
 -- check try catch si jamais une fct throw (leak de fd ?) - mael
 

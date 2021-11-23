@@ -5,13 +5,14 @@ void send_response(Request & request, std::string body, int client_socket, Serve
 	std::pair<int, std::string> error;
 	std::string response;
 
-	request.set_content_length(body.length());
-	response = header(request);
 	error = request.get_error();
 	if (error.first != 200)
-		response += create_error(to_string(error.first) + " " + error.second, server, error.first);
-	else
-		response.append(body);
+		body = create_error(to_string(error.first) + " " + error.second, server, error.first);
+	request.set_content_length(body.length());
+
+	response = header(request);
+
+	response.append(body);
 	// std::cout << "RESPONSE: " << std::endl << response << std::endl;
 	write(client_socket, response.c_str(), response.length());
 	close(client_socket);

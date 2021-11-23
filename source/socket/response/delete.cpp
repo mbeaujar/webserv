@@ -10,7 +10,7 @@ void    method_delete(Request & request, Server const & server, int client_socke
 		if (file_exist(path)) {
 			remove_file(path.c_str());
 		} else {
-			// quoi faire ????
+			request.set_error(std::make_pair(404, "Not Found"));
 		}
 	}
 	send_response(request, "", client_socket, server);
