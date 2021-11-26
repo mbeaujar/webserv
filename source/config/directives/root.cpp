@@ -26,9 +26,10 @@ int parse_root(std::string file, int i, Location &a)
 			count++;
 		}
 	}
-	if (count == 0 || count > 1)
+	if (count == 0 || count > 1) 
 		throw std::invalid_argument("invalid number of arguments in \"root\" directive");
-    if (file[i] && file[i] == ';')
+    if (file[i] && file[i] == ';') {
         i++;
+	}
 	return i;
 }

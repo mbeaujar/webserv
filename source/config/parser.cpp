@@ -13,18 +13,17 @@
  */
 std::string read_file(std::string filename) 
 {
-    std::string	    content, line;
     std::ifstream	file;
+	std::ostringstream contents;
 
     file.open(filename.c_str());
     if (!file.is_open())
     	throw std::invalid_argument("can't open the file in argument");
-    while (std::getline(file, line))
-        content += line + "\n";
-	file.close();
-	if (content == "")
+    contents << file.rdbuf();
+    file.close();
+	if (contents.str() == "")
 		throw std::invalid_argument("Empty file or file is a directory");
-    return content;
+    return contents.str();
 }
 
 

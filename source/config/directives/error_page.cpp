@@ -55,9 +55,10 @@ int	parse_error_page(std::string file, int i, Server &a)
 	}
     if (file[i] == '{')
         throw std::invalid_argument("directive \"error_page\" is not terminated by \";\" in ...");
-    if (file[i] != ';' || code != 2)
+    if (file[i] != ';' || code != 2) {
         throw std::invalid_argument("invalid number of arguments in \"error_page\" directive in ...");
-	if (file_exist(value) == false)
+	}
+	if (file_exist(value) == false) 
 		throw std::invalid_argument("invalid argument in \"error_page\" directive, path does not exist");
 	a.adding_error_page(error, value);
     if (file[i] && file[i] == ';')
