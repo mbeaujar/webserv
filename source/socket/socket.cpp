@@ -3,21 +3,6 @@
 // #include <libexplain/select.h>
 #include <sys/select.h>
 
-// /**
-//  * @brief close all the fds
-//  * 
-//  * @param fds list of fds
-//  * @return int 
-//  */
-// int release_fds(std::map<int, Server> & fds) {
-// 	std::map<int, Server>::iterator it = fds.begin(), ite = fds.end();
-// 	while (it != ite) {
-// 		if (it->first != -1)
-// 			close(it->first);
-// 		++it;
-// 	}
-// 	return 0;
-// }
 
 /**
  * @brief Create a map of fd (fd = servers port)

@@ -23,7 +23,7 @@ int accept_new_connection(int server_socket) {
  * @param limit 	client_max_body_size
  * @return char* 	content of the header
  */
-char *read_header(int client_socket, int limit, int & msgsize) {
+char *read_header(int client_socket, int & msgsize) {
 	int bytes_read;
 	char *buffer;
 
@@ -34,11 +34,9 @@ char *read_header(int client_socket, int limit, int & msgsize) {
 		return NULL;
 	}
 	memset(buffer, 0, BUFFERSIZE);
-	if (limit == 0)
-		limit = BUFFERSIZE;
 	while ((bytes_read = read(client_socket, &buffer[msgsize], 1)) > 0) {
 		msgsize += bytes_read;
-		if (msgsize > BUFFERSIZE - 1 || msgsize > limit - 1)
+		if (msgsize > BUFFERSIZE - 1)
 			break;
 		if (msgsize > 4 && buffer[msgsize - 1] == '\n' && (strcmp(buffer + (msgsize - 1) - 1, "\n\n") == 0
 				|| strcmp(buffer+ (msgsize - 1) - 3, "\r\n\r\n") == 0)){ // stop at blank line
@@ -75,7 +73,8 @@ int handle_connections(int client_socket, Server & server, std::vector<pthread_t
 	char *buffer;
 	Request r;
 
-	buffer = read_header(client_socket, server.get_client_size(), current_reading);
+	buffer = read_header(client_socket, current_reading);
+	std::cerr << "REQUEST: " << std::endl << buffer << std::endl;
 	if (buffer == NULL) 
 		return connections_error(r, server, client_socket);
 
@@ -85,6 +84,11 @@ int handle_connections(int client_socket, Server & server, std::vector<pthread_t
 		return connections_error(r, server, client_socket);
 	}
 
+	if (current_reading > BUFFERSIZE - 1) {
+		r.set_error(std::make_pair(413, "Request Entity Too Large"));
+		delete [] buffer;
+		return connections_error(r, server, client_socket);
+	}
 	try {
 		r = parse_header(buffer);
 	} catch (std::exception &e) {
@@ -94,10 +98,6 @@ int handle_connections(int client_socket, Server & server, std::vector<pthread_t
 	}
  	delete [] buffer;
 
-	if (current_reading > BUFFERSIZE - 1) {
-		r.set_error(std::make_pair(413, "Request Entity Too Large"));
-		return connections_error(r, server, client_socket);
-	}
 		
 	try {
 		create_response(r, server, client_socket, current_reading, threads);
@@ -107,8 +107,4 @@ int handle_connections(int client_socket, Server & server, std::vector<pthread_t
 	return EXIT_SUCCESS;
 }
 
-// si la requete n'est pas supporté 405
-// si pas de index ou ne trouve pas le fichier -> 403 Forbidden
-// si pas de root -> chemin par default /var/wwww/html
-// POST chuncked -> curl -v -d 'salut le monde' -H "Transfer-Encoding: chunked" -X POST localhost:80
 

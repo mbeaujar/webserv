@@ -32,7 +32,7 @@ std::string parse_get(Request & request, Server const & server, int client_socke
 	Location	location;
 
 	location = find_location(request, server, GET);
-	if (request.get_error().first != 200) {
+	if (request.get_error().first >= 400) {
 		std::cerr << "webserv: [warn]: parse_get: can't find location" << std::endl;
 		return "";
 	}
@@ -43,7 +43,7 @@ std::string parse_get(Request & request, Server const & server, int client_socke
 		return "";
 	}
 	path = path_to_file(request, location, GET);
-	if (request.get_error().first != 200) {
+	if (request.get_error().first >= 400) {
 		std::cerr << "webserv: [warn]: parse_get: path: " << path << " does not exist" << std::endl;
 		// request.set_error(std::make_pair(500, "Internal Server Error"));
 		return "";

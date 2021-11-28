@@ -6,14 +6,16 @@ void send_response(Request & request, std::string body, int client_socket, Serve
 	std::string response;
 
 	error = request.get_error();
-	if (error.first != 200)
+	if (error.first >= 400)
 		body = create_error(to_string(error.first) + " " + error.second, server, error.first);
 	request.set_content_length(body.length());
 
 	response = header(request);
 
 	response.append(body);
-	// std::cout << "RESPONSE: " << std::endl << response << std::endl;
+	std::cerr << std::endl;
+	std::cerr << "RESPONSE: " << std::endl << response << std::endl;
+	std::cerr << "------------------------------------------------------" << std::endl;
 	write(client_socket, response.c_str(), response.length());
 	close(client_socket);
 }
@@ -32,7 +34,7 @@ void create_response(Request & request, Server const & server, int client_socket
 	pthread_t id;
 	Thread *t;
 
-	if (error.first != 200) 
+	if (error.first >= 400) 
 		return send_response(request, create_error(to_string(error.first) + " " + error.second, server, error.first), client_socket, server);
 	if (method == POST) {
 		try {

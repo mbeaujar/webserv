@@ -23,7 +23,8 @@
 # define SA_IN	struct sockaddr_in
 # define SA		struct sockaddr
 # define BUFFERSIZE 8192
-# define BACKLOG SOMAXCONN
+# define BACKLOG 100000000
+//SOMAXCONN
 
 # ifndef __APPLE__
 #  define __APPLE__ 0
@@ -40,7 +41,7 @@ int handle_connections(int client_socket, Server & server, std::vector<pthread_t
 // ------------------------------- socket/request
 
 void    	print_request(Request & a);
-char		*read_header(int client_socket, int limit);
+char 		*read_header(int client_socket, int & msgsize);
 Request 	parse_header(std::string request);
 void 		lower_file(std::string & request);
 

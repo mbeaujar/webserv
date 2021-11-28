@@ -1,9 +1,28 @@
 server {
-	listen 8081;
+	listen 80;
+
+	#client_max_body_size 100;
 
 	location / {
-		autoindex on;
-		root /var/www/html;
-		index index.html;
+		method GET;
+		root /var/www/html/YoupiBanane;
+		index youpi.bad_extension;
+	}
+
+	location /put_test {
+		method POST;
+		root /var/www/html/YoupiBanane;
+		upload /var/www/html/upload;
+	}
+
+	location /post_body {
+		method POST;
+		root /var/www/html/YoupiBanane;
+	}
+
+	location /directory {
+		method GET;
+		root /var/www/html/YoupiBanane;
+		index youpi.bad_extension;
 	}
 }

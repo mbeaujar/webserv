@@ -64,7 +64,7 @@ int	convert_hexa(std::string str) {
 	int i = 0;
 	int res = 0;
 	
-	while (str[i] && ((str[i] >= '1' && str[i] <= '9') || (str[i] >= 'a' && str[i] <= 'z')))
+	while (str[i] && ((str[i] >= '0' && str[i] <= '9') || (str[i] >= 'a' && str[i] <= 'z')))
 	{
 		res *= 16;
 		res += str[i] < 58 ? str[i] - 48 : str[i] - 87;
@@ -105,13 +105,21 @@ int read_body_chunked(int client_socket, int client_max_body_size, int file_fd)
 	while (true)
 	{
 		// while (read(client_socket, buffer, 0) < 0)
-			// ;
+		// 	;
 		std::string hexa_length = read_chunked_length(client_socket);
 		int nb = convert_hexa(hexa_length);
-		if (nb == 0)
+		if (nb == 0) {
+			// probleme read
+			char c = 0;
+			read(client_socket, &c, 1);
+			if (c == '\r')
+				read(client_socket, &c, 1);
+			read(client_socket, &c, 1);
+			std::cerr << "ICIIIIIIIIIIIIIIIIII: " << static_cast<int>(c) << std::endl;
 			break;
+		}
 		
-		int client_max = client_max_body_size;
+		int client_max = client_max_body_size; // JE NE LE GERE PAS
 		if (client_max == 0)
 			client_max = nb;
 			
@@ -157,8 +165,13 @@ int read_body_chunked(int client_socket, int client_max_body_size, int file_fd)
 		}
 		char c;
 		read(client_socket, &c, 1);
-		if (c != '\n')
-			std::cerr << "webserv: [warn]: read_body_chunked: no '\n' at the end of the line (read header request)" << std::endl;
+		if (c == '\r') {
+			read(client_socket, &c, 1);
+			if (c != '\n')
+				std::cerr << "webserv: [warn]: read_body_chunked: no '\\n' at the end of the line (read header request)" << std::endl;
+		}
+		else if (c != '\n')
+			std::cerr << "webserv: [warn]: read_body_chunked: no '\\n' at the end of the line (read header request)" << std::endl;
 	}
 	delete[] buffer;
 	return EXIT_SUCCESS;
@@ -186,13 +199,13 @@ void *parse_post(Thread *a) {
 	
 	// check la location
 	location = find_location(a->request, a->server, POST);
-	if (a->request.get_error().first != 200) {
+	if (a->request.get_error().first >= 400) {
 		return NULL;
 	}
 
 	// recup le path
 	path = path_to_file(a->request, location, POST);
-	if (a->request.get_error().first != 200) {
+	if (a->request.get_error().first >= 400) {
 		return NULL;
 	}
 
@@ -217,6 +230,7 @@ void *parse_post(Thread *a) {
 		return NULL;
 	}
 
+	// std::cerr << "CGI" << std::endl;
 	if (a->request.get_content_length() >= 0) {
 		if (read_body(a->client_socket, a->server.get_client_size(), fd, a->request.get_content_length())) {
 			a->request.set_error(std::make_pair(500, "Internal Server Error"));
@@ -234,6 +248,10 @@ void *parse_post(Thread *a) {
 		}
 	}
 
+	// if content-type: ...form... alors set request.set_query_string()
+
+	
+	// std::cerr << "CGI" << std::endl;
 	if (is_cgi(path, location.get_fastcgi_ext()) == true) {
 		if (file_exist(location.get_fastcgi()) == false)
 		{
@@ -265,7 +283,7 @@ void *parse_post(Thread *a) {
 	}
 	file << response;
 	file.close();
-
+	// a->request.set_error(std::make_pair(201, "See Other"));
 	return NULL;
 }
 

@@ -75,6 +75,7 @@ std::string header(Request & request) {
 	header += "HTTP/1.1 " + to_string(request.get_error().first) + " " + request.get_error().second + "\r\n";
 	header += "Date: " + hour_date() + "\r\n";
 	header += "Server: " + request.get_host() + "\r\n";
+	header += "Connection: close\r\n";
 	if (request.get_content_type().empty() == false)
 		header += "Content-Type: " + request.get_content_type() + "\r\n";
 	if (request.get_method() == GET)
@@ -85,6 +86,7 @@ std::string header(Request & request) {
 		header += "Allow:" + allow_method(request) + "\r\n";
 	if (redirect.first != -1)
 		header += "Location: " + redirect.second + "\r\n";
+	// Connection: close
 	header += "\r\n"; // blank line
 	return header;
 }

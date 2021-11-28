@@ -91,7 +91,7 @@ Location find_location(Request & request, Server const & server, int method) {
 		struct s_method m = location.get_methods();
 		request.set_methods(m);
 		request.set_error(std::make_pair(405, "Method Not Allowed"));
-		std::cerr << "Error: Method not allowed" << std::endl;
+		std::cerr << "webserv: [warn]: find_location: Method not allowed" << std::endl;
 		return location;
 	}
 	request.set_path(location.get_root() + request.get_path());

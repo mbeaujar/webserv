@@ -53,14 +53,21 @@ Location& Location::operator=(Location const &copy)
 	return *this;
 }
 
-bool Location::get_method(int nb) const
-{
-    if (nb == DELETE)
-        return true;
-    else if (nb == GET)
-        return true;
-    else
-        return true;
+bool Location::get_method(int nb) const {
+	if (nb == DELETE) {
+		if (_method.m_delete == true)
+			return true;
+		return false;
+	} else if (nb == GET) {
+		if (_method.m_get == true)
+			return true;
+		return false;
+	} else if (nb == POST) {
+		if (_method.m_post == true)
+			return true;
+		return false;
+	} 
+	return false;
 }
 
 s_method Location::get_methods() const { return _method; }
