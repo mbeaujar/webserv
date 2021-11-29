@@ -12,10 +12,11 @@
  */
 Location parse_location(std::string file)
 {
-	int cgi = 0, cgi_ext = 0;
+	int i = 0;
 	Location a;
 	int nb_autoindex = 0;
-	int i = 0;
+	int nb_client_size = 0;
+	int cgi = 0, cgi_ext = 0;
 
 	if (file[i] == '{')
 		i++;
@@ -38,6 +39,13 @@ Location parse_location(std::string file)
 		} else if (file.compare(i, 6, "return") == 0) {
 			i += 6;
 			i = parse_return(file, i, a);
+		}
+		else if (file.compare(i, 20, "client_max_body_size") == 0) {
+		 	i += 20;
+		 	nb_client_size++;
+		 	if (nb_client_size > 1)
+		 		throw std::invalid_argument("\"client_max_body_size\" directive is duplicate");
+		 	i = parse_client_size(file, i, a);
 		} else if (file.compare(i, 6, "method") == 0) {
             i += 6;
             i = parse_method(file, i, a);

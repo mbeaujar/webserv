@@ -25,13 +25,13 @@ class Server {
 		void 		adding_error_page(int const & error, std::string const & path);
 		void		adding_location(std::string const & path, Location const & location);
 
-		void		set_client_size(int const & limit_body_size);
+		// void		set_client_size(int const & limit_body_size);
 		void 		set_default_server(bool const & default_server);
 		void		set_current_port(int const & port);
 
 		int 		get_current_port() const;
 		
-		int	 		get_client_size() const;
+		// int	 		get_client_size() const;
 		bool  		get_default_server() const;
 		std::map<int, std::string> get_error_page() const;
 		int get_number_of_port() const;
@@ -44,7 +44,7 @@ class Server {
 		bool 		find_location(std::string const & path) const;
 
     private:
-		int 							_client_size;
+		// int 							_client_size;
 		bool							_default_server;
 		int								_current_port;
 		std::vector<Port>				_port;

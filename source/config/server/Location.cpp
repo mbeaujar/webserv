@@ -6,6 +6,7 @@
  */
 Location::Location()
 	: _autoindex(false),
+	  _max_body(-1),
 	  _root("/var/www/html"),
 	  _index(),
 	  _method(),
@@ -26,6 +27,7 @@ Location::~Location() {}
  */
 Location::Location(Location const &copy)
 	: _autoindex(copy._autoindex),
+	  _max_body(copy._max_body),
 	  _root(copy._root),
 	  _index(copy._index),
 	  _method(copy._method),
@@ -44,6 +46,7 @@ Location& Location::operator=(Location const &copy)
 	if (this == &copy)
 		return *this;
 	_autoindex = copy._autoindex;
+	_max_body = copy._max_body;
 	_root = copy._root;
 	_index = copy._index;
 	_method = copy._method;
@@ -107,6 +110,8 @@ void Location::set_fastcgi(std::string const & fastcgi) { _fastcgi = fastcgi; }
 
 void Location::set_fastcgi_ext(std::string const & fastcgi_ext) { _fastcgi_ext = fastcgi_ext; }
 
+void Location::set_max_body(int const & max_body) { _max_body = max_body; }
+
 bool Location::get_autoindex() const { return _autoindex; }
 
 std::string Location::get_upload() const { return _upload; }
@@ -120,6 +125,8 @@ std::string Location::get_root() const { return _root; }
 std::vector<std::string> Location::get_index() const { return _index; }
 
 std::pair<int, std::string> Location::get_return() const { return _return; }
+
+int Location::get_max_body() const { return _max_body; }
 
 bool Location::find_index(std::string const & index) const {
 	std::vector<std::string>::const_iterator it = _index.begin(), ite = _index.end();

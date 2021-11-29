@@ -11,27 +11,27 @@ bool Port::operator<(Port const & rhs) { // true nothing / false change
 }
 
 Server::Server()
-	: _client_size(0),
-	  _default_server(false),
+	:  _default_server(false),
 	  _current_port(),
 	  _port(),
 	  _error_page(),
 	  _location() {}
+	// _client_size(0),
 
 Server::Server(Server const &copy)
-	: _client_size(copy._client_size) ,
-	  _default_server(copy._default_server),
+	:  _default_server(copy._default_server),
 	  _current_port(copy._current_port),
 	  _port(copy._port),
 	  _error_page(copy._error_page),
 	  _location(copy._location) {}
+	// _client_size(copy._client_size) ,
 
 Server::~Server() {}
 
 Server& Server::operator=(Server const &copy) {
 	if (this == &copy)
 		return *this;
-	_client_size = copy._client_size;
+	//_client_size = copy._client_size;
 	_default_server = copy._default_server;
 	_current_port = copy._current_port;
 	_port = copy._port;
@@ -55,15 +55,13 @@ void Server::adding_location(std::string const & path, Location const & location
 	_location.insert(std::make_pair(path, location));
 }
 
-void Server::set_client_size(int const & client_size) {
-	_client_size = client_size;
-}
+// void Server::set_client_size(int const & client_size) { _client_size = client_size; }
 
 void Server::set_current_port(int const & port) { _current_port = port; }
 
 int Server::get_current_port() const { return _current_port; }
 
-int Server::get_client_size() const { return _client_size; }
+// int Server::get_client_size() const { return _client_size; }
 
 void Server::set_default_server(bool const & default_server) {
 	_default_server = default_server;

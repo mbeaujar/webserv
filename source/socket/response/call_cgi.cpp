@@ -8,17 +8,20 @@
 // https://www.oreilly.com/openbook/cgi/ch03_02.html
 // https://www.w3.org/Protocols/HTTP/Object_Headers.html#date
 
-char	*dupnormi(const char *s1)
+char *dupnormi(const char *s1)
 {
-	int		i;
-	char	*s2;
+	int i;
+	char *s2;
 
 	i = 0;
 	while (s1[i])
 		i++;
-	try {
+	try
+	{
 		s2 = new char[i + 1];
-	} catch (std::exception &e) {
+	}
+	catch (std::exception &e)
+	{
 		std::cerr << "webserv: [warn]: dupnormi: " << e.what() << std::endl;
 		return NULL;
 	}
@@ -32,17 +35,20 @@ char	*dupnormi(const char *s1)
 	return (s2);
 }
 
-void free_tab(char **envp, int len) {
+void free_tab(char **envp, int len)
+{
 	if (envp == NULL)
 		return;
-	for (int i = 0; i < len; i++) {
+	for (int i = 0; i < len; i++)
+	{
 		if (envp[i])
-			delete [] envp[i];
+			delete[] envp[i];
 	}
-	delete [] envp;
+	delete[] envp;
 }
 
-std::string clean_cgi(int fd_in, int fd_out, char **argv = NULL, char **envp = NULL) {
+std::string clean_cgi(int fd_in, int fd_out, char **argv = NULL, char **envp = NULL)
+{
 	if (fd_in != -1)
 		close(fd_in);
 	if (fd_out != -1)
@@ -52,7 +58,8 @@ std::string clean_cgi(int fd_in, int fd_out, char **argv = NULL, char **envp = N
 	return "";
 }
 
-int create_temporary_file(std::string filename) {
+int create_temporary_file(std::string filename)
+{
 	int fd = -1;
 
 	if (file_exist(filename))
@@ -64,12 +71,16 @@ int create_temporary_file(std::string filename) {
 	return fd;
 }
 
-char **create_envp(Request & request, std::string & method, std::string & path_to_cgi, std::string & path) {
+char **create_envp(Request &request, std::string &method, std::string &path_to_cgi, std::string &path)
+{
 	char **envp;
-	
-	try {
-		envp = new char*[7];
-	} catch(std::exception &e) {
+
+	try
+	{
+		envp = new char *[7];
+	}
+	catch (std::exception &e)
+	{
 		std::cerr << "webserv: [warn]: create_envp: " << e.what() << std::endl;
 		return NULL;
 	}
@@ -82,8 +93,10 @@ char **create_envp(Request & request, std::string & method, std::string & path_t
 	envp[4] = dupnormi(std::string("REQUEST_URI=" + only_path_cgi).c_str());
 	envp[5] = dupnormi(std::string("SCRIPT_FILENAME=" + path).c_str());
 	envp[6] = 0;
-	for (int i = 0; i < 6; i++) {
-		if (!envp[i]) {
+	for (int i = 0; i < 6; i++)
+	{
+		if (!envp[i])
+		{
 			free_tab(envp, 6);
 			return NULL;
 		}
@@ -91,37 +104,44 @@ char **create_envp(Request & request, std::string & method, std::string & path_t
 	return envp;
 }
 
-char **create_argv(std::string & path_to_cgi, std::string & path) {
+char **create_argv(std::string &path_to_cgi, std::string &path)
+{
 	char **argv;
-	
-	try {
-		argv = new char*[3];
-	} catch (std::exception &e) {
+
+	try
+	{
+		argv = new char *[3];
+	}
+	catch (std::exception &e)
+	{
 		std::cerr << "webserv: [warn]: create_argv: " << e.what() << std::endl;
-		return NULL; 
+		return NULL;
 	}
 	argv[0] = dupnormi(cut_filename(path_to_cgi).c_str());
-	if (argv[0] == NULL) {
-		delete [] argv;
+	if (argv[0] == NULL)
+	{
+		delete[] argv;
 		return NULL;
 	}
 	argv[1] = dupnormi(path.c_str());
-	if (argv[1] == NULL) {
+	if (argv[1] == NULL)
+	{
 		delete argv[0];
-		delete [] argv;
+		delete[] argv;
 		return NULL;
 	}
 	argv[2] = 0;
 	return argv;
 }
 
-std::string call_cgi(Request & request, int client_socket, std::string path_to_file, std::string method, std::string path_to_cgi) {
+std::string call_cgi(Request &request, int client_socket, std::string path_to_file, std::string method, std::string path_to_cgi)
+{
 	std::string body;
 	int fd_in, fd_out;
 	char **argv = NULL, **envp = NULL;
 	int pid, status;
 	std::string path_out;
-	
+
 	path_out = ".out_" + to_string(client_socket);
 	fd_in = create_temporary_file(path_to_file);
 	fd_out = create_temporary_file(path_out);
@@ -134,7 +154,8 @@ std::string call_cgi(Request & request, int client_socket, std::string path_to_f
 	pid = fork();
 	if (pid == -1)
 		return clean_cgi(fd_in, fd_out, argv, envp);
-	if (pid == 0) {
+	if (pid == 0)
+	{
 		dup2(fd_in, 0);
 		dup2(fd_out, 1);
 		execve(path_to_cgi.c_str(), argv, envp);

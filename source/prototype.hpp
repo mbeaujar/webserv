@@ -35,7 +35,7 @@ int					skip_comment(std::string file, int i);
 int					skip_space(std::string file, int i);
 int					skip_word(std::string file, int i);
 int					parse_autoindex(std::string file, int i, Location &a);
-int 				parse_client_size(std::string file, int i, Server &a);
+int 				parse_client_size(std::string file, int i, Location &a);
 int					parse_error_page(std::string file, int i, Server &a);
 int					parse_error_page(std::string file, int i, Server &a);
 int					parse_elements(std::string file, int i, Server &a);

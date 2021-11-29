@@ -1,9 +1,11 @@
 #include "../socket.hpp"
 
-bool file_exist(std::string filename) {
+bool file_exist(std::string filename)
+{
 	std::ifstream file;
 	file.open(filename.c_str());
-	if (file) {
+	if (file)
+	{
 		file.close();
 		return true;
 	}
@@ -11,16 +13,48 @@ bool file_exist(std::string filename) {
 	return false;
 }
 
-bool is_directory(std::string path) {
+bool is_directory(std::string path)
+{
 	struct stat s;
-	if (stat(path.c_str(), &s) == 0) {
+	if (stat(path.c_str(), &s) == 0)
+	{
 		if (s.st_mode & S_IFDIR)
 			return true;
 	}
 	return false;
 }
 
-std::string cut_filename(std::string path) {
+int set_file_content(std::string & filename, std::string &content)
+{
+	std::ofstream file;
+
+	file.open(filename.c_str());
+	if (file.is_open() == false)
+		return EXIT_FAILURE;
+	file << content;
+	file.close();
+	return EXIT_SUCCESS;
+}
+
+std::string get_file_content(std::string filename)
+{
+	std::string content, line;
+	std::ifstream file;
+
+	file.open(filename.c_str());
+	if (file.is_open() == false)
+	{
+		std::cerr << "Error: can't open the file: " << filename << std::endl;
+		return "";
+	}
+	std::ostringstream contents;
+	contents << file.rdbuf();
+	file.close();
+	return (contents.str());
+}
+
+std::string cut_filename(std::string path)
+{
 	int i = path.length();
 	while (i > 0 && path[i] != '/')
 		i--;
@@ -30,46 +64,60 @@ std::string cut_filename(std::string path) {
 	return filename;
 }
 
-std::string cut_path(std::string path) {
+std::string cut_path(std::string path)
+{
 	int i = path.length();
 	while (i > 0 && path[i] != '/')
 		i--;
 	return path.substr(0, i);
 }
 
-int remove_file(char const *path) {
+int remove_file(char const *path)
+{
 	int ret = remove(path);
 	if (ret == -1)
 		std::cerr << "Error: remove fail for path: " << path << std::endl;
 	return ret;
 }
 
-std::string path_in_common(std::string location, std::string & path) {
+std::string path_in_common(std::string location, std::string & path)
+{
 	int len = 0;
-	
+
 	while (path[len] && location[len] && path[len] == location[len])
 		len++;
-	if (path[len] != '/' && path.length() != location.length()) {
+	if (path[len] != '/' && path.length() != location.length())
+	{
 		while (len > 0 && path[len] != '/')
 			len--;
 	}
 	return path.substr(0, len);
 }
 
-Location search_location(std::string path, Server const & server) {
+// path conerie.ali
+
+Location search_location(std::string path, Server const &server)
+{
 	Location tmp;
 	std::string longuest_path = "/";
 	std::map<std::string, Location> all = server.get_all_location();
 	std::map<std::string, Location>::iterator it = all.begin(), ite;
-	tmp.set_return(1, "fuck le a-word");
+	tmp.set_return(1, "fuck le p-word");
 
-	if ((ite = all.find("/")) != all.end()) {
+	if ((ite = all.find("/")) != all.end())
+	{
 		tmp = ite->second;
 		ite = all.end();
 	}
-	while (it != ite) {
+	while (it != ite)
+	{
 		std::string common = path_in_common(it->first, path);
-		if (common.length() > longuest_path.length()) {
+		if (is_extension(path, it->first))
+		{
+			return tmp = it->second;
+		}
+		if (common.length() > longuest_path.length())
+		{
 			tmp = it->second;
 			longuest_path = common;
 		}
@@ -78,16 +126,19 @@ Location search_location(std::string path, Server const & server) {
 	return tmp;
 }
 
-Location find_location(Request & request, Server const & server, int method) {
+Location find_location(Request &request, Server const &server, int method)
+{
 	Location location;
 
-	if ((location = search_location(request.get_path(), server)).get_return().first == 1) {
+	if ((location = search_location(request.get_path(), server)).get_return().first == 1)
+	{
 		std::cerr << "Error: Can't find a location for the path" << std::endl;
 		request.set_error(std::make_pair(404, "Not Found"));
 		return location;
 	}
 	// check si la method delete est autorisé
-	if (location.get_method(method) == false) {
+	if (location.get_method(method) == false)
+	{
 		struct s_method m = location.get_methods();
 		request.set_methods(m);
 		request.set_error(std::make_pair(405, "Method Not Allowed"));
@@ -98,14 +149,15 @@ Location find_location(Request & request, Server const & server, int method) {
 	return location;
 }
 
-bool is_cgi(std::string & path, std::string extension_cgi) {
+bool is_extension(std::string & path, std::string extension)
+{
 	size_t path_len = path.length();
-	size_t ext_len = extension_cgi.length();
+	size_t ext_len = extension.length();
 
-	if (extension_cgi == "" || path_len <= ext_len)
+	if (extension == "" || path_len <= ext_len)
 		return false;
 	std::string extension_path = path.substr(path_len - ext_len, ext_len);
-	if (extension_path == extension_cgi)
+	if (extension_path == extension)
 		return true;
 	return false;
 }

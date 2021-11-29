@@ -1,8 +1,8 @@
 #include <iostream>
 #include "../../prototype.hpp"
-#include "../server/Server.hpp"
+#include "../server/Location.hpp"
 
-int parse_client_size(std::string file, int i, Server &a)
+int parse_client_size(std::string file, int i, Location &a)
 {
 	int max_size = -1;
 
@@ -25,7 +25,7 @@ int parse_client_size(std::string file, int i, Server &a)
 		throw std::invalid_argument("unexpected \"}\"");
 	if (max_size == -1)
 		throw std::invalid_argument("invalid number of arguments in \"client_max_body_size\"");
-	a.set_client_size(max_size);
+	a.set_max_body(max_size);
 	if (file[i] == ';')
 		i++;
 	return i;

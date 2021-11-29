@@ -5,8 +5,8 @@ server {
 	location / {
 		autoindex on;
 		method GET;
-		root /var/www/html/pythonTest;
-		upload /var/www/html/pythonTest/putStuff;
+		root /var/www/html;
 	}
-
 }
+
+
