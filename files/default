@@ -11,10 +11,4 @@ server {
 		fastcgi /usr/bin/php-cgi;
 		fastcgi_extension .php;
 	}
-
-	location / {
-		method DELETE;
-		root /var/www/html;
-		index dubaienvue;
-	}
 }

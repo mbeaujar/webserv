@@ -60,7 +60,7 @@ std::string header(Request &request)
 	std::string header;
 	std::pair<int, std::string> redirect = request.get_return();
 
-	if (redirect.first != -1)
+	if (ISREDIRECT(redirect.first))
 		request.set_error(std::make_pair(redirect.first, "Moved Permanently"));
 	header += "HTTP/1.1 " + to_string(request.get_error().first) + " " + request.get_error().second + "\r\n";
 	header += "Date: " + hour_date() + "\r\n";
@@ -76,7 +76,6 @@ std::string header(Request &request)
 		header += "Allow:" + allow_method(request) + "\r\n";
 	if (redirect.first != -1)
 		header += "Location: " + redirect.second + "\r\n";
-	// Connection: close
 	header += "\r\n"; // blank line
 	return header;
 }

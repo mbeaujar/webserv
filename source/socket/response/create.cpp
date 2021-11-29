@@ -7,7 +7,7 @@ void send_response(Request &request, std::string body, int client_socket, Server
 	std::string response;
 
 	error = request.get_error();
-	if (error.first >= 400)
+	if (ISERROR(error.first))
 		body = create_error(to_string(error.first) + " " + error.second, server, error.first);
 	request.set_content_length(body.length());
 

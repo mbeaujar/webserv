@@ -11,10 +11,6 @@
 # define GET    1
 # define POST   2
 
-# ifndef LIMIT
-#  define LIMIT -1
-# endif
-
 std::string get_last_modified(std::string path);
 
 // -------------------------------- config

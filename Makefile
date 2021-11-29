@@ -4,7 +4,10 @@ CC     = clang++
 RM     = rm -rf
 CFLAGS = -Wall -Wextra -Werror -std=c++98
 
-HEADER = source/config/server
+HEADER = source/config/server \
+		source/socket/request \
+		source/socket/response \
+		source/socket
 
 SRCS  =	main.cpp \
 		config/directives/autoindex.cpp \
@@ -47,7 +50,7 @@ SRCS_DIRECTORY=source/
 OBJS_DIRECTORY=.objs/
 
 $(OBJS_DIRECTORY)%.o : $(SRCS_DIRECTORY)%.cpp
-	@$(CC) $(CFLAGS) $< -D LIMIT=-1 -c -o $@
+	@$(CC) $(CFLAGS) $< -c -o $@
 
 
 all : $(OBJS_DIRECTORY) $(NAME)

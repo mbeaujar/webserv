@@ -9,35 +9,49 @@ int find_query_string(std::string &request, int i)
 	return i;
 }
 
-int first_line(std::string &request, Request &r, int i)
-{
-	std::string word = request.substr(i, skip_word_request(request, i) - i);
-	size_t skip = find_query_string(word, 0);
-	r.set_path(word.substr(0, skip));
-	if (skip + 1 < word.length())
-		r.set_query_string(word.substr(skip + 1, word.length() - (skip + 1)));
-	while (request[i] == ' ')
-		i++;
-	while (request[i] && request[i] != '\n')
-		r.set_version(r.get_version() + request[i]);
-	if (request[i])
-		i++;
-	return i;
-}
-
-void lower_file(std::string &request)
+void lower_file(std::string & request)
 {
 	int i = 0;
-	int start_line = 1;
-	while (request[i] != '\0')
+	while (request[i])
 	{
-		if (start_line == 1 && isupper(request[i]))
-			request[i] += 32;
-		if (start_line == 1 && request[i] == ' ')
-			start_line = 0;
-		if (request[i] == '\n')
-			start_line = 1;
+		if (request[i] >= 'A' && request[i] <= 'Z')
+			request += 32;
+		if (request[i] == ':')
+		{
+			while (request[i] && request[i] != '\n')
+				i++;
+		}
 		i++;
+	}
+}
+
+void	get_first_line(std::string & request, Request & r)
+{
+	int i = 0;
+	int tmp = 0;
+	std::string str;
+
+	i = skip_word(request, i);
+	str = request.substr(0, i);
+	if (str == "delete")
+		r.set_method(DELETE);
+	else if (str == "post")
+		r.set_method(POST);
+	else if (str == "get")
+		r.set_method(GET);
+	else
+		r.set_error(std::make_pair(405, "Method not allowed"));
+	tmp = i;
+	i = skip_word(request, i);
+	str = request.substr(tmp, i);
+	r.set_path(str);
+	tmp = i;
+	i = skip_word(request, i);
+	str = request.substr(tmp, i);
+	if (str != "HTTP/1.1")
+	{
+		std::cerr << "Bad version http" << std::endl;
+		r.set_error(std::make_pair(400, "Bad request"));
 	}
 }
 
@@ -49,6 +63,7 @@ Request parse_header(std::string request)
 	Request r;
 
 	lower_file(request);
+	get_first_line(request, r);
 	r.set_content_length(-1);
 	while (request[i])
 	{
@@ -118,6 +133,7 @@ Request parse_header(std::string request)
 		r.set_error(std::make_pair(400, "Bad request"));
 		return r;
 	}
+	print_request(r);
 	return r;
 }
 

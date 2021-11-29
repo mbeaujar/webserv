@@ -23,8 +23,7 @@
 # define SA_IN	struct sockaddr_in
 # define SA		struct sockaddr
 # define BUFFERSIZE 8192
-# define BACKLOG 100000000
-//SOMAXCONN
+# define BACKLOG SOMAXCONN
 
 # define ISERROR(x) (x >= 400) // HTTP code > 400 is a error
 # define ISREDIRECT(x) (x != -1) // No redirection is -1
@@ -53,6 +52,7 @@ int create_socket_ipv6(int port, int backlog);
 
 Request parse_header(std::string request);
 void lower_file(std::string &request);
+void print_request(Request &a);
 
 // -------------------------------- socket/response
 

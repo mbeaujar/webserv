@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 	{
 		servers = parser(argv[1]);
 		check_doublon_port(servers);
-		// debug(servers);
+		debug(servers);
 		handle_socket(servers);
 	}
 	catch (std::exception &e)

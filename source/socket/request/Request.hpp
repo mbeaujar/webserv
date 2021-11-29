@@ -1,14 +1,11 @@
-#ifndef __REQUEST_HPP__
-# define __REQUEST_HPP__
+#ifndef _REQUEST_HPP_
+# define _REQUEST_HPP_
 
-// # include "../socket.hpp"
 #include "../../config/server/Location.hpp"
 # include <iostream>
 
-# define CHUNKED	0
-# define GZIP		1
-
-class Request {
+class Request
+{
     public:
         Request();
         ~Request();
@@ -26,7 +23,6 @@ class Request {
         void			set_return(std::pair<int, std::string> const & error);
         void			set_methods(struct s_method & met);
         void			set_date(std::string const & date);
-        void			set_version(std::string const & version);
 		
 		std::string		get_path() const;
 		std::string		get_query_string() const;
@@ -39,13 +35,11 @@ class Request {
         std::pair<int, std::string> 	get_return() const;
         struct s_method		get_methods() const;
         std::string		get_date() const;
-        std::string		get_version() const;
 
     private:
         std::string     _host;
         int           	_method;
         std::string		_path;
-		std::string		_version;
         std::string		_query_string;
         int             _content_length;
         std::string     _content_type;
