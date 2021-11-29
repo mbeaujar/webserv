@@ -114,7 +114,6 @@ void *parse_connections(void *arg)
 		return connections_error(r, t->server, t->client_socket);
 	}
 	delete[] buffer;
-
 	try
 	{
 		create_response(r, t->server, t->client_socket);

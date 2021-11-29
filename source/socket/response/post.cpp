@@ -133,7 +133,6 @@ int read_body_chunked(int client_socket, int client_max_body_size, int file_fd)
 			if (c == '\r')
 				read(client_socket, &c, 1);
 			read(client_socket, &c, 1);
-			std::cerr << "ICIIIIIIIIIIIIIIIIII: " << static_cast<int>(c) << std::endl;
 			break;
 		}
 
@@ -246,9 +245,11 @@ int parse_post(Server const & server, Request & request, int client_socket)
 
 	if (is_directory(path))
 	{
-		if (path[path.length() - 1] != '/')
+		if (path.length() > 1 && path[path.length() - 1] != '/')
 			path.insert(path.end(), '/');
-		path += location.get_index()[0];
+		std::vector<std::string> index = location.get_index();
+		if (index.size() > 1)
+			path += location.get_index()[0];
 	}
 
 	if ((fd = open(tmp_file.c_str(), O_CREAT | O_RDWR, S_IRWXU)) == -1)
@@ -257,7 +258,6 @@ int parse_post(Server const & server, Request & request, int client_socket)
 		request.set_error(std::make_pair(500, "Internal Server Error"));
 		return EXIT_FAILURE;
 	}
-
 	// std::cerr << "CGI" << std::endl;
 	if (request.get_content_length() >= 0)
 	{

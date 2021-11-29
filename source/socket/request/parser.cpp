@@ -2,7 +2,7 @@
 #include "../socket.hpp"
 #include <algorithm>
 
-int find_query_string(std::string &request, int i)
+int find_query_string(std::string & request, int i)
 {
 	while (request[i] && request[i] != '?')
 		i++;
@@ -15,43 +15,69 @@ void lower_file(std::string & request)
 	while (request[i])
 	{
 		if (request[i] >= 'A' && request[i] <= 'Z')
-			request += 32;
+			request[i] += 32;
 		if (request[i] == ':')
 		{
 			while (request[i] && request[i] != '\n')
 				i++;
 		}
-		i++;
+		if (request[i])
+			i++;
 	}
+}
+
+int fuck_ali(std::string & file, int i) {
+	while (file[i] && !isspace(file[i]))
+		i++;
+	return i;
+}
+
+// POST / HTTP/1.1
+// Host: localhost:80
+
+std::string recup_word(std::string & request, int & i)
+{
+	int tmp;
+	std::string word;
+
+	tmp = fuck_ali(request, i);
+	word = request.substr(i, tmp - i);
+	i = skip_space(request, tmp);
+	return word;
 }
 
 void	get_first_line(std::string & request, Request & r)
 {
 	int i = 0;
-	int tmp = 0;
-	std::string str;
+	std::string word;
 
-	i = skip_word(request, i);
-	str = request.substr(0, i);
-	if (str == "delete")
+	word = recup_word(request, i);
+	if (word == "delete")
 		r.set_method(DELETE);
-	else if (str == "post")
+	else if (word == "post")
 		r.set_method(POST);
-	else if (str == "get")
+	else if (word == "get")
 		r.set_method(GET);
 	else
 		r.set_error(std::make_pair(405, "Method not allowed"));
-	tmp = i;
-	i = skip_word(request, i);
-	str = request.substr(tmp, i);
-	r.set_path(str);
-	tmp = i;
-	i = skip_word(request, i);
-	str = request.substr(tmp, i);
-	if (str != "HTTP/1.1")
+	word = recup_word(request, i);
+	r.set_path(word);
+	word = recup_word(request, i);
+	if (word != "http/1.1")
 	{
-		std::cerr << "Bad version http" << std::endl;
+		std::cerr << "webserv: [warn]: get_first_line: Bad HTTP version: " << word << std::endl;
 		r.set_error(std::make_pair(400, "Bad request"));
+	}
+	word = recup_word(request, i);
+	if (word != "host:")
+	{
+		std::cerr << "webserv: [warn]: get_first_line: Request without host part" << std::endl;
+		r.set_error(std::make_pair(400, "Bad request"));
+	}
+	else
+	{
+		word = recup_word(request, i);
+		r.set_host(word);
 	}
 }
 
@@ -59,7 +85,6 @@ Request parse_header(std::string request)
 {
 	int i = 0;
 	int host = 0;
-	int method = 0;
 	Request r;
 
 	lower_file(request);
@@ -67,20 +92,7 @@ Request parse_header(std::string request)
 	r.set_content_length(-1);
 	while (request[i])
 	{
-		if (request.compare(i, 5, "host:") == 0)
-		{
-			i += 6;
-			r.set_host(request.substr(i, skip_word_request(request, i) - i));
-			i = skip_word_request(request, i);
-			if (method != 1)
-			{
-				std::cerr << "webserv: [warn]: parse_header: Host before method" << std::endl;
-				r.set_error(std::make_pair(400, "Bad request"));
-				return r;
-			}
-			host++;
-		}
-		else if (request.compare(i, 15, "content-length:") == 0)
+		if (request.compare(i, 15, "content-length:") == 0)
 		{
 			i += 16;
 			r.set_content_length(recup_nb(request, i));
@@ -94,12 +106,12 @@ Request parse_header(std::string request)
 			r.set_content_type(request.substr(tmp, i - tmp));
 		}
 		else if (request.compare(i, 18, "transfer-encoding:") == 0)
-		{ // CHUNKED GZIP
+		{
 			i += 19;
 			while (request[i] && request[i] != '\n')
 			{
-				r.add_transfer_encoding(request.substr(i, skip_word_request(request, i) - i));
-				i = skip_word_request(request, i);
+				r.add_transfer_encoding(request.substr(i, fuck_ali(request, i) - i));
+				i = fuck_ali(request, i);
 				if (request[i] != '\n')
 					i++;
 			}
@@ -133,7 +145,6 @@ Request parse_header(std::string request)
 		r.set_error(std::make_pair(400, "Bad request"));
 		return r;
 	}
-	print_request(r);
 	return r;
 }
 

@@ -3,7 +3,7 @@
 #include <sys/select.h>
 #include <csignal>
 
-bool isExit;
+bool g_exit;
 
 void wait_finish(std::map<int, Server> &sockets, std::map<int, Server *> &clients, std::vector<pthread_t> &threads)
 {
@@ -20,7 +20,7 @@ void wait_finish(std::map<int, Server> &sockets, std::map<int, Server *> &client
 void signalHandler(int signum)
 {
 	std::cout << "\nInterrupt signal (" << signum << ") received.\n";
-	isExit = true;
+	g_exit = true;
 }
 
 /**
@@ -86,19 +86,22 @@ int handle_socket(std::vector<Server> &servers)
 		FD_SET(it->first, &current_sockets);
 		++it;
 	}
-	isExit = false;
+	g_exit = false;
 	signal(SIGINT, signalHandler);
 	while (true)
 	{
 		ready_sockets = current_sockets;
 		ready_clients = current_clients;
 		int fds = 0;
-		if ((fds = select(max_fd + 1, &ready_sockets, &ready_clients, NULL, NULL)) < 0) // max_fd 1024
-			std::cerr << "webserv: [warn]: handle_socket: Failed to select: " << strerror(errno) << std::endl;
-		if (fds > 0)
+		if ((fds = select(max_fd + 1, &ready_sockets, &ready_clients, NULL, NULL)) < 0)
+		{
+			if (g_exit == false)
+				std::cerr << "webserv: [warn]: handle_socket: Failed to select: " << strerror(errno) << std::endl;
+		}
+		if (fds > 0 && g_exit == false)
 		{
 			try
-			{
+				{
 				for (int i = 0; i < max_fd + 1; i++)
 				{
 					if (FD_ISSET(i, &ready_sockets))
@@ -137,7 +140,7 @@ int handle_socket(std::vector<Server> &servers)
 				std::cerr << "webserv: [warn]: handle_socket: " << e.what() << std::endl;
 			}
 		}
-		if (isExit == true)
+		if (g_exit == true)
 			break;
 	}
 	wait_finish(sockets, clients, threads);

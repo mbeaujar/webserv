@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 	{
 		servers = parser(argv[1]);
 		check_doublon_port(servers);
-		debug(servers);
+		// debug(servers);
 		handle_socket(servers);
 	}
 	catch (std::exception &e)
@@ -152,6 +152,8 @@ void printserver(Server &a)
 		std::cout << std::endl;
 		if (it2->second.get_fastcgi() != "")
 			std::cout << "\t- fastcgi: " << it2->second.get_fastcgi() << std::endl;
+		if (it2->second.get_max_body() != -1)
+			std::cout << "\t- max_body: " << it2->second.get_max_body() << std::endl;
 		std::pair<int, std::string> g = it2->second.get_return();
 		if (g.first >= 0)
 			std::cout << "\t- return : " << g.first << " " << g.second << "\n";

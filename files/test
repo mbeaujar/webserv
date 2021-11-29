@@ -2,7 +2,6 @@
 server {
 	listen 80;
 
-	#client_max_body_size 100;
 
 	location / {
 		method GET;

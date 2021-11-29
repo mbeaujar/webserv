@@ -126,7 +126,7 @@ Location search_location(std::string path, Server const &server)
 	return tmp;
 }
 
-Location find_location(Request &request, Server const &server, int method)
+Location find_location(Request & request, Server const & server, int method)
 {
 	Location location;
 

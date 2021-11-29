@@ -8,7 +8,7 @@ std::string path_to_file(Request &request, Location &location, int method)
 	{
 		if (is_directory(path))
 		{
-			if (path[path.length() - 1] != '/')
+			if (path.length() > 1 && path[path.length() - 1] != '/')
 				path.insert(path.end(), '/');
 			std::vector<std::string> index = location.get_index();
 			std::vector<std::string>::iterator it = index.begin(), ite = index.end();

@@ -3,9 +3,10 @@ server {
 	listen 80;
 
 	location / {
-		autoindex on;
 		method GET;
+		autoindex on;
 		root /var/www/html;
+		index index.html;
 	}
 }
 

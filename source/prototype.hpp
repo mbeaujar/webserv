@@ -24,12 +24,11 @@ Location 			parse_location(std::string file);
 
 // -------------- config/directives
 
-int					skip_word_request(std::string file, int i);
-int 				skip_word_exception(std::string file, int i);
-int					skip_bracket(std::string file, int i);
-int					skip_comment(std::string file, int i);
-int					skip_space(std::string file, int i);
-int					skip_word(std::string file, int i);
+int 				skip_word_exception(std::string & file, int i);
+int					skip_bracket(std::string & file, int i);
+int					skip_comment(std::string & file, int i);
+int					skip_space(std::string & file, int i);
+int					skip_word(std::string & file, int i);
 int					parse_autoindex(std::string file, int i, Location &a);
 int 				parse_client_size(std::string file, int i, Location &a);
 int					parse_error_page(std::string file, int i, Server &a);
@@ -43,7 +42,7 @@ int 				parse_root(std::string file, int i, Location &a);
 int 				parse_upload(std::string file, int i, Location &a);
 int 				parse_fastcgi(std::string file, int i, Location &a);
 int 				parse_fastcgi_extension(std::string file, int i, Location &a);
-int					recup_nb(std::string file, int & i);
+int					recup_nb(std::string & file, int & i);
 
 
 // -------------------------------- socket 
