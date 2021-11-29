@@ -94,17 +94,17 @@ int 			method_post(Server const & server, Request & request, int client_socket);
 
 // --------- utils.cpp
 
-bool file_exist(std::string filename);
-bool is_directory(std::string path);
-int set_file_content(std::string & filename, std::string &content);
-std::string get_file_content(std::string filename);
-std::string cut_filename(std::string path);
-std::string cut_path(std::string path);
-int remove_file(char const *path);
-std::string path_in_common(std::string location, std::string & path);
-Location search_location(std::string path, Server const &server);
-Location find_location(Request &request, Server const &server, int method);
-bool is_extension(std::string & path, std::string extension);
+bool 			file_exist(std::string filename);
+bool 			is_directory(std::string path);
+int 			set_file_content(std::string & filename, std::string &content);
+std::string 	get_file_content(std::string filename);
+std::string 	cut_filename(std::string path);
+std::string 	cut_path(std::string path);
+int 			remove_file(char const *path);
+std::string 	path_in_common(std::string location, std::string & path);
+Location 		search_location(std::string path, Server const &server);
+Location 		find_location(Request &request, Server const &server, int method);
+bool 			is_extension(std::string & path, std::string extension);
 
 // ---------------------- Template
 
