@@ -1,8 +1,8 @@
 POST / HTTP/1.1
-Host: localhost:80
+Host: localhost:8081
 User-Agent: Go-http-client/1.1
-Transfer-Encoding: chunked
 Content-Type: test/file
+Content-Length: 10
 Accept-Encoding: gzip
 
-0
+lolololola

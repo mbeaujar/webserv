@@ -16,7 +16,7 @@ void lower_file(std::string & request)
 	{
 		if (request[i] >= 'A' && request[i] <= 'Z')
 			request[i] += 32;
-		if (request[i] == ':')
+		if (request[i] == ':' ||request[i] == ' ')
 		{
 			while (request[i] && request[i] != '\n')
 				i++;
@@ -46,7 +46,7 @@ std::string recup_word(std::string & request, int & i)
 	return word;
 }
 
-void	get_first_line(std::string & request, Request & r)
+void	get_first_line(std::string & request, Request & r, Server const & server)
 {
 	int i = 0;
 	std::string word;
@@ -59,11 +59,19 @@ void	get_first_line(std::string & request, Request & r)
 	else if (word == "get")
 		r.set_method(GET);
 	else
+	{
+		int j = i;
+		std::pair<Location, std::string> a = search_location(recup_word(request, j), server);
+		s_method tmp = a.first.get_methods();
+		r.set_methods(tmp);
 		r.set_error(std::make_pair(405, "Method not allowed"));
+	}
 	word = recup_word(request, i);
+	if (word.length() > 1 && word[word.length() - 1] == '/')
+		word.erase(--word.end());
 	r.set_path(word);
 	word = recup_word(request, i);
-	if (word != "http/1.1")
+	if (word != "HTTP/1.1")
 	{
 		std::cerr << "webserv: [warn]: get_first_line: Bad HTTP version: " << word << std::endl;
 		r.set_error(std::make_pair(400, "Bad request"));
@@ -81,14 +89,14 @@ void	get_first_line(std::string & request, Request & r)
 	}
 }
 
-Request parse_header(std::string request)
+Request parse_header(std::string request, Server const & server)
 {
 	int i = 0;
 	int host = 0;
 	Request r;
 
 	lower_file(request);
-	get_first_line(request, r);
+	get_first_line(request, r, server);
 	r.set_content_length(-1);
 	while (request[i])
 	{
@@ -135,7 +143,7 @@ Request parse_header(std::string request)
 	if (r.get_host().empty() || host > 1)
 	{
 		std::cerr << "webserv: [warn]: parse_header: none or too many Host field" << std::endl;
-		std::cerr << request << std::endl;
+		// std::cerr << request << std::endl;
 		r.set_error(std::make_pair(400, "Bad request"));
 		return r;
 	}
@@ -145,6 +153,7 @@ Request parse_header(std::string request)
 		r.set_error(std::make_pair(400, "Bad request"));
 		return r;
 	}
+	// print_request(r);
 	return r;
 }
 

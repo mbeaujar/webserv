@@ -29,7 +29,8 @@ int read_body(int client_socket, int client_max_body_size, int file_fd, int cont
 		memset(buffer, 0, BUFFERSIZE);
 		if (total_size + BUFFERSIZE <= content_length && total_size + BUFFERSIZE <= client_max_body_size)
 		{
-			msgsize = read(client_socket, buffer, BUFFERSIZE);
+			// msgsize = read(client_socket, buffer, BUFFERSIZE);
+			msgsize = recv(client_socket, buffer, BUFFERSIZE, 0);
 		}
 		else
 		{
@@ -38,7 +39,8 @@ int read_body(int client_socket, int client_max_body_size, int file_fd, int cont
 			{ // si on depasse client max
 				int size = client_max_body_size - total_size;
 
-				msgsize = read(client_socket, buffer, size);
+				// msgsize = read(client_socket, buffer, size);
+				msgsize = recv(client_socket, buffer, size, 0);
 			}
 			else
 			{
@@ -46,7 +48,8 @@ int read_body(int client_socket, int client_max_body_size, int file_fd, int cont
 				{ // si on depasse content length
 					int size = content_length - total_size;
 
-					msgsize = read(client_socket, buffer, size);
+					// msgsize = read(client_socket, buffer, size);
+					msgsize = recv(client_socket, buffer, size, 0);
 				}
 				else
 				{
@@ -56,7 +59,8 @@ int read_body(int client_socket, int client_max_body_size, int file_fd, int cont
 					else
 						size = content_length - total_size;
 
-					msgsize = read(client_socket, buffer, size);
+					// msgsize = read(client_socket, buffer, size);
+					msgsize = recv(client_socket, buffer, size, 0);
 				}
 			}
 		}
@@ -71,37 +75,39 @@ int read_body(int client_socket, int client_max_body_size, int file_fd, int cont
 	return EXIT_SUCCESS;
 }
 
-int convert_hexa(std::string str)
-{
-
-	int i = 0;
-	int res = 0;
-
-	while (str[i] && ((str[i] >= '0' && str[i] <= '9') || (str[i] >= 'a' && str[i] <= 'z')))
-	{
-		res *= 16;
-		res += str[i] < 58 ? str[i] - 48 : str[i] - 87;
-		i++;
-	}
-	return res;
-}
-
-std::string read_chunked_length(int client_socket)
+int read_chunked_length(int client_socket)
 {
 	std::string buffer;
 	char buff;
+	int nb = 0;
 	int ret = 1;
 
 	while (ret)
 	{
-		ret = read(client_socket, &buff, 1);
-		if (ret == 0)
-			return buffer;
-		if (buff == '\n')
-			return buffer;
-		buffer.insert(buffer.end(), buff);
+		// ret = read(client_socket, &buff, 1);
+		ret = recv(client_socket, &buff, 1, 0);
+		if (ret <= 0 || buff == '\n' || buff == '\r') {
+			if (buff == '\r')
+			{
+				recv(client_socket, &buff, 1, 0);
+				if (buff != '\n')
+				{
+					std::cerr << "PROBLEM CHUNKED" << std::endl;
+				}
+			}
+			return nb;
+		}
+		if ((buff >= '0' && buff <= '9') || (buff >= 'a' && buff <= 'f'))
+		{
+			nb *= 16;
+			if (buff < 58)
+				nb += (buff - 48);
+			else
+				nb += (buff - 87);
+		}
 	}
-	return buffer;
+	// std::cout << "RES: " << nb << std::endl;
+	return nb;
 }
 
 // read chuncked
@@ -121,10 +127,10 @@ int read_body_chunked(int client_socket, int client_max_body_size, int file_fd)
 	}
 	while (true)
 	{
-		// while (read(client_socket, buffer, 0) < 0)
-		// 	;
-		std::string hexa_length = read_chunked_length(client_socket);
-		int nb = convert_hexa(hexa_length);
+		// std::string hexa_length = read_chunked_length(client_socket);
+		// std::cout << "HEXA: " << hexa_length << std::endl;
+		// int nb = convert_hexa(hexa_length);
+		int nb = read_chunked_length(client_socket);
 		if (nb == 0)
 		{
 			// probleme read
@@ -146,7 +152,8 @@ int read_body_chunked(int client_socket, int client_max_body_size, int file_fd)
 			memset(buffer, 0, BUFFERSIZE);
 			if (total_size + BUFFERSIZE <= nb && total_size + BUFFERSIZE <= client_max)
 			{
-				msgsize = read(client_socket, buffer, BUFFERSIZE);
+				// msgsize = read(client_socket, buffer, BUFFERSIZE);
+				msgsize = recv(client_socket, buffer, BUFFERSIZE, 0);
 			}
 			else
 			{
@@ -154,7 +161,8 @@ int read_body_chunked(int client_socket, int client_max_body_size, int file_fd)
 				{ // si on depasse client max
 					int size = client_max - total_size;
 
-					msgsize = read(client_socket, buffer, size);
+					// msgsize = read(client_socket, buffer, size);
+					msgsize = recv(client_socket, buffer, size, 0);
 				}
 				else
 				{
@@ -162,7 +170,8 @@ int read_body_chunked(int client_socket, int client_max_body_size, int file_fd)
 					{ // si on depasse content length
 						int size = nb - total_size;
 
-						msgsize = read(client_socket, buffer, size);
+						// msgsize = read(client_socket, buffer, size);
+						msgsize = recv(client_socket, buffer, size, 0);
 					}
 					else
 					{
@@ -173,7 +182,8 @@ int read_body_chunked(int client_socket, int client_max_body_size, int file_fd)
 						}
 						else
 							size = nb - total_size;
-						msgsize = read(client_socket, buffer, size);
+						// msgsize = read(client_socket, buffer, size);
+						msgsize = recv(client_socket, buffer, size, 0);
 					}
 				}
 			}
@@ -217,11 +227,16 @@ int parse_post(Server const & server, Request & request, int client_socket)
 	Location location;
 	int fd;
 
-
+	if (request.get_content_length() > -1 && request.get_content_type() == "chunked")
+	{
+		request.set_error(std::make_pair(400, "Bad request"));
+		return EXIT_FAILURE;
+	}
 	tmp_file = ".post_" + to_string(client_socket);
 	location = find_location(request, server, POST);
 	if (ISERROR(request.get_error().first))
 	{
+		std::cerr << "webserv: [warn]: parse_post: can't find location" << std::endl;
 		return EXIT_FAILURE;
 	}
 
@@ -229,6 +244,7 @@ int parse_post(Server const & server, Request & request, int client_socket)
 	path = path_to_file(request, location, POST);
 	if (ISERROR(request.get_error().first))
 	{
+		std::cerr << "webserv: [warn]: parse_post: can't find path" << std::endl;
 		return EXIT_FAILURE;
 	}
 
@@ -239,6 +255,7 @@ int parse_post(Server const & server, Request & request, int client_socket)
 		if (path_upload(path, location.get_upload()) == false)
 		{
 			// code erreur si on peux pas upload ??
+			std::cerr << "webserv: [warn]: parse_post: path upload does not exist" << std::endl;
 			return EXIT_FAILURE;
 		}
 	}
@@ -252,7 +269,7 @@ int parse_post(Server const & server, Request & request, int client_socket)
 			path += location.get_index()[0];
 	}
 
-	if ((fd = open(tmp_file.c_str(), O_CREAT | O_RDWR, S_IRWXU)) == -1)
+	if ((fd = open(tmp_file.c_str(), O_CREAT | O_RDWR, S_IRWXO)) == -1)
 	{
 		std::cerr << "webserv: [warn]: parse_post: can't open: " << tmp_file << std::endl;
 		request.set_error(std::make_pair(500, "Internal Server Error"));
@@ -264,6 +281,7 @@ int parse_post(Server const & server, Request & request, int client_socket)
 		if (read_body(client_socket, location.get_max_body(), fd, request.get_content_length()))
 		{
 			request.set_error(std::make_pair(500, "Internal Server Error"));
+			std::cerr << "webserv: [warn]: parse_post: can't read body" << std::endl;
 			remove_file(tmp_file.c_str());
 			close(fd);
 			return EXIT_FAILURE;
@@ -274,6 +292,7 @@ int parse_post(Server const & server, Request & request, int client_socket)
 		if (read_body_chunked(client_socket, location.get_max_body(), fd))
 		{
 			request.set_error(std::make_pair(500, "Internal Server Error"));
+			std::cerr << "webserv: [warn]: parse_post: can't read body chunked" << std::endl;
 			remove_file(tmp_file.c_str());
 			close(fd);
 			return EXIT_FAILURE;
@@ -287,6 +306,7 @@ int parse_post(Server const & server, Request & request, int client_socket)
 		if (file_exist(location.get_fastcgi()) == false)
 		{
 			request.set_error(std::make_pair(502, "Bad Gateway"));
+			std::cerr << "webserv: [warn]: parse_post: file does not exist" << std::endl;
 			remove_file(tmp_file.c_str());
 			close(fd);
 			return EXIT_FAILURE;

@@ -37,7 +37,6 @@ std::string parse_get(Request &request, Server const &server, int client_socket)
 	std::string html, response, path;
 	Location location;
 
-	std::cerr << "OUI" << std::endl;
 	location = find_location(request, server, GET);
 	redirect = location.get_return();
 	if (ISERROR(request.get_error().first))

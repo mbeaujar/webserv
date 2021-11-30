@@ -55,7 +55,7 @@ std::string get_last_modified(std::string path)
 	return date;
 }
 
-std::string header(Request &request)
+std::string header(Request & request)
 {
 	std::string header;
 	std::pair<int, std::string> redirect = request.get_return();

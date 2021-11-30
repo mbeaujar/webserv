@@ -1,5 +1,5 @@
 #include "../socket.hpp"
-#include <pthread.h>
+#include <csignal>
 
 void send_response(Request &request, std::string body, int client_socket, Server const &server)
 {
@@ -15,10 +15,18 @@ void send_response(Request &request, std::string body, int client_socket, Server
 
 	response.append(body);
 	std::cerr << std::endl;
-	std::cerr << "RESPONSE: " << std::endl
-			  << response << std::endl;
+	std::cerr << "RESPONSE: " << std::endl;
+	std::cerr << response << std::endl;
 	std::cerr << "------------------------------------------------------" << std::endl;
-	write(client_socket, response.c_str(), response.length());
+	// write(client_socket, response.c_str(), response.length());
+	if (send(client_socket, response.c_str(), response.length(), MSG_CONFIRM) == -1)
+	{
+		std::cerr << "webserv: [warn]: send_response: can't write to client" << std::endl;
+	}
+	if (shutdown(client_socket, SHUT_RDWR) == -1)
+	{
+		std::cerr << "webserv: [warn]: send_response: shutdown can't shut client and socket" << std::endl;
+	}
 	close(client_socket);
 }
 

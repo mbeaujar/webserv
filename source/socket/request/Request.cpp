@@ -10,6 +10,7 @@ Request::Request() :
 	_transfer_encoding(),
 	_error(200, "OK"),
 	_return(-1, ""),
+	_methods(),
 	_date() {}
 
 Request::Request(Request const & src)
@@ -22,6 +23,7 @@ Request::Request(Request const & src)
 	  _transfer_encoding(src._transfer_encoding),
 	  _error(src._error),
 	  _return(src._return),
+	  _methods(),
 	  _date(src._date) {}
 
 Request::~Request() {}
@@ -29,16 +31,17 @@ Request::~Request() {}
 Request & Request::operator=(Request const & rhs) {
     if (this != &rhs)
     {
-        this->_host              = rhs._host;
-        this->_method            = rhs._method;
-        this->_path              = rhs._path;
-		this->_query_string		 = rhs._query_string;
-        this->_content_length    = rhs._content_length;
-        this->_content_type      = rhs._content_type;
-		this->_transfer_encoding = rhs._transfer_encoding;
-		this->_error             = rhs._error;
-		this->_return            = rhs._return;
-		this->_date              = rhs._date;
+        this->_host             	= rhs._host;
+        this->_method           	= rhs._method;
+        this->_path             	= rhs._path;
+		this->_query_string			= rhs._query_string;
+        this->_content_length   	= rhs._content_length;
+        this->_content_type     	= rhs._content_type;
+		this->_transfer_encoding	= rhs._transfer_encoding;
+		this->_error            	= rhs._error;
+		this->_return           	= rhs._return;
+		this->_methods				= rhs._methods;
+		this->_date             	= rhs._date;
     }
     return *this;
 }

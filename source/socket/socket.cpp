@@ -13,14 +13,19 @@ void wait_finish(std::map<int, Server> &sockets, std::map<int, Server *> &client
 		pthread_join(*it, NULL);
 		++it;
 	}
-	release_fds(sockets);
 	release_fds(clients);
+	release_fds(sockets);
 }
 
 void signalHandler(int signum)
 {
 	std::cout << "\nInterrupt signal (" << signum << ") received.\n";
 	g_exit = true;
+}
+
+void signalPipeHandle(int signum)
+{
+	(void)signum;
 }
 
 /**
@@ -80,7 +85,6 @@ int handle_socket(std::vector<Server> &servers)
 			release_fds(sockets);
 			return EXIT_FAILURE;
 		}
-		fcntl(it->first, F_SETFL, O_NONBLOCK);
 		if (it->first > max_fd)
 			max_fd = it->first;
 		FD_SET(it->first, &current_sockets);
@@ -88,6 +92,7 @@ int handle_socket(std::vector<Server> &servers)
 	}
 	g_exit = false;
 	signal(SIGINT, signalHandler);
+	signal(SIGPIPE, signalPipeHandle);
 	while (true)
 	{
 		ready_sockets = current_sockets;

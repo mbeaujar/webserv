@@ -5,7 +5,7 @@ s_method::s_method()
 	  m_post(false),
 	  m_delete(false) {}
 
-s_method::s_method(s_method const &copy)
+s_method::s_method(s_method const & copy)
 	: m_get(copy.m_get),
 	  m_post(copy.m_post),
 	  m_delete(copy.m_delete) {} 

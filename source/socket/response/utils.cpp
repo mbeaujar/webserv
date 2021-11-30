@@ -84,29 +84,29 @@ std::string path_in_common(std::string location, std::string & path)
 {
 	int len = 0;
 
+	if (location == path)
+		return location;
 	while (path[len] && location[len] && path[len] == location[len])
 		len++;
 	if (path[len] != '/' && path.length() != location.length())
 	{
 		while (len > 0 && path[len] != '/')
-			len--;
+			--len;
 	}
 	return path.substr(0, len);
 }
 
-// path conerie.ali
-
-Location search_location(std::string path, Server const &server)
+std::pair<Location, std::string> search_location(std::string path, Server const &server)
 {
-	Location tmp;
-	std::string longuest_path = "/";
 	std::map<std::string, Location> all = server.get_all_location();
 	std::map<std::string, Location>::iterator it = all.begin(), ite;
-	tmp.set_return(1, "fuck le p-word");
-
+	std::pair<Location, std::string> tmp;
+	tmp.first.set_return(1, "fuck le p-word");
+	tmp.second = "/";
+	 
 	if ((ite = all.find("/")) != all.end())
 	{
-		tmp = ite->second;
+		tmp.first = ite->second;
 		ite = all.end();
 	}
 	while (it != ite)
@@ -114,39 +114,66 @@ Location search_location(std::string path, Server const &server)
 		std::string common = path_in_common(it->first, path);
 		if (is_extension(path, it->first))
 		{
-			return tmp = it->second;
+			tmp.first = it->second;
+			tmp.second = common;
+			return tmp;
 		}
-		if (common.length() > longuest_path.length())
+		if (common.length() > tmp.second.length())
 		{
-			tmp = it->second;
-			longuest_path = common;
+			tmp.first = it->second;
+			tmp.second = common;
 		}
 		++it;
 	}
 	return tmp;
 }
 
+std::string export_new_path(std::string & root, std::string & request, std::string & common)
+{
+	int i = 0;
+
+	while (request[i] && common[i] && request[i] == common[i])
+		++i;
+	if (request[i] && common[i] && request[i] != common[i])
+	{
+		while (i > 0 && request[i] && request[i] != '/')
+			--i;
+		++i;
+	}
+	return root + request.substr(i, request.length() - i);
+}
+
+// /directory/index.html - path -> /index.html
+
+// /var/www/html/YoupiBanane - root // root + path -> /var/www/html/YoupiBanane/index.html
+
+// /directory/ - pair.second
+
 Location find_location(Request & request, Server const & server, int method)
 {
-	Location location;
+	std::pair<Location, std::string> pair;
 
-	if ((location = search_location(request.get_path(), server)).get_return().first == 1)
+	if ((pair = search_location(request.get_path(), server)).first.get_return().first == 1)
 	{
 		std::cerr << "Error: Can't find a location for the path" << std::endl;
 		request.set_error(std::make_pair(404, "Not Found"));
-		return location;
+		return pair.first;
 	}
-	// check si la method delete est autorisé
-	if (location.get_method(method) == false)
+	if (pair.first.get_method(method) == false)
 	{
-		struct s_method m = location.get_methods();
+		struct s_method m = pair.first.get_methods();
 		request.set_methods(m);
 		request.set_error(std::make_pair(405, "Method Not Allowed"));
 		std::cerr << "webserv: [warn]: find_location: Method not allowed" << std::endl;
-		return location;
+		return pair.first;
 	}
-	request.set_path(location.get_root() + request.get_path());
-	return location;
+	std::string root = pair.first.get_root();
+	std::string path = request.get_path();
+	// std::string rr = export_new_path(root, path, pair.second);
+	request.set_path(export_new_path(root, path, pair.second));
+	// request.set_path(pair.first.get_root() + request.get_path());
+	// std::cerr << "path -> " << request.get_path() << std::endl;
+	return pair.first;
 }
 
 bool is_extension(std::string & path, std::string extension)

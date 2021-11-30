@@ -7,12 +7,12 @@
  * @param server_socket 
  * @return int 
  */
-int accept_new_connection(int server_socket)
+int		accept_new_connection(int server_socket)
 {
 	int addr_size = sizeof(SA_IN);
 	int client_socket;
 	SA_IN client_addr;
-	if ((client_socket = accept(server_socket, (SA *)&client_addr, (socklen_t *)&addr_size)) == -1)
+	if ((client_socket = accept(server_socket, reinterpret_cast<SA*>(&client_addr), reinterpret_cast<socklen_t *>(&addr_size))) == -1)
 		std::cerr << "accept failed" << std::endl;
 	return client_socket;
 }
@@ -24,7 +24,7 @@ int accept_new_connection(int server_socket)
  * @param limit 	client_max_body_size
  * @return char* 	content of the header
  */
-char *read_header(int client_socket, int &msgsize)
+char	*read_header(int client_socket, int &msgsize)
 {
 	int bytes_read;
 	char *buffer;
@@ -38,18 +38,18 @@ char *read_header(int client_socket, int &msgsize)
 		std::cerr << "webserv: [warn]: read_header: " << e.what() << std::endl;
 		return NULL;
 	}
+	FIX_BROKEN_PIPE;
 	memset(buffer, 0, BUFFERSIZE);
-	while ((bytes_read = read(client_socket, &buffer[msgsize], 1)) > 0)
+	while ((bytes_read = recv(client_socket, &buffer[msgsize], 1, 0)) > 0)
 	{
 		msgsize += bytes_read;
 		if (msgsize > BUFFERSIZE - 1)
 			break;
 		if (msgsize > 4 && buffer[msgsize - 1] == '\n' && (strcmp(buffer + (msgsize - 1) - 1, "\n\n") == 0 || strcmp(buffer + (msgsize - 1) - 3, "\r\n\r\n") == 0))
-		{ // stop at blank line
 			break;
-		}
 	}
-	buffer[msgsize] = 0; // a test
+	if (msgsize <= BUFFERSIZE - 1)
+		buffer[msgsize] = 0; // a test
 	return buffer;
 }
 
@@ -69,8 +69,6 @@ void *connections_error(Request &r, Server &server, int client_socket)
 	return NULL;
 }
 
-
-
 void *parse_connections(void *arg)
 {
 	Thread *t;
@@ -87,7 +85,7 @@ void *parse_connections(void *arg)
 		return connections_error(r, t->server, t->client_socket);
 	}
 
-	if (strlen(buffer) == 0)
+	if (buffer && strlen(buffer) == 0)
 	{
 		std::cerr << "webserv: [warn]: handle_connections: empty header in the request" << std::endl;
 		delete[] buffer;
@@ -104,7 +102,9 @@ void *parse_connections(void *arg)
 	}
 	try
 	{
-		r = parse_header(buffer);
+		std::cout << "Header Request: " << std::endl;
+		std::cout << buffer << std::endl;
+		r = parse_header(buffer, t->server);
 	}
 	catch (std::exception &e)
 	{

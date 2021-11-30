@@ -1,13 +1,14 @@
 
 server {
-	listen 80;
+	listen 8081;
 
 	location / {
-		method GET;
 		autoindex on;
 		root /var/www/html;
 		index index.html;
+		upload /var/www/html/upload;
 	}
+
 }
 
 

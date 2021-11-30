@@ -1,5 +1,5 @@
-#ifndef __S_METHOD_HPP__
-# define __S_METHOD_HPP__
+#ifndef _S_METHOD_HPP_
+# define _S_METHOD_HPP_
 
 struct s_method {
 	s_method();

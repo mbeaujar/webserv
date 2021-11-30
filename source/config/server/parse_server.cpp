@@ -69,6 +69,8 @@ Server config_server(std::string file)
 				throw std::invalid_argument("duplicate location \"" + path + "\"");
 			int skip = skip_bracket(file, i);
 			std::string location = file.substr(i, skip - (i - 1));
+			if (path.length() > 1 && path[path.length()-1] == '/')
+				path.erase(--path.end());
 			a.adding_location(path, parse_location(location));
 			i = skip + 1;
 		} else if (file[i] && !isspace(file[i]) && file[i] != '#' && file[i] != '}')
