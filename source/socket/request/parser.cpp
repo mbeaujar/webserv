@@ -26,7 +26,7 @@ void lower_file(std::string & request)
 	}
 }
 
-int fuck_ali(std::string & file, int i) {
+int skip_the_word(std::string & file, int i) {
 	while (file[i] && !isspace(file[i]))
 		i++;
 	return i;
@@ -40,7 +40,7 @@ std::string recup_word(std::string & request, int & i)
 	int tmp;
 	std::string word;
 
-	tmp = fuck_ali(request, i);
+	tmp = skip_the_word(request, i);
 	word = request.substr(i, tmp - i);
 	i = skip_space(request, tmp);
 	return word;
@@ -118,8 +118,8 @@ Request parse_header(std::string request, Server const & server)
 			i += 19;
 			while (request[i] && request[i] != '\n')
 			{
-				r.add_transfer_encoding(request.substr(i, fuck_ali(request, i) - i));
-				i = fuck_ali(request, i);
+				r.add_transfer_encoding(request.substr(i, skip_the_word(request, i) - i));
+				i = skip_the_word(request, i);
 				if (request[i] != '\n')
 					i++;
 			}

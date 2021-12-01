@@ -26,9 +26,8 @@ bool is_directory(std::string path)
 
 int set_file_content(std::string & filename, std::string &content)
 {
-	std::ofstream file;
+	std::ofstream file(filename.c_str(), std::ios_base::app);
 
-	file.open(filename.c_str());
 	if (file.is_open() == false)
 		return EXIT_FAILURE;
 	file << content;
@@ -72,11 +71,11 @@ std::string cut_path(std::string path)
 	return path.substr(0, i);
 }
 
-int remove_file(char const *path)
+int remove_file(char const * path)
 {
 	int ret = remove(path);
 	if (ret == -1)
-		std::cerr << "Error: remove fail for path: " << path << std::endl;
+		std::cerr << "webserv: [warn]: remove_file: remove fail for path: " << path << std::endl;
 	return ret;
 }
 
@@ -101,7 +100,7 @@ std::pair<Location, std::string> search_location(std::string path, Server const 
 	std::map<std::string, Location> all = server.get_all_location();
 	std::map<std::string, Location>::iterator it = all.begin(), ite;
 	std::pair<Location, std::string> tmp;
-	tmp.first.set_return(1, "fuck le p-word");
+	tmp.first.set_return(1, "fuck le a-word");
 	tmp.second = "/";
 	 
 	if ((ite = all.find("/")) != all.end())
@@ -140,6 +139,9 @@ std::string export_new_path(std::string & root, std::string & request, std::stri
 			--i;
 		++i;
 	}
+	int len = root.length();
+	if (len > 1 && request[i] != '/' && root[len - 1] != '/')
+		root.push_back('/'); 
 	return root + request.substr(i, request.length() - i);
 }
 
@@ -169,10 +171,7 @@ Location find_location(Request & request, Server const & server, int method)
 	}
 	std::string root = pair.first.get_root();
 	std::string path = request.get_path();
-	// std::string rr = export_new_path(root, path, pair.second);
 	request.set_path(export_new_path(root, path, pair.second));
-	// request.set_path(pair.first.get_root() + request.get_path());
-	// std::cerr << "path -> " << request.get_path() << std::endl;
 	return pair.first;
 }
 

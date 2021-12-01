@@ -22,10 +22,10 @@
 # define SA_IN6	struct sockaddr_in6
 # define SA_IN	struct sockaddr_in
 # define SA		struct sockaddr
-# define BUFFERSIZE 8192
+# define BUFFERSIZE 1024
 # define BACKLOG SOMAXCONN
-# define FUCKALI 1000
-# define FIX_BROKEN_PIPE usleep(FUCKALI)
+# define TIME 1000
+# define FIX_BROKEN_PIPE usleep(TIME)
 
 # define ISERROR(x) (x >= 400) // HTTP code > 400 is a error
 # define ISREDIRECT(x) (x != -1) // No redirection is -1
@@ -93,6 +93,11 @@ std::string 	parse_cgi(Request &request, std::string response);
 // --------- post.cpp
 
 int 			method_post(Server const & server, Request & request, int client_socket);
+
+// --------- read_post.cpp
+
+int				read_body(int client_socket, int client_max_body_size, int file_fd, int content_length);
+int				read_body_chunked(int client_socket, int client_max_body_size, int file_fd);
 
 // --------- utils.cpp
 

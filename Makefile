@@ -33,11 +33,12 @@ SRCS  =	main.cpp \
 		socket/response/autoindex.cpp \
 		socket/response/call_cgi.cpp \
 		socket/response/create.cpp \
+		socket/response/delete.cpp \
 		socket/response/get.cpp \
+		socket/response/header.cpp \
 		socket/response/parse_cgi.cpp \
 		socket/response/post.cpp \
-		socket/response/header.cpp \
-		socket/response/delete.cpp \
+		socket/response/read_post.cpp \
 		socket/response/utils.cpp \
 		socket/connections.cpp \
 		socket/create.cpp \

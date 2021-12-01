@@ -31,7 +31,7 @@ char	*read_header(int client_socket, int &msgsize)
 
 	try
 	{
-		buffer = new char[BUFFERSIZE];
+		buffer = new char[1024];
 	}
 	catch (std::exception &e)
 	{
@@ -39,16 +39,16 @@ char	*read_header(int client_socket, int &msgsize)
 		return NULL;
 	}
 	FIX_BROKEN_PIPE;
-	memset(buffer, 0, BUFFERSIZE);
+	memset(buffer, 0, 1024);
 	while ((bytes_read = recv(client_socket, &buffer[msgsize], 1, 0)) > 0)
 	{
 		msgsize += bytes_read;
-		if (msgsize > BUFFERSIZE - 1)
+		if (msgsize > 1024 - 1)
 			break;
 		if (msgsize > 4 && buffer[msgsize - 1] == '\n' && (strcmp(buffer + (msgsize - 1) - 1, "\n\n") == 0 || strcmp(buffer + (msgsize - 1) - 3, "\r\n\r\n") == 0))
 			break;
 	}
-	if (msgsize <= BUFFERSIZE - 1)
+	if (msgsize <= 1024 - 1)
 		buffer[msgsize] = 0; // a test
 	return buffer;
 }
@@ -93,7 +93,7 @@ void *parse_connections(void *arg)
 		return connections_error(r, t->server, t->client_socket);
 	}
 
-	if (current_reading > BUFFERSIZE - 1)
+	if (current_reading > 1024 - 1)
 	{
 		r.set_error(std::make_pair(413, "Request Entity Too Large"));
 		delete[] buffer;

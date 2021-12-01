@@ -6,7 +6,7 @@
  */
 Location::Location()
 	: _autoindex(false),
-	  _max_body(-1),
+	  _max_body(0),
 	  _root("/var/www/html"),
 	  _index(),
 	  _method(),
