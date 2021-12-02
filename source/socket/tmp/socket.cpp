@@ -48,11 +48,6 @@ std::map<int, Server> config_socket(std::vector<Server> &servers)
 			int server_socket;
 			if (begin->ipv4)
 				server_socket = create_socket_ipv4(begin->port, BACKLOG);
-			else
-				server_socket = create_socket_ipv6(begin->port, BACKLOG);
-			it->set_current_port(begin->port);
-			sockets.insert(std::make_pair(server_socket, *it));
-			++begin;
 		}
 		++it;
 	}
@@ -148,6 +143,7 @@ int handle_socket(std::vector<Server> &servers)
 		if (g_exit == true)
 			break;
 	}
+	
 	wait_finish(sockets, clients, threads);
 	return EXIT_SUCCESS;
 }

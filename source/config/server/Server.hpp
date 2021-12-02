@@ -5,16 +5,11 @@
 # include <vector>
 # include <map>
 # include "Location.hpp"
+# include "Port.hpp"
 
-struct Port {
-	int port;
-	bool ipv4;
 
-	bool operator==(Port const & rhs);
-	bool operator<(Port const & rhs);
-};
-
-class Server {
+class Server
+{
     public:
         Server();
         Server(Server const &copy);

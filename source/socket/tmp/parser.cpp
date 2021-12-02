@@ -16,7 +16,7 @@ void lower_file(std::string & request)
 	{
 		if (request[i] >= 'A' && request[i] <= 'Z')
 			request[i] += 32;
-		if (request[i] == ':' ||request[i] == ' ')
+		if (request[i] == ':' || request[i] == ' ')
 		{
 			while (request[i] && request[i] != '\n')
 				i++;
@@ -166,18 +166,3 @@ Request parse_header(std::string request, Server const & server)
 	return r;
 }
 
-void print_request(Request &a)
-{
-
-	std::cout << "----------- Request -----------" << std::endl;
-	std::cout << " -> Host     : -> " << a.get_host() << std::endl;
-	std::cout << " -> Type     : -> " << a.get_content_type() << std::endl;
-	std::cout << " -> Path     : -> " << a.get_path() << std::endl;
-	std::cout << " -> Method   : -> " << a.get_method() << std::endl;
-	std::cout << " -> Length   : -> " << a.get_content_length() << std::endl;
-	// std::cout << " -> Encoding : -> " << a.get_transfer_encoding() << std::endl;
-	std::cout << " -> Error    : -> " << a.get_error().first << " -> " << a.get_error().second << std::endl;
-	std::cout << " -> Return   : -> " << a.get_return().first << " -> " << a.get_return().second << std::endl;
-	std::cout << " -> Query_string : -> " << a.get_query_string() << std::endl;
-	std::cout << "-------------------------------" << std::endl;
-}

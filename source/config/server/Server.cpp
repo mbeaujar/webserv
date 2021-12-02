@@ -1,15 +1,5 @@
 #include "Server.hpp"
 
-bool Port::operator==(Port const & rhs) { return port == rhs.port && ipv4 == rhs.ipv4; }
-
-bool Port::operator<(Port const & rhs) { // true nothing / false change
-	if (port != rhs.port)
-		return port < rhs.port;
-	if (ipv4 == rhs.ipv4)
-		return true;
-	return ipv4 < rhs.ipv4;
-}
-
 Server::Server()
 	:  _default_server(false),
 	  _current_port(),

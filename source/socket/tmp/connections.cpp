@@ -72,51 +72,45 @@ void *connections_error(Request &r, Server &server, int client_socket)
 void *parse_connections(void *arg)
 {
 	Thread *t;
-	int current_reading;
-	char *buffer;
-	Request r;
 
 	t = reinterpret_cast<Thread*>(arg);
-	current_reading = 0;
-	buffer = read_header(t->client_socket, current_reading);
-	if (buffer == NULL)
-	{
-		delete t;
-		return connections_error(r, t->server, t->client_socket);
-	}
 
-	if (buffer && strlen(buffer) == 0)
-	{
-		std::cerr << "webserv: [warn]: handle_connections: empty header in the request" << std::endl;
-		delete[] buffer;
-		delete t;
-		return connections_error(r, t->server, t->client_socket);
-	}
+	Request request(t->client_socket, t->server);
+	// buffer = read_header(t->client_socket, current_reading);
+	// if (buffer == NULL)
+	// {
+	// 	delete t;
+	// 	return connections_error(r, t->server, t->client_socket);
+	// }
 
-	if (current_reading > 1024 - 1)
-	{
-		r.set_error(std::make_pair(413, "Request Entity Too Large"));
-		delete[] buffer;
-		delete t;
-		return connections_error(r, t->server, t->client_socket);
-	}
+	// if (buffer && strlen(buffer) == 0)
+	// {
+	// 	std::cerr << "webserv: [warn]: handle_connections: empty header in the request" << std::endl;
+	// 	delete[] buffer;
+	// 	delete t;
+	// 	return connections_error(r, t->server, t->client_socket);
+	// }
+
+	// if (current_reading > 1024 - 1)
+	// {
+	// 	r.set_error(std::make_pair(413, "Request Entity Too Large"));
+	// 	delete[] buffer;
+	// 	delete t;
+	// 	return connections_error(r, t->server, t->client_socket);
+	// }
 	try
 	{
-		std::cout << "Header Request: " << std::endl;
-		std::cout << buffer << std::endl;
-		r = parse_header(buffer, t->server);
+		Request request(t->client_socket, t->server);         // CREATION CLASS REQUEST
 	}
 	catch (std::exception &e)
 	{
 		std::cerr << "webserv: [warn]: handle_connections: " << e.what() << std::endl;
-		delete[] buffer;
 		delete t;
-		return connections_error(r, t->server, t->client_socket);
+		return connections_error(request, t->server, t->client_socket);
 	}
-	delete[] buffer;
 	try
 	{
-		create_response(r, t->server, t->client_socket);
+		create_response(request, t->server, t->client_socket); 			// CREATION CLASS RESPONSE
 	}
 	catch (std::exception &e)
 	{

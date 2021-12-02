@@ -1,6 +1,6 @@
 #include "../socket.hpp"
 
-void method_delete(Request &request, Server const &server, int client_socket)
+void method_delete(Request & request, Server const & server, int client_socket)
 {
 	std::string path;
 	Location location;

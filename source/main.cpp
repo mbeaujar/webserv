@@ -1,26 +1,25 @@
 #include "prototype.hpp"
-#include <vector>
-#include <algorithm>
+#include "socket/Socket.hpp"
 
 void printserver(Server &a);
-void check_doublon_port(std::vector<Server> &servers);
 void debug(std::vector<Server> &servers);
 
 int main(int argc, char *argv[])
 {
 	if (argc != 2)
 	{
-		std::cerr << "number of arguments invalid"
-				  << "\n";
+		std::cerr << "number of arguments invalid" << "\n";
 		return EXIT_FAILURE;
 	}
-	std::vector<Server> servers;
 	try
 	{
+		std::vector<Server> servers;
 		servers = parser(argv[1]);
-		check_doublon_port(servers);
 		// debug(servers);
-		handle_socket(servers);
+		
+		Socket sockets;
+
+		sockets.execute(servers);
 	}
 	catch (std::exception &e)
 	{
@@ -28,44 +27,6 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 	return EXIT_SUCCESS;
-}
-
-bool is_inf(Port &a, Port &b) { return a < b; }
-
-void check_doublon_port(std::vector<Server> &servers)
-{
-	std::vector<Server>::iterator it = servers.begin(), ite = servers.end();
-	std::vector<Port> all;
-	std::vector<Port>::iterator begin, end;
-
-	while (it != ite)
-	{
-		std::vector<Port> &tmp = it->get_port();
-		if (tmp.size() == 0)
-			throw std::invalid_argument("Server without port");
-		begin = tmp.begin();
-		end = tmp.end();
-		while (begin != end)
-		{
-			all.push_back(*begin);
-			++begin;
-		}
-		++it;
-	}
-	if (all.size() == 0)
-		throw std::invalid_argument("GROS PROBLEME");
-	std::sort(all.begin(), all.end(), is_inf);
-	begin = all.begin();
-	end = all.end();
-	while (begin != end)
-	{
-		std::vector<Port>::iterator tmp1 = begin + 1;
-		if (tmp1 == end)
-			break;
-		if (*tmp1 == *begin)
-			throw std::invalid_argument("There is a doublon for the port: " + to_string(tmp1->port));
-		++begin;
-	}
 }
 
 void debug(std::vector<Server> &servers)

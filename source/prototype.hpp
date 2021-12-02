@@ -47,19 +47,9 @@ int					recup_nb(std::string & file, int & i);
 
 // -------------------------------- socket 
 
-int 				handle_socket(std::vector<Server> & servers);
 bool		is_directory(std::string path);
 bool		file_exist(std::string filename);
 
-
-
-template <typename tostring>
-std::string to_string(tostring n)
-{
-	std::ostringstream ss;
-	ss << n;
-	return ss.str();
-}
 
 template <typename T>
 void printvector(std::vector<T> &vector)

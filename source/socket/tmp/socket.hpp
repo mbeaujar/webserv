@@ -27,7 +27,7 @@
 # define SA_IN6	struct sockaddr_in6
 # define SA_IN	struct sockaddr_in
 # define SA		struct sockaddr
-# define BUFFERSIZE 1024
+# definte BUFFERSIZE 1024
 # define BACKLOG SOMAXCONN
 # define TIME 1000
 # define FIX_BROKEN_PIPE usleep(TIME)
