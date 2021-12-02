@@ -51,52 +51,27 @@ int	read_chunk_child(char *buffer, int file_fd, int msgsize)
 	if (msgsize == -1)
 		msgsize = 0;
 	buffer[msgsize] = 0;
-	std::cerr << "BUFFER chunked: " << buffer << std::endl;
 	write(file_fd, buffer, msgsize);
 	return 0;
 }
 
-void	read_for(int client_socket, int client_max_body_size, int file_fd, int content_length, char *buffer, int (*f)(char*, int, int))
+int	read_for(int client_socket, int file_fd, int content_length, char *buffer, int (*f)(char*, int, int))
 {
 	int msgsize;
+	int total_size;
 	
-	for (int total_size = 0; total_size < content_length && total_size < client_max_body_size; total_size += msgsize)
+	for (total_size = 0; total_size < content_length; total_size += msgsize)
 	{
 		msgsize = 0;
 		memset(buffer, 0, BUFFERSIZE);
-		if (total_size + BUFFERSIZE <= content_length && total_size + BUFFERSIZE <= client_max_body_size)
+		if (total_size + BUFFERSIZE < content_length)
 			msgsize = read_buffer(client_socket, &buffer, BUFFERSIZE);
 		else
-		{
-			if (total_size + BUFFERSIZE <= content_length) // si avec totale_size + buffer on depasse client max
-			{
-				int size = client_max_body_size - total_size;
-
-				msgsize = read_buffer(client_socket, &buffer, size);
-			}
-			else
-			{
-				if (total_size + BUFFERSIZE <= client_max_body_size) // si avec totale_size + buffer on depasse content length
-				{
-					int size = content_length - total_size;
-
-					msgsize = read_buffer(client_socket, &buffer, size);
-				}
-				else
-				{
-					int size; // si avec totale_size + buffer on depasse les content-length et client max body size
-					if (client_max_body_size < content_length)
-						size = client_max_body_size - total_size;
-					else
-						size = content_length - total_size;
-
-					msgsize = read_buffer(client_socket, &buffer, size);
-				}
-			}
-		}
+			msgsize = read_buffer(client_socket, &buffer, (content_length - total_size));	
 		if (f(buffer, file_fd, msgsize) == 1)
-			break;
+			break ;
 	}
+	return total_size;
 }
 
 int read_body(int client_socket, int client_max_body_size, int file_fd, int content_length)
@@ -112,11 +87,10 @@ int read_body(int client_socket, int client_max_body_size, int file_fd, int cont
 		std::cerr << "webserv: [warn]: read_body: " << e.what() << std::endl;
 		return EXIT_FAILURE;
 	}
-	if (client_max_body_size == 0)
-		client_max_body_size = content_length;
-
-	// si client_max depasse content alors content = client
-	read_for(client_socket, client_max_body_size, file_fd, content_length, buffer, read_body_child);
+	if (client_max_body_size != 0 && content_length > client_max_body_size)
+		content_length = client_max_body_size;
+	if (content_length != (read_for(client_socket, file_fd, content_length, buffer, read_body_child)))
+		std::cerr << "webserv: [warn]: read_body: read_for return" << std::endl;
 	delete[] buffer;
 	return EXIT_SUCCESS;
 }
@@ -150,6 +124,8 @@ int read_chunked_length(int client_socket)
 int read_body_chunked(int client_socket, int client_max_body_size, int file_fd)
 {
 	char *buffer;
+	int total_size;
+	int client_max;
 
 	try
 	{
@@ -160,24 +136,24 @@ int read_body_chunked(int client_socket, int client_max_body_size, int file_fd)
 		std::cerr << "webserv: [warn]: read_body_chunked: " << e.what() << std::endl;
 		return EXIT_FAILURE;
 	}
+	total_size = 0;
+	client_max = client_max_body_size;
 	while (true)
 	{
-		// std::string hexa_length = read_chunked_length(client_socket);
-		// std::cout << "HEXA: " << hexa_length << std::endl;
-		// int nb = convert_hexa(hexa_length);
 		int nb = read_chunked_length(client_socket);
-		std::cout << "NB: " << nb << std::endl;
 		if (nb == 0)
 		{
 			read_endline(client_socket);
-			break;
+			break ;
 		}
-		int client_max = client_max_body_size; // JE NE LE GERE PAS
-		if (client_max == 0)
-			client_max = nb;
-
-		read_for(client_socket, client_max, file_fd, nb, buffer, read_chunk_child);
+		if (client_max_body_size == 0)
+			client_max = total_size + nb;
+		if (total_size + nb > client_max)
+			nb = client_max - total_size;
+		total_size += read_for(client_socket, file_fd, nb, buffer, read_chunk_child);
 		read_endline(client_socket);
+		if (client_max_body_size != 0 && total_size + nb > client_max_body_size)
+			break ;
 	}
 	delete[] buffer;
 	return EXIT_SUCCESS;

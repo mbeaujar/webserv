@@ -8,14 +8,19 @@
 # include <sys/socket.h>
 # include <netinet/in.h>
 # include <arpa/inet.h>
+# include <sys/types.h>
 # include <sys/stat.h>
+# include <algorithm>
+# include <string.h>
 # include <unistd.h>
+# include <dirent.h>
 # include <fstream>
 # include <fcntl.h>
-# include <errno.h>
 # include <iomanip>
 # include <sstream>
 # include <cstring>
+# include <stdio.h>
+# include <errno.h>
 # include <cstdio>
 # include <time.h>
 
@@ -30,9 +35,9 @@
 # define ISERROR(x) (x >= 400) // HTTP code > 400 is a error
 # define ISREDIRECT(x) (x != -1) // No redirection is -1
 
-# ifndef __APPLE__
-#  define __APPLE__ 0
-# endif
+# ifndef _APPLE_
+#  define _APPLE_ 0
+# endif	/* _APPLE_ */
 
 // -------------------------------- socket
 
@@ -135,4 +140,4 @@ int release_fds(std::map<int, T> &fds)
 	return EXIT_SUCCESS;
 }
 
-#endif
+#endif /* _SOCKET_HPP_ */

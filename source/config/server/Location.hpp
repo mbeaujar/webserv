@@ -1,5 +1,5 @@
-#ifndef __LOCATION_HPP__
-# define __LOCATION_HPP__
+#ifndef _LOCATION_HPP_
+# define _LOCATION_HPP_
 
 # include <iostream>
 # include <vector>
@@ -13,7 +13,7 @@ class Location
 {
     public:
         Location();
-        Location(Location const &copy);
+        Location(Location const & copy);
         virtual ~Location();
         Location &operator=(Location const &copy);
 
@@ -24,22 +24,22 @@ class Location
 		void						set_root(std::string const & root);
 		void						set_autoindex(bool const & autoindex);
 		void						set_upload(std::string const & upload);
-		void						set_fastcgi(std::string const & fastcgi);
-		void						set_fastcgi_ext(std::string const & fastcgi_ext);
+		void						set_path_cgi(std::string const & fastcgi);
+		void						set_cgi_ext(std::string const & fastcgi_ext);
 		void						set_return(int const & code, std::string const & path);
 
-		int							get_max_body() const;
-		bool						get_autoindex() const;
-		std::string					get_root() const;
-		s_method					get_methods() const;
-        bool						get_method(int nb) const;
-		std::string					get_upload() const;
-		std::string					get_fastcgi() const;
-		std::string					get_fastcgi_ext() const;
-		std::vector<std::string>	get_index() const;
-		std::pair<int, std::string>	get_return() const;
+		int	&						get_max_body();
+		bool &						get_autoindex();
+		std::string &				get_root();
+		s_method &					get_methods();
+        bool 						get_method(int nb);
+		std::string	&				get_upload();
+		std::string	&				get_path_cgi();
+		std::string	&				get_cgi_ext();
+		std::vector<std::string> &	get_index();
+		std::pair<int, std::string>	&get_return();
 
-		bool find_index(std::string const & index) const;
+		bool  find_index(std::string const & index);
 	
 	private:
         bool 						_autoindex;
@@ -48,10 +48,10 @@ class Location
 		std::vector<std::string> 	_index;
         s_method	                _method;
 		std::string 				_upload;
-		std::string 				_fastcgi;
-		std::string					_fastcgi_ext; // fastcgi_extension
+		std::string 				_path_cgi;
+		std::string					_cgi_ext; // fastcgi_extension
 		std::pair<int, std::string> _return;
 
 };
 
-#endif
+#endif /* _LOCATION_HPP_  */

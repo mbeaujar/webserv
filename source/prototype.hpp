@@ -1,5 +1,5 @@
-#ifndef __PROTOTYPE_HPP__
-# define __PROTOTYPE_HPP__
+#ifndef _PROTOTYPE_HPP_
+# define _PROTOTYPE_HPP_
 
 # include "config/server/Server.hpp"
 # include "config/server/Location.hpp"
@@ -40,8 +40,8 @@ int 				parse_index(std::string file, int i, Location &a);
 int 				parse_listen(std::string file, int i, Server &a);
 int 				parse_root(std::string file, int i, Location &a);
 int 				parse_upload(std::string file, int i, Location &a);
-int 				parse_fastcgi(std::string file, int i, Location &a);
-int 				parse_fastcgi_extension(std::string file, int i, Location &a);
+int 				parse_cgi(std::string file, int i, Location &a);
+int 				parse_cgi_ext(std::string file, int i, Location &a);
 int					recup_nb(std::string & file, int & i);
 
 
@@ -75,4 +75,4 @@ void printvector(std::vector<T> &vector)
 	std::cout << " ]" << "\n";
 }
 
-#endif
+#endif /*  _PROTOTYPE_HPP_ */

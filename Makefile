@@ -13,8 +13,8 @@ SRCS  =	main.cpp \
 		config/directives/autoindex.cpp \
 		config/directives/client_size.cpp \
 		config/directives/error_page.cpp \
-		config/directives/fastcgi_extension.cpp \
-		config/directives/fastcgi.cpp \
+		config/directives/cgi_ext.cpp \
+		config/directives/path_cgi.cpp \
 		config/directives/index.cpp \
 		config/directives/listen.cpp \
 		config/directives/method.cpp \

@@ -11,4 +11,4 @@ struct s_method {
     bool m_delete;
 };
 
-#endif
+#endif /* _S_METHOD_HPP_ */

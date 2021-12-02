@@ -1,5 +1,5 @@
-#ifndef __SERVER_HPP__
-# define __SERVER_HPP__
+#ifndef _SERVER_HPP_
+# define _SERVER_HPP_
 
 # include <iostream>
 # include <vector>
@@ -52,4 +52,4 @@ class Server {
 		std::map<std::string, Location> _location;
 };
 
-#endif
+#endif /* _SERVER_HPP_ */

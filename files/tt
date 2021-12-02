@@ -3,9 +3,10 @@ server {
 	listen 8081;
 
 	location / {
+		method GET;
 		autoindex on;
 		root /var/www/html;
-		client_max_body_size 5m;
+		#client_max_body_size 5m;
 		index index.html;
 		upload /var/www/html/upload;
 	}

@@ -169,9 +169,8 @@ Location find_location(Request & request, Server const & server, int method)
 		std::cerr << "webserv: [warn]: find_location: Method not allowed" << std::endl;
 		return pair.first;
 	}
-	std::string root = pair.first.get_root();
-	std::string path = request.get_path();
-	request.set_path(export_new_path(root, path, pair.second));
+	std::string new_path = export_new_path(pair.first.get_root(), request.get_path(), pair.second);
+	request.set_file(new_path);
 	return pair.first;
 }
 

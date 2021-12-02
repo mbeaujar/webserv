@@ -150,8 +150,8 @@ void printserver(Server &a)
 			std::cout << "DELETE";
 		}
 		std::cout << std::endl;
-		if (it2->second.get_fastcgi() != "")
-			std::cout << "\t- fastcgi: " << it2->second.get_fastcgi() << std::endl;
+		if (it2->second.get_path_cgi() != "")
+			std::cout << "\t- fastcgi: " << it2->second.get_path_cgi() << std::endl;
 		if (it2->second.get_max_body() != -1)
 			std::cout << "\t- max_body: " << it2->second.get_max_body() << std::endl;
 		std::pair<int, std::string> g = it2->second.get_return();

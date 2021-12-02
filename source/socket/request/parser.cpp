@@ -32,9 +32,6 @@ int skip_the_word(std::string & file, int i) {
 	return i;
 }
 
-// POST / HTTP/1.1
-// Host: localhost:80
-
 std::string recup_word(std::string & request, int & i)
 {
 	int tmp;
@@ -74,7 +71,7 @@ void	get_first_line(std::string & request, Request & r, Server const & server)
 	if (word != "HTTP/1.1")
 	{
 		std::cerr << "webserv: [warn]: get_first_line: Bad HTTP version: " << word << std::endl;
-		r.set_error(std::make_pair(400, "Bad request"));
+		r.set_error(std::make_pair(505, "HTTP Version Not Supporteds"));
 	}
 	word = recup_word(request, i);
 	if (word != "host:")
@@ -93,17 +90,18 @@ Request parse_header(std::string request, Server const & server)
 {
 	int i = 0;
 	int host = 0;
+	int chunked = 0;
 	Request r;
 
 	lower_file(request);
 	get_first_line(request, r, server);
-	r.set_content_length(-1);
 	while (request[i])
 	{
 		if (request.compare(i, 15, "content-length:") == 0)
 		{
 			i += 16;
-			r.set_content_length(recup_nb(request, i));
+			int nb = recup_nb(request, i);
+			r.set_content_length(nb);
 		}
 		else if (request.compare(i, 13, "content-Type:") == 0)
 		{
@@ -118,7 +116,12 @@ Request parse_header(std::string request, Server const & server)
 			i += 19;
 			while (request[i] && request[i] != '\n')
 			{
-				r.add_transfer_encoding(request.substr(i, skip_the_word(request, i) - i));
+				std::string word = request.substr(i, skip_the_word(request, i) - i);
+				if (word != "chunked")
+				{
+					chunked = 1;
+					r.set_error(std::make_pair(501, "Not Implemented"));
+				}
 				i = skip_the_word(request, i);
 				if (request[i] != '\n')
 					i++;
@@ -139,6 +142,12 @@ Request parse_header(std::string request, Server const & server)
 			if (request[i])
 				i++;
 		}
+	}
+	if (r.get_content_length() == -1 && chunked == 0)
+	{
+		std::cerr << "webserv: [warn]: parse_header: request without content-length and chunked" << std::endl;
+		r.set_error(std::make_pair(411, "Length Required"));
+		return r;
 	}
 	if (r.get_host().empty() || host > 1)
 	{

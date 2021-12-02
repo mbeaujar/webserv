@@ -1,7 +1,7 @@
 #include "../../prototype.hpp"
 #include "../server/Location.hpp"
 
-int parse_fastcgi(std::string file, int i, Location &a)
+int parse_cgi(std::string file, int i, Location &a)
 {
 	int count = 0;
 
@@ -17,7 +17,7 @@ int parse_fastcgi(std::string file, int i, Location &a)
 			std::string word = file.substr(i, skip - i);
 			if (file_exist(word) == false)
 				throw std::invalid_argument("invalid argument in \"fastcgi\" directive, path does not exist");
-			a.set_fastcgi(word);
+			a.set_path_cgi(word);
 			i = skip;
 			count++;
 		}

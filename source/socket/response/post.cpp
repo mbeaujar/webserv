@@ -27,11 +27,6 @@ int parse_post(Server const & server, Request & request, int client_socket)
 	Location location;
 	int fd;
 
-	// if (request.get_content_length() > -1 && request.get_content_type() == "chunked")
-	// {
-	// 	request.set_error(std::make_pair(400, "Bad request"));
-	// 	return EXIT_FAILURE;
-	// }
 	tmp_file = ".post_" + to_string(client_socket);
 	location = find_location(request, server, POST);
 	if (ISERROR(request.get_error().first))
@@ -54,9 +49,11 @@ int parse_post(Server const & server, Request & request, int client_socket)
 		if (path_upload(path, location.get_upload()) == false)
 		{
 			// code erreur si on peux pas upload ??
+			
 			std::cerr << "webserv: [warn]: parse_post: path upload does not exist" << std::endl;
 			return EXIT_FAILURE;
 		}
+		request.set_error(std::make_pair(201, "Created"));
 	}
 
 	if (is_directory(path))
@@ -98,11 +95,9 @@ int parse_post(Server const & server, Request & request, int client_socket)
 		}
 	}
 
-	// if content-type: ...form... alors set request.set_query_string()
-
-	if (is_extension(path, location.get_fastcgi_ext()) == true)
+	if (is_extension(path, location.get_cgi_ext()) == true)
 	{
-		if (file_exist(location.get_fastcgi()) == false)
+		if (file_exist(location.get_path_cgi()) == false)
 		{
 			request.set_error(std::make_pair(502, "Bad Gateway"));
 			std::cerr << "webserv: [warn]: parse_post: file does not exist" << std::endl;
@@ -110,7 +105,7 @@ int parse_post(Server const & server, Request & request, int client_socket)
 			close(fd);
 			return EXIT_FAILURE;
 		}
-		response = call_cgi(request, client_socket, tmp_file, "POST", location.get_fastcgi());
+		response = call_cgi(request, client_socket, tmp_file, "POST", location.get_path_cgi());
 		if (response.empty() == true)
 			request.set_error(std::make_pair(502, "Bad Gateway"));
 		else

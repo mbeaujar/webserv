@@ -70,12 +70,17 @@ std::string header(Request & request)
 		header += "Content-Type: " + request.get_content_type() + "\r\n";
 	if (request.get_method() == GET)
 		header += "Content-length: " + to_string(request.get_content_length()) + "\r\n";
-	if (file_exist(request.get_path()))
-		header += "Last-Modified: " + get_last_modified(request.get_path()) + "\r\n";
+	if (file_exist(request.get_file()))
+		header += "Last-Modified: " + get_last_modified(request.get_file()) + "\r\n";
 	if (request.get_error().first == 405)
 		header += "Allow:" + allow_method(request) + "\r\n";
-	if (redirect.first != -1)
-		header += "Location: " + redirect.second + "\r\n";
+	if (redirect.first != -1 || request.get_error().first == 201)
+	{
+		if (redirect.first != -1)
+			header += "Location: " + redirect.second + "\r\n";
+		else
+			header += "Location: " + request.get_path() + "\r\n";
+	}
 	header += "\r\n"; // blank line
 	return header;
 }

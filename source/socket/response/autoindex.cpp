@@ -1,12 +1,4 @@
 #include "../socket.hpp"
-#include <sys/types.h>
-#include <dirent.h>
-#include <algorithm>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <string.h>
-#include <stdio.h>
-#include <errno.h>
 // opendir readir
 
 // echange si a < b
@@ -17,7 +9,7 @@ bool dirent_comp(struct dirent *a, struct dirent *b)
 	return false;
 }
 
-std::string current_host(std::string const &host, int const &port)
+std::string current_host(std::string const & host, int const & port)
 {
 	int i = 0;
 	while (host[i] && host[i] != ':')
@@ -27,7 +19,7 @@ std::string current_host(std::string const &host, int const &port)
 	return host + ":" + to_string(port);
 }
 
-std::string clear_dirname(std::string const &dirname, std::string const &root)
+std::string clear_dirname(std::string const & dirname, std::string const & root)
 {
 	int i = 0;
 	while (dirname[i] && dirname[i] == root[i])
@@ -35,7 +27,7 @@ std::string clear_dirname(std::string const &dirname, std::string const &root)
 	return dirname.substr(i, dirname.length() - i);
 }
 
-std::string get_data(std::string const &path_to_file, std::string const &filename, std::string const &file)
+std::string get_data(std::string const & path_to_file, std::string const & filename, std::string const & file)
 {
 	std::vector<std::string> words;
 	int x = 0, pos = 0;
@@ -59,7 +51,7 @@ std::string get_data(std::string const &path_to_file, std::string const &filenam
 	return words[0] + "-" + words[1] + "-" + words[2] + " " + words[3];
 }
 
-std::string put_file_name(std::string file, bool const &is_dir)
+std::string put_file_name(std::string file, bool const & is_dir)
 {
 	file += (is_dir == true ? "/" : "");
 	if (file.length() > 49)
@@ -82,7 +74,7 @@ off_t file_size(const char *filename)
 	return 0;
 }
 
-std::string get_file_size(std::string const &path_to_file, std::string const &file, bool const &is_dir)
+std::string get_file_size(std::string const & path_to_file, std::string const & file, bool const & is_dir)
 {
 	if (is_dir == true)
 		return "-";
@@ -92,7 +84,7 @@ std::string get_file_size(std::string const &path_to_file, std::string const &fi
 
 std::string put_space(std::string space) { return std::string(20 - space.length() < 0 ? 0 : 20 - space.length(), ' ') + space; }
 
-std::string put_space_data(std::string const &path_to_file, std::string const &filename, std::string const &file, bool const &is_dir)
+std::string put_space_data(std::string const & path_to_file, std::string const & filename, std::string const & file, bool const & is_dir)
 {
 	std::string space, size;
 	int len = 51 - filename.length();
@@ -104,12 +96,12 @@ std::string put_space_data(std::string const &path_to_file, std::string const &f
 	return space + get_data(path_to_file, filename, file) + put_space(size) + "\n";
 }
 
-std::string create_element(struct dirent *file, std::string const &dir_name, std::string const &root, bool const &is_dir, std::string const &host, int const &port)
+std::string create_element(struct dirent *file, std::string const & dir_name, std::string const & root, bool const & is_dir, std::string const & host, int const & port)
 {
 	return "<a href= \"http://" + current_host(host, port) + clear_dirname(dir_name, root) + file->d_name + "\">" + put_file_name(file->d_name, is_dir) + "</a>" + put_space_data(dir_name, put_file_name(file->d_name, is_dir), file->d_name, is_dir);
 }
 
-std::string create_list_element(std::vector<struct dirent *> &list, std::string const &dir_name, std::string const &root, bool const &is_dir, std::string const &host, int const &port)
+std::string create_list_element(std::vector<struct dirent *> & list, std::string const & dir_name, std::string const & root, bool const & is_dir, std::string const & host, int const & port)
 {
 	std::string response;
 
@@ -123,7 +115,7 @@ std::string create_list_element(std::vector<struct dirent *> &list, std::string 
 	return response;
 }
 
-std::string listing(std::string const &path, std::string const &root, std::string const &host, int const &port)
+std::string listing(std::string const & path, std::string const & root, std::string const & host, int const & port)
 {
 	std::string response;
 	std::string dir_name = path;
@@ -157,7 +149,7 @@ std::string listing(std::string const &path, std::string const &root, std::strin
 	return response;
 }
 
-std::string autoindex_on(std::string const &path, std::string const &root, std::string const &host, int const &port)
+std::string autoindex_on(std::string const & path, std::string const & root, std::string const & host, int const & port)
 {
 	std::string response;
 	std::string path_to_dir = path;

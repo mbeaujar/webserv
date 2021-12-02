@@ -51,11 +51,11 @@ Location parse_location(std::string file)
             i = parse_method(file, i, a);
         } else if (file.compare(i, 8, "fastcgi ") == 0) {
 			i += 7;
-			i = parse_fastcgi(file, i, a);
+			i = parse_cgi(file, i, a);
 			cgi++;
 		} else if (file.compare(i, 17, "fastcgi_extension") == 0) {
 			i += 17;
-			i = parse_fastcgi_extension(file, i, a);
+			i = parse_cgi_ext(file, i, a);
 			cgi_ext++;
 		} else if (file.compare(i, 6, "upload") == 0) {
 			i += 6;

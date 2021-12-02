@@ -1,7 +1,7 @@
 #include "../../prototype.hpp"
 #include "../server/Location.hpp"
 
-int parse_fastcgi_extension(std::string file, int i, Location &a)
+int parse_cgi_ext(std::string file, int i, Location &a)
 {
 	int count = 0;
 
@@ -17,7 +17,7 @@ int parse_fastcgi_extension(std::string file, int i, Location &a)
 			std::string word = file.substr(i, skip - i);
 			if (word[0] != '.')
 				throw std::invalid_argument("invalid argument in \"fastcgi_extension\" directive");
-			a.set_fastcgi_ext(word);
+			a.set_cgi_ext(word);
 			i = skip;
 			count++;
 		}

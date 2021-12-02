@@ -9,7 +9,8 @@ void send_response(Request &request, std::string body, int client_socket, Server
 	error = request.get_error();
 	if (ISERROR(error.first))
 		body = create_error(to_string(error.first) + " " + error.second, server, error.first);
-	request.set_content_length(body.length());
+	int len = body.length();
+	request.set_content_length(len);
 
 	response = header(request);
 

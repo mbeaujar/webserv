@@ -2,14 +2,12 @@
 
 std::string path_to_file(Request &request, Location &location, int method)
 {
-	std::string path = request.get_path();
+	std::string const & path = request.get_file();
 
 	if (file_exist(path))
 	{
 		if (is_directory(path))
 		{
-			if (path.length() > 1 && path[path.length() - 1] != '/')
-				path.insert(path.end(), '/');
 			std::vector<std::string> index = location.get_index();
 			std::vector<std::string>::iterator it = index.begin(), ite = index.end();
 			while (it != ite)
@@ -60,9 +58,9 @@ std::string parse_get(Request &request, Server const &server, int client_socket)
 	{
 		response = autoindex_on(path, location.get_root(), request.get_host(), server.get_current_port());
 	}
-	else if (is_extension(path, location.get_fastcgi_ext()) == true)
+	else if (is_extension(path, location.get_cgi_ext()) == true)
 	{
-		response = call_cgi(request, client_socket, path, "GET", location.get_fastcgi());
+		response = call_cgi(request, client_socket, path, "GET", location.get_path_cgi());
 		if (response.empty() == true)
 		{
 			request.set_error(std::make_pair(502, "Bad Gateway"));
