@@ -2,13 +2,15 @@
 
 Post::Post() {}
 
-Post::Post(Post const & src) {
+Post::Post(Post const & src)
+{
     *this = src;
 }
 
 Post::~Post() {}
 
-Post & Post::operator=(Post const & rhs) {
+Post & Post::operator=(Post const & rhs)
+{
     if (this != &rhs)
     {
 

@@ -1,7 +1,6 @@
 #include "Autoindex.hpp"
 
-Autoindex::Autoindex(std::string const & path, std::string const & root, std::string const & host, int const & port) :
-    _response()
+Autoindex::Autoindex(std::string const & path, std::string const & root, std::string const & host, int const & port)
 {
     this->autoindex_on(path, root, host, port);
 }

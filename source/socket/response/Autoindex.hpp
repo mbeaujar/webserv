@@ -4,6 +4,8 @@
 # include <iostream>
 # include <dirent.h>
 # include <vector>
+# include "../proto.hpp"
+# include <cstring>
 
 class Autoindex
 {
@@ -15,7 +17,7 @@ class Autoindex
         Autoindex & operator=(Autoindex const & rhs);
 
     private:
-        std::string     _reponse;
+        std::string     _response;
 
         off_t       file_size(const char *filename);
         std::string put_space(std::string space);

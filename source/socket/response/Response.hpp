@@ -1,35 +1,45 @@
 #ifndef _RESPONSE_HPP_
 # define _RESPONSE_HPP_
 
-# include <string>
-# include <iostream>
 # include "../request/Request.hpp"
 # include "../../config/server/Server.hpp"
 # include "../proto.hpp"
+# include "AMethods.hpp"
+# include "Post.hpp"
+# include "Get.hpp"
+# include "Delete.hpp"
+
+# include <string>
+# include <iostream>
+# include <sys/stat.h>
+# include <cstring>
 
 class Response
 {
     public:
-        // Canonical
-        Response(int client_socket, Request & request, Server & server);
+        Response(int & client_socket, Request & request, Server & server);
         Response(Response const & copy);
         virtual ~Response();
         Response & operator=(Response const & rhs);
 	
-        // Methods
 		void execute(void);
 
-        std::string header(Request & request);
-        std::string allow_method(Request &request);
-		
-
-		// which methods
-
 	private:
-		int &			_client_socket;
+		int &	_client_socket;
 		Request & 		_request;
 		Server & 	_server;
+		std::string _response;
+		AMethods* _method;
+		size_t		_content_length;
 
+
+		void create_method(int & method);
+		void send_response(void);
+		std::string get_hour_date(void);
+		std::string get_last_modified(std::string & path);
+		std::string error_html(void);
+        void create_header(void);
+        std::string allow_method(void);
 };
 
 #endif /* _RESPONSE_HPP_ */

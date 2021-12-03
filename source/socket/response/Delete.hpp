@@ -8,14 +8,12 @@
 class Delete : public AMethods
 {
     public:
-        // Canonical
-        Delete();
+        Delete(Server & server, Request & request, int & client_socket);
         Delete(Delete const & copy);
         virtual ~Delete();
         Delete & operator=(Delete const & rhs);
 
-        // Methods
-        std::string execute(Server const & server, Request & request);
+        void execute(void);
 
 };
 

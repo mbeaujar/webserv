@@ -14,33 +14,33 @@ Request::Request(int & client_socket, Server const & server) :
     _content_type(),
 	_methods(),
 	_error(200, "OK"),
-	_return(-1, "") 
-	{
-		int len = 0;
-		char *header = this->read_header(client_socket);
+	_return(-1, "")
+{
+	int len = 0;
+	char *header = this->read_header(client_socket);
 
-		if (header)
-			len = strlen(header);
-		
-		if (header == NULL)
-		{
-			std::cerr << "webserv: [warn]: class Request: Constructor: can't read header request" << std::endl;
-			this->set_error(std::make_pair(500, "Internal Server Error"));
-		}
-		else if (header && len == 0)
-		{
-			std::cerr << "webserv: [warn]: class Request: Constructor: empty header in the request" << std::endl;
-			this->set_error(std::make_pair(400, "Bad Request"));
-		}
-		else if (len > MAX_LEN - 1)
-		{
-			std::cerr << "webserv: [warn]: class Request: Constructor: header in the request too large" << std::endl;
-			this->set_error(std::make_pair(413, "Request Entity Too Large"));
-		}
-		else 
-			parse_header(header, server);
-		delete [] header;
+	if (header)
+		len = strlen(header);
+	
+	if (header == NULL)
+	{
+		std::cerr << "webserv: [warn]: class Request: Constructor: can't read header request" << std::endl;
+		this->set_error(std::make_pair(500, "Internal Server Error"));
 	}
+	else if (header && len == 0)
+	{
+		std::cerr << "webserv: [warn]: class Request: Constructor: empty header in the request" << std::endl;
+		this->set_error(std::make_pair(400, "Bad Request"));
+	}
+	else if (len > MAX_LEN - 1)
+	{
+		std::cerr << "webserv: [warn]: class Request: Constructor: header in the request too large" << std::endl;
+		this->set_error(std::make_pair(413, "Request Entity Too Large"));
+	}
+	else 
+		parse_header(header, server);
+	delete [] header;
+}
 
 Request::Request(Request const & src) :
   	_method(src._method),
@@ -57,7 +57,8 @@ Request::Request(Request const & src) :
 
 Request::~Request() {}
 
-Request & Request::operator=(Request const & rhs) {
+Request & Request::operator=(Request const & rhs)
+{
     if (this != &rhs)
     {
         this->_method           	= rhs._method;
@@ -103,7 +104,7 @@ std::string &				Request::get_query_string() { return _query_string; }
 std::string &				Request::get_content_type() { return _content_type; }
 std::string & 				Request::get_path() { return _path; }
 struct s_method	&			Request::get_methods() { return _methods; }
-std::string const & 		Request::get_file() { return _file; }
+std::string  & 				Request::get_file() { return _file; }
 std::pair<int, std::string> &Request::get_error() { return _error; }
 std::pair<int, std::string> &Request::get_return() { return _return; }
 
@@ -116,7 +117,7 @@ int Request::find_query_string(std::string & request, int i)
 	return i;
 }
 
-void Request::lower_file(std::string & request)
+void lower_file(std::string & request)
 {
 	int i = 0;
 	while (request[i])
@@ -154,6 +155,7 @@ void	Request::get_first_line(std::string & request, Server const & server)
 {
 	int i = 0;
 	std::string word;
+	(void)server;
 
 	word = recup_word(request, i);
 	if (word == "delete")
@@ -279,7 +281,7 @@ void Request::parse_header(std::string request, Server const & server)
 				i++;
 		}
 	}
-	if (this->get_content_length() == -1 && chunked == 0)
+	if (_method == POST && _content_length == -1 && chunked == 0)
 	{
 		std::cerr << "webserv: [warn]: class Request: parse_header: request without content-length and chunked" << std::endl;
 		this->set_error(std::make_pair(411, "Length Required"));

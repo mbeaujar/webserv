@@ -2,11 +2,14 @@
 # define _REQUEST_HPP_
 
 # include <iostream>
-# include "../../config/server/Location.hpp"
+# include "../../config/server/Server.hpp"
 # include <unistd.h>
 # include <sys/socket.h>
+# include <stdlib.h>
 # define MAX_LEN 8192
 # define FIX_BROKEN_PIPE usleep(TIME)
+
+void lower_file(std::string & request);
 
 class Request
 {
@@ -39,7 +42,7 @@ class Request
 		std::string	&	            get_query_string();
         std::string	&	            get_content_type();
         struct s_method	&           get_methods();
-		std::string const &         get_file();
+		std::string &         		get_file();
         std::pair<int, std::string> &get_error();
         std::pair<int, std::string> &get_return();
 
@@ -60,7 +63,6 @@ class Request
         
         int         skip_the_word(std::string & file, int i);
         int         find_query_string(std::string & request, int i);
-        void        lower_file(std::string & request);
         void        get_first_line(std::string & request, Server const & server);
         std::string recup_word(std::string & request, int & i);
 		char*		read_header(int client_socket);

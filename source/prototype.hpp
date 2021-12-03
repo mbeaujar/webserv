@@ -11,8 +11,6 @@
 # define GET    1
 # define POST   2
 
-std::string get_last_modified(std::string path);
-
 // -------------------------------- config
 
 std::vector<Server>	parser(const char *filename);

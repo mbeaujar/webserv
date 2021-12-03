@@ -14,7 +14,7 @@ class Post : public AMethods
 
         // Methods
         int set_file_content(std::string & filename, std::string &content);
-        virtual std::string execute(Server const & server, Request & request);
+        virtual void execute(void);
 
 };
 

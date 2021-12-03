@@ -11,32 +11,32 @@
 class AMethods 
 {
 	public:
-		// Canonical
-		AMethods(int method);
+		AMethods(Server & server, Request & request, int method, int & client_socket);
 		AMethods(AMethods const &copy);
 		virtual ~AMethods();
 		AMethods & operator=(AMethods const & rhs);
 
-		// Methods
-		bool	method_allowed(int & request_method) const;
-		bool		search_location(std::string const & path, Server const & server);
-		virtual std::string execute(Server const & server, Request & request) const = 0;
+		virtual void execute(void) = 0;
+		int		search_location(void);
+		bool is_method_allowed(void);
+		std::string & get_body(void);
 
-		// Setters
-		void			set_method(int const & method);
-		void			set_path_file(std::string const & path_file);
-		void			set_location(Location const & location);
+	private:
+		std::string path_in_common(std::string const & path_location, std::string & path);
+		void 		update_path_file(void);
+		int		path_to_file(void);
+		bool		path_upload(void);
 
-		// Getters
-		int &			get_method();
-		Location &		get_location();
-		std::string &	get_path_file();
-		
 	protected:
 		int		 	_method;
-		Location	_location;
+		Location*	_location;
 		std::string _path_file;
-
+		Server & 	_server;
+		Request & 	_request;
+		int		&	_client_socket;
+		std::string _body;
+	
+		bool 		is_extension(std::string & path, std::string const & extension);
 };
 
 #endif /* _AMETHODS_HPP_ */

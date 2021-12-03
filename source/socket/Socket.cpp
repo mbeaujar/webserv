@@ -34,7 +34,7 @@ Socket::~Socket()
 
 	while (it != ite)
 	{
-		pthread_join(*it, NULL);
+		pthread_join(*it, NULL); // block if there is a thread with a infinite loop
 		++it;
 	}
 	this->release_fds(_clients);
@@ -137,7 +137,7 @@ int Socket::config_sockets(std::vector<Server> &servers)
 				server_socket = this->create_socket_ipv4(begin->port, BACKLOG);
 			else
 				server_socket = this->create_socket_ipv6(begin->port, BACKLOG);
-			it->set_current_port(begin->port);
+			it->set_current_port(begin->port); // ???????????????????????????????????????????????????????????
 			if (server_socket == -1)
 			{
 				std::cerr << "webserv: [emerg]: class Socket: config_sockets: can't create socket" << std::endl;
@@ -257,7 +257,8 @@ void *handle_connection(void *a)
 		Request request(t->client_socket, t->server);
 		if (ISERROR(request.get_error().first) == false)
 		{
-			// Response a;
+			Response a(t->client_socket, request, t->server);
+			a.execute();
 		}
 	}
 	catch(const std::exception& e)

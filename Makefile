@@ -26,23 +26,18 @@ SRCS  =	main.cpp \
 		config/server/s_method.cpp \
 		config/server/parse_location.cpp \
 		config/server/parse_server.cpp \
+		config/server/Port.cpp \
 		config/server/Server.cpp \
 		config/parser.cpp \
-		socket/request/parser.cpp \
 		socket/request/Request.cpp \
-		socket/response/autoindex.cpp \
-		socket/response/call_cgi.cpp \
-		socket/response/create.cpp \
-		socket/response/delete.cpp \
-		socket/response/get.cpp \
-		socket/response/header.cpp \
-		socket/response/parse_cgi.cpp \
-		socket/response/post.cpp \
-		socket/response/read_post.cpp \
+		socket/response/AMethods.cpp \
+		socket/response/Cgi.cpp \
+		socket/response/Delete.cpp \
+		socket/response/Get.cpp \
+		socket/response/Response.cpp \
 		socket/response/utils.cpp \
-		socket/connections.cpp \
-		socket/create.cpp \
-		socket/socket.cpp \
+		socket/signal.cpp \
+		socket/Socket.cpp \
 		socket/Thread.cpp 
 
 OBJS = $(addprefix .objs/, $(SRCS:.cpp=.o))

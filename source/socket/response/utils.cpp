@@ -17,21 +17,21 @@ bool file_exist(std::string filename)
 	return false;
 }
 
-int skip_space(std::string & file, int i) {
-	while (file[i] && isspace(file[i]))
-		i++;
-	return i;
-}
+// int skip_space(std::string & file, int i) {
+// 	while (file[i] && isspace(file[i]))
+// 		i++;
+// 	return i;
+// }
 
-int recup_nb(std::string & file, int & i) {
-	int port = 0;
+// int recup_nb(std::string & file, int & i) {
+// 	int port = 0;
 
-	while (isdigit(file[i])) {
-		port = (port * 10) +  (file[i] - 48);
-		i++;
-	}
-	return port;
-}
+// 	while (isdigit(file[i])) {
+// 		port = (port * 10) +  (file[i] - 48);
+// 		i++;
+// 	}
+// 	return port;
+// }
 
 bool is_directory(std::string path)
 {
@@ -58,22 +58,20 @@ bool is_directory(std::string path)
 // }
 
 // // VIRE
-std::string & get_file_content(std::string filename)
+std::string get_file_content(std::string filename)
 {
-	std::string content;
 	std::ifstream file;
 
 	file.open(filename.c_str());
-	if (file.is_open() == false)
+	if (file.is_open() == true)
 	{
-		std::cerr << "Error: can't open the file: " << filename << std::endl;
-		return content; // == return ""
+		std::ostringstream contents;
+		contents << file.rdbuf();
+		file.close();
+		return contents.str();
 	}
-	std::ostringstream contents;
-	contents << file.rdbuf();
-	file.close();
-	content = contents.str();
-	return content;
+	std::cerr << "Error: can't open the file: " << filename << std::endl;
+	return "";
 }
 
 std::string path_filename(std::string path)

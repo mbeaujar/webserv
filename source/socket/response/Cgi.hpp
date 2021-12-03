@@ -31,14 +31,15 @@ class Cgi
 		std::string 	_query_string;
 		std::string		_path_file_in;
 		std::string		_path_file_out;
+		std::string		_body;
 
 		void free_tab(char **tab, int len);
 		char* strdup(std::string const & s1);
 		int create_argv(void);
 		int create_envp(int & method);
 		int create_file(std::string name);
-		std::string error(Request & request, std::string reason);
-		std::string & parse(Request & request, int & client_socket);
+		std::string &  error(Request & request, std::string reason);
+		void parse(Request & request, int & client_socket);
 		std::string parse_cgi(Request &request, std::string response);
 		void parse_header(Request &request, std::string header);
 		void parse_status(Request &request, std::string error);

@@ -3,7 +3,10 @@
 
 # include "../config/server/Server.hpp"
 # include "request/Request.hpp"
+# include "response/Response.hpp"
 # include "Thread.hpp"
+# include "proto.hpp"
+
 # include <iostream>
 # include <sys/select.h>
 # include <vector>
@@ -12,7 +15,7 @@
 # include <fcntl.h>
 # include <unistd.h>
 # include <cstring>
-#include <sys/types.h>
+# include <sys/types.h>
 # include <netinet/in.h>
 # include <arpa/inet.h>
 # include <errno.h>
@@ -23,7 +26,6 @@
 # define SA		struct sockaddr
 # define BUFFERSIZE 1024
 # define BACKLOG SOMAXCONN
-# define ISERROR(x) (x >= 400)
 
 extern bool g_exit;
 

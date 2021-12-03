@@ -1,19 +1,22 @@
 #ifndef _GET_HPP_
 # define _GET_HPP_
 
-#include "AMethods.hpp"
+# include "AMethods.hpp"
+# include "Response.hpp"
+# include "Autoindex.hpp"
+# include "../proto.hpp"
+# include "Cgi.hpp"
 
 class Get : public AMethods
 {
     public:
         // Canonical
-        Get();
+        Get(Server & server, Request & request, int & client_socket);
         Get(Get const & copy);
         virtual ~Get();
         Get & operator=(Get const & rhs);
 
-        // Methods
-        std::string execute(Server const & server, Request & request);
+        void execute(void);
 	
 	private:
 

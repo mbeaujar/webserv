@@ -127,6 +127,10 @@ std::pair<Location, std::string> search_location(std::string path, Server const 
 	return tmp;
 }
 
+// root = loc root
+// request = req path
+// common = _path_file
+
 std::string export_new_path(std::string & root, std::string & request, std::string & common)
 {
 	int i = 0;
@@ -171,7 +175,7 @@ Location find_location(Request & request, Server const & server, int method)
 		std::cerr << "webserv: [warn]: find_location: Method not allowed" << std::endl;
 		return pair.first;
 	}
-	std::string new_path = export_new_path(pair.first.get_root(), request.get_path(), pair.second);
+	std::string new_path = export_new_path(pair.first.get_root(), request.get_path(), pair.second); // root + path
 	request.set_file(new_path);
 	return pair.first;
 }

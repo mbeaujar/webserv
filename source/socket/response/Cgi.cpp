@@ -9,7 +9,8 @@ Cgi::Cgi() :
 	_content(),
 	_path_cgi(),
 	_path_file_in(),
-	_path_file_out() {}
+	_path_file_out(),
+	_body() {}
 
 Cgi::Cgi(Cgi const & copy) :
     _pid(copy._pid),
@@ -20,7 +21,8 @@ Cgi::Cgi(Cgi const & copy) :
 	_content(copy._content),
 	_path_cgi(copy._path_cgi),
 	_path_file_in(copy._path_file_in),
-	_path_file_out(copy._path_file_out) {}
+	_path_file_out(copy._path_file_out),
+	_body(copy._body) {}
 
 Cgi::~Cgi()
 {
@@ -35,7 +37,8 @@ Cgi::~Cgi()
 }
 
 
-Cgi & Cgi::operator=(Cgi const & copy) {
+Cgi & Cgi::operator=(Cgi const & copy)
+{
     if (this != &copy)
     {
 		_pid = copy._pid;
@@ -47,11 +50,12 @@ Cgi & Cgi::operator=(Cgi const & copy) {
 		_path_cgi = copy._path_cgi;
 		_path_file_in = copy._path_file_in;
 		_path_file_out = copy._path_file_out;
+		_body = copy._body;
     }
     return *this;
 }
 
-std::string & Cgi::execution(Request & request, int method, int & client_socket, std::string & path_in)
+std::string & Cgi::execute(Request & request, int method, int & client_socket, std::string & path_in)
 {
 	int status;
 	bool ret;
@@ -70,7 +74,7 @@ std::string & Cgi::execution(Request & request, int method, int & client_socket,
 	_pid = fork();
 	if (_pid == -1)
 		return this->error(request, "can't create child process");
-	if (pid == 0)
+	if (_pid == 0)
 	{
 		dup2(_fd_in, 0);
 		dup2(_fd_out, 1);
@@ -78,7 +82,8 @@ std::string & Cgi::execution(Request & request, int method, int & client_socket,
 		exit(EXIT_FAILURE);
 	}
 	waitpid(_pid, &status, 0);
-	return this->parse(request, client_socket);
+	this->parse(request, client_socket);
+	return _body;
 }
 
 // ------------------------ PRIVATE --------------------------- //
@@ -190,35 +195,34 @@ int Cgi::create_envp(int & method)
 int Cgi::create_file(std::string name)
 {
 	if (file_exist(name))
-		remove_file(name);
+		remove_file(name.c_str());
 	int fd = open(name.c_str(), O_CREAT | O_RDWR, S_IRWXO);
 	if (fd == -1)
 		std::cerr << "webserv: [warn]: class Cgi: Method create_file: can't create file: "<< name << '\n';
 	return fd;
 }
 
-std::string Cgi::error(Request & request, std::string reason)
+std::string & Cgi::error(Request & request, std::string reason)
 {
 	request.set_error(std::make_pair(502, "Bad Gateway"));
 	std::cerr << "webserv: [warn]: class Cgi: Method execution: " << reason << '\n';
-	return "";
+	return request.get_query_string();
 }
 
-std::string & Cgi::parse(Request & request, int & client_socket)
+void Cgi::parse(Request & request, int & client_socket)
 {
 	std::string & content = get_file_content(".post_" + to_string(client_socket));
 
 	int len = this->header_size(content);
 	std::string header = content.substr(0, len);
-	std::string body = content.substr(len, content.length() - len);
+	_body = content.substr(len, content.length() - len);
 
 	lower_file(header);
-	parse_header(request, header);
-	return body;
+	this->parse_header(request, header);
 }
 
 
-int Cgi::header_size(std::string response)
+int Cgi::header_size(std::string & response)
 {
 	int i = 0;
 	while (response[i])
