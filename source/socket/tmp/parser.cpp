@@ -5,7 +5,7 @@
 int find_query_string(std::string & request, int i)
 {
 	while (request[i] && request[i] != '?')
-		i++;
+		++i;
 	return i;
 }
 
@@ -19,16 +19,16 @@ void lower_file(std::string & request)
 		if (request[i] == ':' || request[i] == ' ')
 		{
 			while (request[i] && request[i] != '\n')
-				i++;
+				++i;
 		}
 		if (request[i])
-			i++;
+			++i;
 	}
 }
 
 int skip_the_word(std::string & file, int i) {
 	while (file[i] && !isspace(file[i]))
-		i++;
+		++i;
 	return i;
 }
 
@@ -108,7 +108,7 @@ Request parse_header(std::string request, Server const & server)
 			i += 14;
 			int tmp = i;
 			while (request[i] && request[i] != '\n')
-				i++;
+				++i;
 			r.set_content_type(request.substr(tmp, i - tmp));
 		}
 		else if (request.compare(i, 18, "transfer-encoding:") == 0)
@@ -124,7 +124,7 @@ Request parse_header(std::string request, Server const & server)
 				}
 				i = skip_the_word(request, i);
 				if (request[i] != '\n')
-					i++;
+					++i;
 			}
 		}
 		else if (request.compare(i, 5, "date:") == 0)
@@ -132,15 +132,15 @@ Request parse_header(std::string request, Server const & server)
 			i += 5;
 			int tmp = i;
 			while (request[i] && request[i] != '\n')
-				i++;
+				++i;
 			r.set_date(request.substr(tmp, i - tmp));
 		}
 		else
 		{
 			while (request[i] && request[i] != '\n')
-				i++;
+				++i;
 			if (request[i])
-				i++;
+				++i;
 		}
 	}
 	if (r.get_content_length() == -1 && chunked == 0)

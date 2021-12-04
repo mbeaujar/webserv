@@ -25,6 +25,6 @@ int parse_method(std::string file, int i, Location &a)
 		}
 	}
 	if (file[i] == ';')
-		i++;
+		++i;
 	return i;
 }

@@ -13,7 +13,7 @@ bool path_upload(std::string path, std::string upload)
 		return false;
 	int i = 0;
 	while (upload[i] && upload[i] == path[i])
-		i++;
+		++i;
 	if (upload[i])
 		return false;
 	return true;

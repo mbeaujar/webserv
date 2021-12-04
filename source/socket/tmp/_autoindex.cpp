@@ -9,21 +9,11 @@ bool dirent_comp(struct dirent *a, struct dirent *b)
 	return false;
 }
 
-std::string current_host(std::string const & host, int const & port)
-{
-	int i = 0;
-	while (host[i] && host[i] != ':')
-		i++;
-	if (host[i] == ':')
-		return host;
-	return host + ":" + to_string(port);
-}
-
 std::string clear_dirname(std::string const & dirname, std::string const & root)
 {
 	int i = 0;
 	while (dirname[i] && dirname[i] == root[i])
-		i++;
+		++i;
 	return dirname.substr(i, dirname.length() - i);
 }
 

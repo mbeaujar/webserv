@@ -28,8 +28,8 @@ void Get::execute(void)
 		{
 			if (is_directory(_path_file) == true && _location->get_autoindex() == true)
 			{
-				// Autoindex a;
-				// body = a.execute();
+				Autoindex a(_path_file, _request.get_path(), _request.get_host(), this->get_port());
+				_body = a.get_content();
 			}
 			else if (is_extension(_path_file, _location->get_cgi_ext()) == true)
 			{

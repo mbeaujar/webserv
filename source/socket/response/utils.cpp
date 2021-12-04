@@ -19,7 +19,7 @@ bool file_exist(std::string filename)
 
 // int skip_space(std::string & file, int i) {
 // 	while (file[i] && isspace(file[i]))
-// 		i++;
+// 		++i;
 // 	return i;
 // }
 
@@ -28,7 +28,7 @@ bool file_exist(std::string filename)
 
 // 	while (isdigit(file[i])) {
 // 		port = (port * 10) +  (file[i] - 48);
-// 		i++;
+// 		++i;
 // 	}
 // 	return port;
 // }

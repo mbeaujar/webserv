@@ -16,7 +16,7 @@ int parse_client_size(std::string file, int i, Location &a)
 			if (max_size == -1 && isdigit(file[i])) {
 				max_size = recup_nb(file, i);
 				if (file[i] == 'm' || file[i] == 'M')
-					i++;
+					++i;
 			} else 
 				throw std::invalid_argument("\"client_max_body_size\" directive invalid value");
 		}
@@ -27,6 +27,6 @@ int parse_client_size(std::string file, int i, Location &a)
 		throw std::invalid_argument("invalid number of arguments in \"client_max_body_size\"");
 	a.set_max_body(max_size);
 	if (file[i] == ';')
-		i++;
+		++i;
 	return i;
 }

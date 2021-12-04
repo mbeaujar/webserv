@@ -37,6 +37,7 @@ class AMethods
 		std::string _body;
 	
 		bool 		is_extension(std::string & path, std::string const & extension);
+		int			get_port(void);
 };
 
 #endif /* _AMETHODS_HPP_ */

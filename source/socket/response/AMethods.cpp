@@ -169,7 +169,7 @@ bool AMethods::path_upload(void)
 		return false;
 	int i = 0;
 	while (upload[i] && _path_file[i] && upload[i] == _path_file[i])
-		i++;
+		++i;
 	if (upload[i])
 		return false;
 	return true;
@@ -188,5 +188,19 @@ bool AMethods::is_extension(std::string & path, std::string const & extension)
 	if (extension_path == extension)
 		return true;
 	return false;
+}
+
+int AMethods::get_port(void)
+{
+	std::vector<Port> list = _server.get_port();
+	std::vector<Port>::iterator it = list.begin(), ite = list.end();
+
+	while (it != ite)
+	{
+		if (it->fd == _client_socket)
+			return it->port;
+		++it;
+	}
+	return -1;
 }
 

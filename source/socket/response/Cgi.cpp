@@ -95,7 +95,7 @@ char* Cgi::strdup(std::string const & s1)
 
 	i = 0;
 	while (s1[i])
-		i++;
+		++i;
 	try
 	{
 		s2 = new char[i + 1];
@@ -109,7 +109,7 @@ char* Cgi::strdup(std::string const & s1)
 	while (s1[i])
 	{
 		s2[i] = s1[i];
-		i++;
+		++i;
 	}
 	s2[i] = '\0';
 	return s2;
@@ -211,7 +211,7 @@ std::string & Cgi::error(Request & request, std::string reason)
 
 void Cgi::parse(Request & request, int & client_socket)
 {
-	std::string & content = get_file_content(".post_" + to_string(client_socket));
+	std::string content = get_file_content(".post_" + to_string(client_socket));
 
 	int len = this->header_size(content);
 	std::string header = content.substr(0, len);
@@ -231,7 +231,7 @@ int Cgi::header_size(std::string & response)
 			return i + 4;
 		if (response.compare(i, 2, "\n\n") == 0)
 			return i + 2;
-		i++;
+		++i;
 	}
 	return i;
 }
@@ -239,7 +239,7 @@ int Cgi::header_size(std::string & response)
 int Cgi::skip_line(std::string line, int i)
 {
 	while (line[i] && line[i] != '\n')
-		i++;
+		++i;
 	return i;
 }
 
@@ -248,10 +248,10 @@ void Cgi::parse_status(Request &request, std::string error)
 	int code, i = 0;
 
 	while (isspace(error[i]) && error[i] != '\n')
-		i++;
+		++i;
 	code = recup_nb(error, i);
 	while (isspace(error[i]) && error[i] != '\n')
-		i++;
+		++i;
 	int skip = skip_line(error, i);
 	request.set_error(std::make_pair(code, error.substr(i, skip - i)));
 }
@@ -267,7 +267,7 @@ void Cgi::parse_header(Request &request, std::string header)
 			parse_status(request, header.substr(i, skip - i));
 			i = skip;
 			if (header[i] == '\n')
-				i++;
+				++i;
 		}
 		if (header.compare(i, 14, "content-type: ") == 0)
 		{
@@ -276,7 +276,7 @@ void Cgi::parse_header(Request &request, std::string header)
 			request.set_content_type(header.substr(i, skip - i));
 			i = skip;
 			if (header[i] == '\n')
-				i++;
+				++i;
 		}
 		if (header.compare(i, 16, "content-length: ") == 0)
 		{
@@ -284,7 +284,7 @@ void Cgi::parse_header(Request &request, std::string header)
 			int code = recup_nb(header, i);
 			request.set_content_length(code);
 			if (header[i] == '\n')
-				i++;
+				++i;
 		}
 	}
 }

@@ -55,7 +55,7 @@ void Response::execute(void)
 		}
 		if (ISERROR(_request.get_error().first) == true)
 			body = this->error_html();
-		std::cerr << body << std::endl;
+		// std::cerr << body << std::endl;
 		this->create_header(); 
 		_response.append(body);
 		_content_length = body.length();
@@ -155,7 +155,7 @@ std::string Response::get_hour_date(void)
 	return date;
 }
 
-std::string Response::get_last_modified(std::string & path)
+std::string get_last_modified(std::string & path)
 {
 	struct stat stats;
 	tm *tm;
@@ -188,7 +188,7 @@ void Response::create_header(void)
 	if (_request.get_content_length() == GET)
 		_response += "Content-length: " + to_string(_content_length) + "\r\n";
 	if (file_exist(_request.get_file()) == true)
-		_response += "Last-Modified: " + this->get_last_modified(_request.get_file()) + "\r\n";
+		_response += "Last-Modified: " + get_last_modified(_request.get_file()) + "\r\n";
 	if (error.first == 405)
 		_response += "Allow: " + this->allow_method() + "\r\n";
 	if (ISREDIRECT(redirect.first) || error.first == 201)

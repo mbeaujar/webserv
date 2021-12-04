@@ -4,6 +4,7 @@
 struct Port
 {
 	int port;
+	int fd;
 	bool ipv4;
 
 	bool operator==(Port const & rhs) const;

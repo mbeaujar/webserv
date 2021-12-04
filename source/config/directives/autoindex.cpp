@@ -30,6 +30,6 @@ int	parse_autoindex(std::string file, int i, Location &a)
 	}
 	a.set_autoindex(autoindex);
 	if (file[i] == ';')
-		i++;
+		++i;
 	return i;
 }

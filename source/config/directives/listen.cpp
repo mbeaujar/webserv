@@ -52,6 +52,6 @@ int parse_listen(std::string file, int i, Server &a)
 	if (is_default == true)
 		a.set_default_server(is_default);
 	if (file[i] == ';')
-		i++;
+		++i;
 	return i;
 }

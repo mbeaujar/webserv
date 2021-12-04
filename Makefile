@@ -35,6 +35,7 @@ SRCS  =	main.cpp \
 		socket/response/Delete.cpp \
 		socket/response/Get.cpp \
 		socket/response/Response.cpp \
+		socket/response/Autoindex.cpp \
 		socket/response/utils.cpp \
 		socket/signal.cpp \
 		socket/Socket.cpp \

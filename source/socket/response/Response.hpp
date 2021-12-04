@@ -14,6 +14,8 @@
 # include <sys/stat.h>
 # include <cstring>
 
+std::string get_last_modified(std::string & path);
+
 class Response
 {
     public:
@@ -36,7 +38,6 @@ class Response
 		void create_method(int & method);
 		void send_response(void);
 		std::string get_hour_date(void);
-		std::string get_last_modified(std::string & path);
 		std::string error_html(void);
         void create_header(void);
         std::string allow_method(void);

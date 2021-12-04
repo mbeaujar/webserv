@@ -1,57 +1,117 @@
 #include "Autoindex.hpp"
+#include <algorithm>
 
-Autoindex::Autoindex(std::string const & path, std::string const & root, std::string const & host, int const & port)
+Autoindex::Autoindex(std::string & path_file, std::string & request_path, std::string const & host, int const port) :
+	_path_file(path_file),
+	_request_path(request_path),
+	_host(host),
+	_port(port),
+	_body(),
+	_dirname(),
+	_directory(),
+	_file()
 {
-    this->autoindex_on(path, root, host, port);
+	if (_request_path.length() > 1 && _request_path[_request_path.length() - 1] != '/')
+		_request_path.push_back('/');
+	if (_path_file.length() > 1 && _path_file[_path_file.length() - 1] != '/')
+		_path_file.push_back('/');
 }
 
-Autoindex::Autoindex(Autoindex const & src) { *this = src; }
+Autoindex::Autoindex(Autoindex const & copy) :
+	_path_file(copy._path_file),
+	_request_path(copy._request_path),
+	_host(copy._host),
+	_port(copy._port),
+	_body(copy._body),
+	_dirname(copy._dirname),
+	_directory(copy._directory),
+	_file(copy._file)
+{
+	if (_request_path.length() > 1 && _request_path[_request_path.length() - 1] != '/')
+		_request_path.push_back('/');
+	if (_path_file.length() > 1 && _path_file[_path_file.length() - 1] != '/')
+		_path_file.push_back('/');
+}
 
 Autoindex::~Autoindex() {}
 
-Autoindex & Autoindex::operator=(Autoindex const & rhs)
+Autoindex & Autoindex::operator=(Autoindex const & copy)
 {
-    if (this != &rhs)
+    if (this != &copy)
     {
-
+		_path_file = copy._path_file;
+		_request_path = copy._request_path;
+		// _host = copy._host; <- const can't init
+		// _port = copy._port; <- same
+		_body = copy._body;
+		_dirname = copy._dirname;
+		_directory = copy._directory;
+		_file = copy._file;
     }
     return *this;
 }
 
-// echange si a < b
-bool Autoindex::dirent_comp(struct dirent *a, struct dirent *b)
+std::string Autoindex::get_content(void)
+{
+	this->fill_lists();
+	this->create_list_element(_directory, true);
+	this->create_list_element(_file, false);
+	std::string response;
+
+	response += "<html>\n";
+	response += "<head>\n";
+	response += "<title>" + _request_path + "</title>\n";
+	response += "</head>\n";
+	response += "<body bgcolor=\"white\">\n";
+	response += "<h1>Index of " + _request_path + "</h1>\n";
+	response += "<hr>\n";
+	response += "<pre>" + _body + "</pre>";
+	response += "<hr>\n";
+	response += "</body>\n";
+	response += "</html>";
+	return response;
+}
+
+
+// ------------------------ PRIVATE --------------------- //
+
+bool dirent_comp(struct dirent *a, struct dirent *b)
 {
 	if (strcmp(a->d_name, b->d_name) <= 0)
 		return true;
 	return false;
 }
 
-std::string Autoindex::current_host(std::string const & host, int const & port)
+void Autoindex::fill_lists(void)
 {
-	int i = 0;
-	while (host[i] && host[i] != ':')
-		i++;
-	if (host[i] == ':')
-		return host;
-	return host + ":" + to_string(port);
+	DIR *dir = opendir(_path_file.c_str());
+	if (dir == NULL)
+		std::cerr << "webserv: [warn]: class Autoindex: fill_lists: can't open dir" << "\n";
+	else
+	{
+		for (dirent *for_dir = readdir(dir); for_dir != NULL; for_dir = readdir(dir))
+		{
+			if (strcmp(for_dir->d_name, "..") == 0)
+				_body += this->create_element(for_dir->d_name, true);
+			else if (strcmp(for_dir->d_name, ".") != 0)
+			{
+				if (is_directory(_path_file + for_dir->d_name))
+					_directory.push_back(for_dir);
+				else
+					_file.push_back(for_dir);
+			}
+		}
+		closedir(dir);
+	}
 }
 
-std::string Autoindex::clear_dirname(std::string const & dirname, std::string const & root)
-{
-	int i = 0;
-	while (dirname[i] && dirname[i] == root[i])
-		i++;
-	return dirname.substr(i, dirname.length() - i);
-}
-
-std::string Autoindex::get_data(std::string const & path_to_file, std::string const & filename, std::string const & file)
+std::string Autoindex::get_date(std::string & filename)
 {
 	std::vector<std::string> words;
 	int x = 0, pos = 0;
 
-	if (filename == "../")
-		return "";
-	std::string path = get_last_modified(path_to_file + file);
+	std::string path = _path_file + filename;
+	path = get_last_modified(path);
 	while (path[pos] && isdigit(path[pos]) == false)
 		pos++;
 	for (x = pos; path[pos]; pos++)
@@ -68,120 +128,63 @@ std::string Autoindex::get_data(std::string const & path_to_file, std::string co
 	return words[0] + "-" + words[1] + "-" + words[2] + " " + words[3];
 }
 
-std::string Autoindex::put_file_name(std::string file, bool const & is_dir)
+std::string Autoindex::information(int len_name, std::string & filename, bool const & is_dir)
 {
-	file += (is_dir == true ? "/" : "");
-	if (file.length() > 49)
-	{
-		file[47] = '.';
-		file[48] = '.';
-		file[49] = '>';
-		return (file.substr(0, 50));
-	}
-	return file;
-}
-
-off_t Autoindex::file_size(const char *filename)
-{
+	std::string space_before(51 - len_name > 0 ? 51 - len_name : 0, ' ');
 	struct stat st;
 
-	if (stat(filename, &st) == 0)
-		return st.st_size;
-	std::cerr << "webserv: [warn]: file_size: Cannot determine size of " << filename << " : " << strerror(errno) << std::endl;
-	return 0;
-}
-
-std::string Autoindex::get_file_size(std::string const & path_to_file, std::string const & file, bool const & is_dir)
-{
-	if (is_dir == true)
-		return "-";
-	std::string path = path_to_file + file;
-	return to_string(file_size(path.c_str()));
-}
-
-std::string Autoindex::put_space(std::string space) { return std::string(20 - space.length() < 0 ? 0 : 20 - space.length(), ' ') + space; }
-
-std::string Autoindex::put_space_data(std::string const & path_to_file, std::string const & filename, std::string const & file, bool const & is_dir)
-{
-	std::string space, size;
-	int len = 51 - filename.length();
-	while (len-- > 0 && filename != "../")
-		space.push_back(' ');
-	if (filename == "../")
-		return "\n";
-	size = get_file_size(path_to_file, file, is_dir);
-	return space + get_data(path_to_file, filename, file) + put_space(size) + "\n";
-}
-
-std::string Autoindex::create_element(struct dirent *file, std::string const & dir_name, std::string const & root, bool const & is_dir, std::string const & host, int const & port)
-{
-	return "<a href= \"http://" + current_host(host, port) + clear_dirname(dir_name, root) + file->d_name + "\">" + put_file_name(file->d_name, is_dir) + "</a>" + put_space_data(dir_name, put_file_name(file->d_name, is_dir), file->d_name, is_dir);
-}
-
-std::string Autoindex::create_list_element(std::vector<struct dirent *> & list, std::string const & dir_name, std::string const & root, bool const & is_dir, std::string const & host, int const & port)
-{
-	std::string response;
-
-	std::sort(list.begin(), list.end(), dirent_comp);
-	std::vector<struct dirent *>::iterator it = list.begin(), ite = list.end();
-	while (it != ite)
+	if (stat(std::string(_path_file + filename).c_str(), &st) == 0)
 	{
-		response += create_element(*it, dir_name, root, is_dir, host, port);
-		++it;
+		std::string size = "-";
+		
+		if (is_dir == false)
+			size = to_string(st.st_size);
+		std::string space_after(20 - size.length() > 0 ? 20 - size.length() : 0, ' ');
+		return space_before + this->get_date(filename) + space_after + size;
 	}
-	return response;
+	std::cerr << "webserv: [warn]: class Autoindex: information: can't find path: " << filename << "\n";
+	return "";
 }
 
-std::string Autoindex::listing(std::string const & path, std::string const & root, std::string const & host, int const & port)
+std::string Autoindex::create_element(std::string name_file, bool const is_dir)
 {
-	std::string response;
-	std::string dir_name = path;
-	std::vector<struct dirent *> directory;
-	std::vector<struct dirent *> file;
-
-	if (dir_name[dir_name.length() - 1] != '/')
-		dir_name.insert(dir_name.end(), '/');
-
-	DIR *dir = opendir(path.c_str());
-	if (dir == NULL)
-	{
-		std::cerr << "Error: can't opendir: " << strerror(errno) << std::endl;
-		return "";
-	}
-	for (struct dirent *for_dir = readdir(dir); for_dir != NULL; for_dir = readdir(dir))
-	{
-		if (strcmp(for_dir->d_name, "..") == 0)
-			response += create_element(for_dir, dir_name, root, true, host, port);
-		else if (strcmp(for_dir->d_name, ".") != 0)
-		{
-			if (is_directory(dir_name + for_dir->d_name))
-				directory.push_back(for_dir);
-			else
-				file.push_back(for_dir);
-		}
-	}
-	response += create_list_element(directory, dir_name, root, true, host, port);
-	response += create_list_element(file, dir_name, root, false, host, port);
-	closedir(dir);
-	return response;
+	std::string filename = this->format_name(name_file, is_dir);
+	if (name_file == "../")
+		return "<a href= \"http://" + this->current_host() + _request_path + name_file + "\">" + filename + "</a>\n";
+	return "<a href= \"http://" + this->current_host() + _request_path + name_file + "\">" + filename + "</a>" + this->information(filename.length(), filename, is_dir) + "\n";
 }
 
-void Autoindex::autoindex_on(std::string const & path, std::string const & root, std::string const & host, int const & port)
+void Autoindex::create_list_element(std::vector<dirent*> & list, bool const is_dir)
 {
-	std::string path_to_dir = path;
-	path_to_dir.erase(--path_to_dir.end());
+	std::vector<dirent*>::iterator it = list.begin(), ite = list.end();
+	std::sort(it, ite, dirent_comp);
 
-	_response = "<html>\n";
-	_response += "<head>\n";
-	_response += "<title>" + path + "</title>\n";
-	_response += "</head>\n";
-	_response += "<body bgcolor=\"white\">\n";
-	_response += "<h1>Index of " + clear_dirname(path_to_dir, root) + "/</h1>\n";
-	_response += "<hr>\n";
-	_response += "<pre>";
-	_response += listing(path, root, host, port);
-	_response += "</pre>";
-	_response += "<hr>\n";
-	_response += "</body>\n";
-	_response += "</html>";
+	for (; it != ite; ++it)
+		_body += this->create_element((*it)->d_name, is_dir);
 }
+
+std::string Autoindex::current_host(void)
+{
+	int i = 0;
+	while (_host[i] && _host[i] != ':')
+		++i;
+	if (_host[i] == ':')
+		return _host;
+	return _host + ":" + to_string(_port);
+}
+
+std::string Autoindex::format_name(std::string & name, bool const & is_dir)
+{
+	if (is_dir)
+		name.push_back('/');
+	if (name.length() > 49)
+	{
+		name[47] = '.';
+		name[48] = '.';
+		name[49] = '>';
+		return (name.substr(0, 50));
+	}
+	return name;
+}
+
+

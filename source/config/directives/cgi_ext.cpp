@@ -25,6 +25,6 @@ int parse_cgi_ext(std::string file, int i, Location &a)
 	if (count != 1)
 		throw std::invalid_argument("invalid number of arguments in \"fastcgi_extension\" directive");
 	if (file[i] == ';')
-		i++;
+		++i;
 	return i;
 }

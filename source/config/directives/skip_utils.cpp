@@ -6,14 +6,14 @@ int recup_nb(std::string & file, int & i) {
 
 	while (isdigit(file[i])) {
 		port = (port * 10) +  (file[i] - 48);
-		i++;
+		++i;
 	}
 	return port;
 }
 
 int skip_space(std::string & file, int i) {
 	while (file[i] && isspace(file[i]))
-		i++;
+		++i;
 	return i;
 }
 
@@ -27,7 +27,7 @@ int skip_bracket(std::string & file, int i) {
 			counter--;
 		if (counter == 0)
 			break;
-		i++;
+		++i;
 	}
 	if (!file[i])
 		throw std::invalid_argument("unexpected \"}\" or \"{\"");
@@ -37,16 +37,16 @@ int skip_bracket(std::string & file, int i) {
 int skip_comment(std::string & file, int i) {
 	while (file[i] && file[i] == '#') {
 		while (file[i] && file[i] != '\n')
-			i++;
+			++i;
 		if (file[i] == '\n')
-			i++;
+			++i;
 	}
 	return i;
 }
 
 int skip_word_exception(std::string & file, int i) {
 	while (file[i] && !isspace(file[i]) && file[i] != ';' && file[i] != '#')
-		i++;
+		++i;
 	return i;
 }
 
@@ -54,7 +54,7 @@ int skip_word(std::string & file, int i) {
 	while (file[i] && !isspace(file[i]) && file[i] != ';' && file[i] != '#') {
 		if (file[i] == '{' || file[i] == '}')
 			throw std::invalid_argument("directive is not termined by \";\"");
-		i++;
+		++i;
 	}
 	return i;
 }

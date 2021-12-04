@@ -41,7 +41,7 @@ Server config_server(std::string file)
 	// int nb_client_size = 0;
 
 	if (file[i] == '{')
-		i++;
+		++i;
 	while (file[i] && file[i] != '}')
 	{
 		i = skip_comment(file, i);

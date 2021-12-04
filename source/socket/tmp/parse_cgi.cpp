@@ -12,7 +12,7 @@ int header_size(std::string response)
 			return i + 4;
 		if (response.compare(i, 2, "\n\n") == 0)
 			return i + 2;
-		i++;
+		++i;
 	}
 	return i;
 }
@@ -20,7 +20,7 @@ int header_size(std::string response)
 int skip_line(std::string line, int i)
 {
 	while (line[i] && line[i] != '\n')
-		i++;
+		++i;
 	return i;
 }
 
@@ -29,10 +29,10 @@ void parse_status(Request &request, std::string error)
 	int code, i = 0;
 
 	while (isspace(error[i]) && error[i] != '\n')
-		i++;
+		++i;
 	code = recup_nb(error, i);
 	while (isspace(error[i]) && error[i] != '\n')
-		i++;
+		++i;
 	int skip = skip_line(error, i);
 	request.set_error(std::make_pair(code, error.substr(i, skip - i)));
 }
@@ -48,7 +48,7 @@ void parse_header(Request &request, std::string header)
 			parse_status(request, header.substr(i, skip - i));
 			i = skip;
 			if (header[i] == '\n')
-				i++;
+				++i;
 		}
 		if (header.compare(i, 14, "content-type: ") == 0)
 		{
@@ -57,7 +57,7 @@ void parse_header(Request &request, std::string header)
 			request.set_content_type(header.substr(i, skip - i));
 			i = skip;
 			if (header[i] == '\n')
-				i++;
+				++i;
 		}
 		if (header.compare(i, 16, "content-length: ") == 0)
 		{
@@ -65,7 +65,7 @@ void parse_header(Request &request, std::string header)
 			int code = recup_nb(header, i);
 			request.set_content_length(code);
 			if (header[i] == '\n')
-				i++;
+				++i;
 		}
 	}
 }

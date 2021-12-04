@@ -19,7 +19,7 @@ Location parse_location(std::string file)
 	int cgi = 0, cgi_ext = 0;
 
 	if (file[i] == '{')
-		i++;
+		++i;
 	while (file[i] && file[i] != '}')
 	{
 		i = skip_comment(file, i);
