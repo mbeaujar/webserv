@@ -2,12 +2,13 @@
 
 Post::Post(Server & server, Request & request, int & client_socket) :
 	AMethods(server, request, POST, client_socket),
-	_file_fd(),
-	_content_length(),
-	_ret(),
-	_totalsize(),
-	_clientmax(),
-	_buffer(NULL)
+	_file_fd(-1),
+	_content_length(0),
+	_ret(-1),
+	_totalsize(0),
+	_clientmax(0),
+	_buffer(NULL),
+	_file_name(".post_" + to_string(client_socket))
 {
 	try
 	{
@@ -27,7 +28,8 @@ Post::Post(Post const & src) :
 	_ret(src._ret),
 	_totalsize(src._totalsize),
 	_clientmax(src._clientmax),
-	_buffer(src._buffer)
+	_buffer(src._buffer),
+	_file_name(".post_" + to_string(_client_socket))
 {
 	try
 	{
@@ -42,6 +44,10 @@ Post::Post(Post const & src) :
 
 Post::~Post()
 {
+	if (file_exist(_file_name))
+		remove_file(_file_name.c_str());
+	if (_file_fd != -1)
+		close(_file_fd);
 	if (_buffer != NULL)
 		delete [] _buffer;
 	_buffer = NULL;
@@ -68,10 +74,14 @@ Post & Post::operator=(Post const & rhs)
     return *this;
 }
 
-int Post::set_file_content(std::string & content)
+int Post::set_file_content(std::string & content, bool is_app)
 {
-	std::ofstream file(_path_file.c_str(), std::ios_base::app);
+	std::ofstream file;
 
+	if (is_app == true)
+		file.open(_path_file.c_str(), std::ios_base::app);
+	else
+		file.open(_path_file.c_str());
 	if (file.is_open() == false)
 	{
 		_request.set_error(std::make_pair(500, "Internal Server Error"));
@@ -91,10 +101,9 @@ void Post::execute(void)
 			if (this->is_method_allowed() == true)
 			{
 				std::string content;
-				std::string name_file = ".post_" + to_string(_client_socket);
 				
 				// create file
-				_file_fd = open(name_file.c_str(), O_CREAT | O_RDWR, S_IRWXO);
+				_file_fd = open(_file_name.c_str(), O_CREAT | O_RDWR, S_IRWXO);
 				if (_file_fd == -1)
 				{
 					_request.set_error(std::make_pair(502, "Bad Gateway"));
@@ -107,24 +116,38 @@ void Post::execute(void)
 				else
 					this->read_body_chunked();
 				
-				// cgi / get_content
-				if (this->is_extension(_path_file, _location.get_cgi_ext()) == true)
+				// query string
+				bool is_app = APPEND;
+
+				if (_request.get_content_type() == "application/x-www-form-urlencoded")
 				{
-					Cgi a(_location.get_path_cgi());
-					content = a.execute(_request, POST, _client_socket, _path_file);
+					if (this->is_extension(_path_file, _location.get_cgi_ext()) == true)
+					{
+						Cgi a(_location.get_path_cgi());
+
+						content = get_file_content(_file_name);
+						_request.set_query_string(content);
+						content = a.execute(_request, POST, _client_socket, _path_file);
+						is_app = NOAPPEND;
+					}
+					else
+						return;
 				}
 				else
-					content = get_file_content(name_file);
+				{
+					if (this->is_extension(_path_file, _location.get_cgi_ext()) == true)
+					{
+						Cgi a(_location.get_path_cgi());
+						content = a.execute(_request, POST, _client_socket, _file_name);
+					}
+					else
+						content = get_file_content(_file_name);
+				}
 
-				// remove _file_fd
-				remove_file(name_file.c_str());
-				close(_file_fd);
-				// is error
 				if (ISERROR(_request.get_error().first))
 					return ;
 					
-				// set_file_content
-				this->set_file_content(content);
+				this->set_file_content(content, is_app);
 			}
 		}
 	}

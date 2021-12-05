@@ -3,7 +3,7 @@
 
 void signalHandler(int signum)
 {
-	std::cout << "\nInterrupt signal (" << signum << ") received.\n";
+	std::cout << "\nInterrupt signal ( " << signum << " ) received.\n";
 	g_exit = true;
 }
 
