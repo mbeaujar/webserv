@@ -27,6 +27,6 @@ int parse_upload(std::string file, int i, Location &a)
 	if (count != 1)
 		throw std::invalid_argument("invalid number of arguments in \"upload\" directive");
 	if (file[i] == ';')
-		i++;
+		++i;
 	return i;
 }

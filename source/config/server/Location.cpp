@@ -108,10 +108,11 @@ void 							Location::set_upload(std::string const & upload) { _upload = upload;
 void 							Location::set_path_cgi(std::string const & path_cgi) { _path_cgi = path_cgi; }
 void 							Location::set_cgi_ext(std::string const & cgi_ext) { _cgi_ext = cgi_ext; }
 void 							Location::set_max_body(int const & max_body) { _max_body = max_body; }
+
 int& 							Location::get_max_body() { return _max_body; }
 bool& 							Location::get_autoindex() { return _autoindex; }
 std::string& 					Location::get_upload() { return _upload; }
-std::string& 					Location::get_path_cgi() { return _path_cgi; }
+std::string 					Location::get_path_cgi() { return _path_cgi; }
 std::string& 					Location::get_cgi_ext() { return _cgi_ext; }
 std::string& 					Location::get_root() { return _root; }
 std::vector<std::string>&		Location::get_index() { return _index; }

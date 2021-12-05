@@ -1,22 +1,11 @@
 #include "Server.hpp"
 
-bool Port::operator==(Port const & rhs) { return port == rhs.port && ipv4 == rhs.ipv4; }
-
-bool Port::operator<(Port const & rhs) { // true nothing / false change
-	if (port != rhs.port)
-		return port < rhs.port;
-	if (ipv4 == rhs.ipv4)
-		return true;
-	return ipv4 < rhs.ipv4;
-}
-
 Server::Server()
 	:  _default_server(false),
 	  _current_port(),
 	  _port(),
 	  _error_page(),
 	  _location() {}
-	// _client_size(0),
 
 Server::Server(Server const &copy)
 	:  _default_server(copy._default_server),
@@ -24,14 +13,12 @@ Server::Server(Server const &copy)
 	  _port(copy._port),
 	  _error_page(copy._error_page),
 	  _location(copy._location) {}
-	// _client_size(copy._client_size) ,
 
 Server::~Server() {}
 
 Server& Server::operator=(Server const &copy) {
 	if (this == &copy)
 		return *this;
-	//_client_size = copy._client_size;
 	_default_server = copy._default_server;
 	_current_port = copy._current_port;
 	_port = copy._port;
@@ -55,13 +42,9 @@ void Server::adding_location(std::string const & path, Location const & location
 	_location.insert(std::make_pair(path, location));
 }
 
-// void Server::set_client_size(int const & client_size) { _client_size = client_size; }
-
 void Server::set_current_port(int const & port) { _current_port = port; }
 
 int Server::get_current_port() const { return _current_port; }
-
-// int Server::get_client_size() const { return _client_size; }
 
 void Server::set_default_server(bool const & default_server) {
 	_default_server = default_server;
@@ -107,4 +90,81 @@ std::map<std::string, Location> Server::get_all_location() const { return _locat
 
 Location Server::get_location(std::string const & path) const {
 	return _location.find(path)->second;
+}
+
+
+void printserver(Server &a)
+{
+	std::cout << "---------- SERVER ----------" << "\n" << "\n";
+	std::cout << "> port : ";
+	std::vector<Port> b = a.get_port();
+	std::vector<Port>::iterator it = b.begin(), ite = b.end();
+	while (it != ite)
+	{
+		std::cout << "[ " << it->port << ", ";
+		if (it->ipv4)
+			std::cout << "ipv4";
+		else
+			std::cout << "ipv6";
+		std::cout << "]";
+		if (it + 1 != ite)
+			std::cout << ", ";
+		++it;
+	}
+	std::cout << "\n";
+	if (a.get_default_server() == true)
+		std::cout << "> default_server is on" << "\n";
+	std::map<int, std::string> c = a.get_error_page();
+	if (c.size() > 0)
+		std::cout << "> error_page : " << std::endl;
+	std::map<int, std::string>::iterator it1 = c.begin(), ite1 = c.end();
+	while (it1 != ite1)
+	{
+		std::cout << "\t- " << it1->first << " " << it1->second << "\n";
+		++it1;
+	}
+	std::map<std::string, Location> d = a.get_all_location();
+	if (d.size() > 0)
+		std::cout << "Location : " << "\n";
+	std::map<std::string, Location>::iterator it2 = d.begin(), ite2 = d.end();
+	while (it2 != ite2)
+	{
+		std::cout << "  -> path " << it2->first << "\n";
+		if (it2->second.get_autoindex() == true)
+			std::cout << "\t- autoindex is on " << "\n";
+		if (it2->second.get_root() != "")
+			std::cout << "\t- root : " << it2->second.get_root() << "\n";
+		std::vector<std::string> f = it2->second.get_index();
+		if (f.size() > 0)
+		{
+			std::cout << "\t- index : ";
+			printvector(f);
+		}
+		s_method z = it2->second.get_methods();
+		std::cout << "\t- method : ";
+		if (z.m_get == true)
+			std::cout << "GET";
+		if (z.m_post == true)
+		{
+			if (z.m_get == true)
+				std::cout << ", ";
+			std::cout << "POST";
+		}
+		if (z.m_delete == true)
+		{
+			if (z.m_post == true || z.m_get == true)
+				std::cout << ", ";
+			std::cout << "DELETE";
+		}
+		std::cout << std::endl;
+		if (it2->second.get_path_cgi() != "")
+			std::cout << "\t- fastcgi: " << it2->second.get_path_cgi() << std::endl;
+		if (it2->second.get_max_body() != -1)
+			std::cout << "\t- max_body: " << it2->second.get_max_body() << std::endl;
+		std::pair<int, std::string> g = it2->second.get_return();
+		if (g.first >= 0)
+			std::cout << "\t- return : " << g.first << " " << g.second << "\n";
+		std::cout << "\n";
+		++it2;
+	}
 }

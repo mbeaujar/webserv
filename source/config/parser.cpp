@@ -40,4 +40,3 @@ std::vector<Server> parser(const char *filename)
 	servers = parse_server(file);
 	return servers;
 }
-

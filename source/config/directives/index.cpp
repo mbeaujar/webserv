@@ -23,6 +23,6 @@ int parse_index(std::string file, int i, Location &a)
 	if (count == 0)
 		throw std::invalid_argument("invalid number of arguments in \"index\" directive");
 	if (file[i] == ';')
-		i++;
+		++i;
 	return i;
 }

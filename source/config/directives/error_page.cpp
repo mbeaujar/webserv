@@ -32,7 +32,7 @@ int	parse_error_page(std::string file, int i, Server &a)
                 code = 1;
                 while (isdigit(file[i])) {
                     error = (error * 10) + (file[i] - 48);
-                    i++;
+                    ++i;
                 }
                 if (!isspace(file[i]))
                     throw std::invalid_argument("invalid value \"" + file.substr(tmp, skip_word_exception(file, i) - tmp) + "\"" + " in ...");
@@ -62,6 +62,6 @@ int	parse_error_page(std::string file, int i, Server &a)
 		throw std::invalid_argument("invalid argument in \"error_page\" directive, path does not exist");
 	a.adding_error_page(error, value);
     if (file[i] && file[i] == ';')
-        i++;
+        ++i;
     return i;
 }

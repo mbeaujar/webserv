@@ -43,13 +43,15 @@ int parse_listen(std::string file, int i, Server &a)
 	if (a.find_port(port, ipv6 == 0)) {
 		std::string error = "a duplicate listen ";
 		error += (ipv6 != 0 ? "[::]:" : "0.0.0.0:");
-		error += to_string(port);
+		std::stringstream o;
+		o << port;
+		error += o.str();
 		throw std::invalid_argument(error);
 	}
 	a.adding_port(port, ipv6 == 0);
 	if (is_default == true)
 		a.set_default_server(is_default);
 	if (file[i] == ';')
-		i++;
+		++i;
 	return i;
 }

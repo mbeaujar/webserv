@@ -34,7 +34,7 @@ class Location
 		s_method &					get_methods();
         bool 						get_method(int nb);
 		std::string	&				get_upload();
-		std::string	&				get_path_cgi();
+		std::string					get_path_cgi();
 		std::string	&				get_cgi_ext();
 		std::vector<std::string> &	get_index();
 		std::pair<int, std::string>	&get_return();
