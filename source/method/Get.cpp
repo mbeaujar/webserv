@@ -4,7 +4,7 @@ Get::Get(Server & server, Request & request, int & client_socket) : AMethods(ser
 
 Get::Get(Get const & src) : AMethods(src._server, src._request, GET, src._client_socket)
 {
-	*this = src;;
+	*this = src;
 }
 
 Get::~Get() {}

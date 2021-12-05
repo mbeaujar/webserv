@@ -19,7 +19,7 @@ class Request
 {
     public:
         // Canonical
-        Request(int & client_socket, Server const & server);
+        Request(int & client_socket);
         ~Request();
         Request(Request const & src);
         Request &operator=(Request const & rhs);
@@ -68,10 +68,10 @@ class Request
 
         int         skip_the_word(std::string & file, int i);
         int         find_query_string(std::string & request, int i);
-        void        get_first_line(std::string & request, Server const & server);
+        void        get_first_line(std::string & request);
         std::string recup_word(std::string & request, int & i);
 		char*		read_header(int client_socket);
-        void        parse_header(std::string header, Server const & server);
+        void        parse_header(std::string header);
 		void        print_request(void);
 };
 

@@ -11,6 +11,7 @@
 # define DELETE 0
 # define GET    1
 # define POST   2
+# define OTHER  3
 # define ISERROR(x) (x >= 400) // 4XX request error, 5xx server error
 # define ISREDIRECT(x) (x != -1) // No redirection is -1
 

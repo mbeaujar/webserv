@@ -9,6 +9,8 @@
 # include <cstring>
 
 # define BUFFERSIZE 1024
+# define APPEND		1
+# define NOAPPEND	0
 
 class Post : public AMethods
 {
@@ -20,7 +22,7 @@ class Post : public AMethods
         Post & operator=(Post const & rhs);
 
         // Methods
-        int set_file_content(std::string & content);
+        int set_file_content(std::string & content, bool is_app);
         virtual void execute(void);
 
 	private:
@@ -30,6 +32,7 @@ class Post : public AMethods
 		int 	_totalsize;
 		int 	_clientmax;
 		char * 	_buffer;
+		std::string _file_name;
 
 		int read_buffer(int size);
 		int read_endline(void);

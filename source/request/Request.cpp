@@ -1,6 +1,6 @@
 #include "Request.hpp"
 
-Request::Request(int & client_socket, Server const & server) :
+Request::Request(int & client_socket) :
     _method(),
     _content_length(-1),
     _host(),
@@ -35,7 +35,7 @@ Request::Request(int & client_socket, Server const & server) :
 		this->set_error(std::make_pair(413, "Request Entity Too Large"));
 	}
 	else 
-		parse_header(header, server);
+		parse_header(header);
 	delete [] header;
 }
 
@@ -148,11 +148,10 @@ std::string Request::recup_word(std::string & request, int & i)
 	return word;
 }
 
-void	Request::get_first_line(std::string & request, Server const & server)
+void	Request::get_first_line(std::string & request)
 {
 	int i = 0;
 	std::string word;
-	(void)server;
 
 	word = recup_word(request, i);
 	if (word == "delete")
@@ -161,14 +160,8 @@ void	Request::get_first_line(std::string & request, Server const & server)
 		this->set_method(POST);
 	else if (word == "get")
 		this->set_method(GET);
-	// else
-	// {
-	// 	int j = i;
-	// 	std::pair<Location, std::string> a = search_location(recup_word(request, j), server);
-	// 	s_method tmp = a.first.get_methods();
-	// 	this->set_methods(tmp);
-	// 	this->set_error(std::make_pair(405, "Method not allowed"));
-	// }
+	else
+		this->set_method(OTHER);
 	word = recup_word(request, i);
 	if (word.length() > 1 && word[word.length() - 1] == '/')
 		word.erase(--word.end());
@@ -191,6 +184,7 @@ void	Request::get_first_line(std::string & request, Server const & server)
 		this->set_host(word);
 	}
 }
+
 char*	Request::read_header(int client_socket)
 {
 	int bytes_read, msgsize;
@@ -222,14 +216,14 @@ char*	Request::read_header(int client_socket)
 }
 
 
-void Request::parse_header(std::string request, Server const & server)
+void Request::parse_header(std::string request)
 {
 	int i = 0;
 	int host = 0;
 	int chunked = 0;
 
 	lower_file(request);
-	get_first_line(request, server);
+	get_first_line(request);
 	while (request[i])
 	{
 		if (request.compare(i, 15, "content-length:") == 0)

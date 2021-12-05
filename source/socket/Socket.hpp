@@ -25,7 +25,8 @@
 # define SA_IN	struct sockaddr_in
 # define SA		struct sockaddr
 # define BUFFERSIZE 1024
-# define BACKLOG SOMAXCONN
+# define BACKLOG 10000
+// SOMAXCONN
 
 extern bool g_exit;
 

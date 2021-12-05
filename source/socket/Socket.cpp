@@ -30,13 +30,6 @@ Socket::Socket(Socket const & copy) :
 
 Socket::~Socket()
 {
-	std::vector<pthread_t>::iterator it = _threads_id.begin(), ite = _threads_id.end();
-
-	while (it != ite)
-	{
-		pthread_join(*it, NULL); // block if there is a thread with a infinite loop
-		++it;
-	}
 	this->release_fds(_clients);
 	this->release_fds(_sockets);
 }
@@ -135,11 +128,10 @@ int Socket::config_sockets(std::vector<Server> &servers)
 		{
 			int server_socket;
 			if (begin->ipv4)
-				server_socket = this->create_socket_ipv4(begin->port, BACKLOG);
+				server_socket = this->create_socket_ipv4(begin->port, BACKLOG); // BACKLOG
 			else
 				server_socket = this->create_socket_ipv6(begin->port, BACKLOG);
 			begin->fd = server_socket;
-			// it->set_current_port(begin->port); // ???????????????????????????????????????????????????????????
 			if (server_socket == -1)
 			{
 				std::cerr << "webserv: [emerg]: class Socket: config_sockets: can't create socket" << std::endl;
@@ -246,6 +238,7 @@ int Socket::accept_connection(int server_socket)
 	SA_IN client_addr;
 	if ((client_socket = accept(server_socket, reinterpret_cast<SA*>(&client_addr), reinterpret_cast<socklen_t *>(&addr_size))) == -1)
 		std::cerr << "werbserv: [emerg]: class Socket: accept_connection: accept failed" << std::endl;
+	// std::cerr << "fd: " << client_socket << "\n";
 	return client_socket;
 }
 
@@ -256,7 +249,9 @@ void *handle_connection(void *a)
 	t = reinterpret_cast<Thread*>(a);
 	try
 	{
-		Request request(t->client_socket, t->server);
+		Request request(t->client_socket);
+		if (request.get_method() == OTHER)
+			request.set_error(std::make_pair(405, "Method Not Allowed"));
 		Response a(t->client_socket, request, t->server);
 		a.execute();
 	}
@@ -284,6 +279,7 @@ int Socket::create_thread(int & client_socket, Server & server)
 	}
 	t->init(server, client_socket);
 	pthread_create(&id, NULL, handle_connection, t);
+	pthread_detach(id);
 	_threads_id.push_back(id);
 	return EXIT_SUCCESS;
 }

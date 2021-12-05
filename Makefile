@@ -13,16 +13,7 @@ HEADER = -I source  \
 	-I source/autoindex \
 	-I source/socket 
 
-
-
-# source/config/server \
-# 		 source/autoindex \
-# 		 source/response \
-# 		 source/socket \
-
-
 SRCS  =	main.cpp \
-		utils.cpp \
 		config/directives/autoindex.cpp \
 		config/directives/client_size.cpp \
 		config/directives/error_page.cpp \
@@ -92,5 +83,3 @@ re : fclean all
 
 
 .PHONY: all clean fclean re
-
-

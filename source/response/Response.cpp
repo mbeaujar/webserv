@@ -53,13 +53,13 @@ void Response::execute(void)
 					body = _method->get_body();
 			}
 		}
-		if (ISERROR(_request.get_error().first) == true)
+		if (ISERROR(_request.get_error().first) == true && _request.get_method() == GET)
 			body = this->error_html();
 		this->create_header(); 
 		_response.append(body);
 		_content_length = body.length();
 	}
-	catch(const std::exception& e)
+	catch (const std::exception & e)
 	{
 		std::cerr << "webserv: [warn]: class Response: execute: " << e.what() << '\n';
 		_request.set_error(std::make_pair(500, "Internal Server Error"));
@@ -114,7 +114,7 @@ void Response::create_method(int & method)
 		else if (method == DELETE)
 			_method = new Delete(_server, _request, _client_socket);
 	}
-	catch(const std::exception& e)
+	catch (const std::exception & e)
 	{
 		std::cerr << "webserv: [warn]: class Response: create_method: " << e.what() << '\n';
 		_method = NULL;
