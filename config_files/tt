@@ -1,0 +1,22 @@
+
+server {
+	listen 8081;
+
+	location / {
+		method GET;
+		autoindex on;
+		root /var/www/html;
+		#client_max_body_size 5m;
+		fastcgi_extension .html;
+		fastcgi /home/user42/Bureau/webserv/ubuntu_cgi_tester;
+		index index.html;
+		upload /var/www/html/upload;
+	}
+
+	location /lala {
+		return 301 http://www.google.com;
+	}
+
+}
+
+

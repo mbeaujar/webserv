@@ -257,11 +257,8 @@ void *handle_connection(void *a)
 	try
 	{
 		Request request(t->client_socket, t->server);
-		if (ISERROR(request.get_error().first) == false)
-		{
-			Response a(t->client_socket, request, t->server);
-			a.execute();
-		}
+		Response a(t->client_socket, request, t->server);
+		a.execute();
 	}
 	catch(const std::exception& e)
 	{

@@ -1,11 +1,11 @@
 #ifndef _SOCKET_HPP_
 # define _SOCKET_HPP_
 
-# include "../config/server/Server.hpp"
-# include "request/Request.hpp"
-# include "response/Response.hpp"
+# include "Server.hpp"
+# include "Request.hpp"
+# include "Response.hpp"
 # include "Thread.hpp"
-# include "proto.hpp"
+# include "prototype.hpp"
 
 # include <iostream>
 # include <sys/select.h>

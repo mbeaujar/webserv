@@ -4,12 +4,25 @@ CC     = clang++
 RM     = rm -rf
 CFLAGS = -Wall -Wextra -Werror -std=c++98
 
-HEADER = source/config/server \
-		source/socket/request \
-		source/socket/response \
-		source/socket
+HEADER = -I source  \
+	-I source/config/server \
+	-I source/request \
+	-I source/response \
+	-I source/method \
+	-I source/cgi \
+	-I source/autoindex \
+	-I source/socket 
+
+
+
+# source/config/server \
+# 		 source/autoindex \
+# 		 source/response \
+# 		 source/socket \
+
 
 SRCS  =	main.cpp \
+		utils.cpp \
 		config/directives/autoindex.cpp \
 		config/directives/client_size.cpp \
 		config/directives/error_page.cpp \
@@ -29,17 +42,17 @@ SRCS  =	main.cpp \
 		config/server/Port.cpp \
 		config/server/Server.cpp \
 		config/parser.cpp \
-		socket/request/Request.cpp \
-		socket/response/AMethods.cpp \
-		socket/response/Cgi.cpp \
-		socket/response/Delete.cpp \
-		socket/response/Get.cpp \
-		socket/response/Response.cpp \
-		socket/response/Autoindex.cpp \
-		socket/response/utils.cpp \
+		autoindex/Autoindex.cpp \
+		cgi/Cgi.cpp \
+		method/AMethods.cpp \
+		method/Get.cpp \
+		method/Post.cpp \
+		method/Delete.cpp \
+		request/Request.cpp \
+		response/Response.cpp \
 		socket/signal.cpp \
 		socket/Socket.cpp \
-		socket/Thread.cpp 
+		socket/Thread.cpp
 
 OBJS = $(addprefix .objs/, $(SRCS:.cpp=.o))
 
@@ -47,19 +60,23 @@ SRCS_DIRECTORY=source/
 OBJS_DIRECTORY=.objs/
 
 $(OBJS_DIRECTORY)%.o : $(SRCS_DIRECTORY)%.cpp
-	@$(CC) $(CFLAGS) $< -c -o $@
+	@$(CC) $(CFLAGS) $(HEADER) $< -c -o $@
 
 all : $(OBJS_DIRECTORY) $(NAME)
 
 $(NAME) : $(OBJS)
-	@$(CC) $(CFLAGS) $(OBJS) -lpthread -o $(NAME)
+	@$(CC) $(CFLAGS) $(OBJS) $(HEADER) -lpthread -o $(NAME)
 
 $(OBJS_DIRECTORY):
 	@mkdir $@
 	@mkdir -p $@/config/directives
 	@mkdir -p $@/config/server
-	@mkdir -p $@/socket/request
-	@mkdir -p $@/socket/response
+	@mkdir -p $@/autoindex
+	@mkdir -p $@/cgi
+	@mkdir -p $@/method
+	@mkdir -p $@/request
+	@mkdir -p $@/response
+	@mkdir -p $@/socket
 
 test:
 	@netcat localhost 80 < netcat
