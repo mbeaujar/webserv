@@ -2,7 +2,7 @@
 # define _SERVER_HPP_
 
 # include "Location.hpp"
-# include "Port.hpp"
+# include "s_port.hpp"
 
 # include <iostream>
 # include <vector>
@@ -28,14 +28,14 @@ class Server
 		void		adding_location(std::string const & path, Location const & location);
 		Location 	get_location(std::string const & path) const;
 		std::string	find_error(int const & error) const;
-		std::vector<Port>& get_port();
+		std::vector<s_port>& get_port();
 		std::map<int, std::string> get_error_page() const;
 		std::map<std::string, Location> get_all_location() const;
 
     private:
 		bool							_default_server;
 		int								_current_port;
-		std::vector<Port>				_port;
+		std::vector<s_port>				_port;
 		std::map<int , std::string>		_error_page;
 		std::map<std::string, Location> _location;
 };

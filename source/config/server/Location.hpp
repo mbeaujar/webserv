@@ -1,9 +1,11 @@
 #ifndef _LOCATION_HPP_
 # define _LOCATION_HPP_
 
+# include "s_method.hpp"
+
 # include <iostream>
 # include <vector>
-# include "s_method.hpp"
+# include <map>
 
 # define DELETE 0
 # define GET    1
@@ -21,11 +23,10 @@ class Location
         void adding_method(int nb);
 
 		void						set_max_body(int const & max_body);
-		void						set_root(std::string const & root);
+		void						set_root(std::string const & root);	
 		void						set_autoindex(bool const & autoindex);
 		void						set_upload(std::string const & upload);
-		void						set_path_cgi(std::string const & fastcgi);
-		void						set_cgi_ext(std::string const & fastcgi_ext);
+		void						set_cgi(std::string const & ext, std::string const & path);
 		void						set_return(int const & code, std::string const & path);
 
 		int	&						get_max_body();
@@ -34,23 +35,23 @@ class Location
 		s_method &					get_methods();
         bool 						get_method(int nb);
 		std::string	&				get_upload();
-		std::string					get_path_cgi();
-		std::string	&				get_cgi_ext();
 		std::vector<std::string> &	get_index();
-		std::pair<int, std::string>	&get_return();
+		std::pair<int, std::string>	& get_return();
+		std::map<std::string, std::string> & get_cgi();
+
+		std::string find_path_cgi(std::string const & ext);
 
 		bool  find_index(std::string const & index);
 	
 	private:
-        bool 						_autoindex;
-		int							_max_body;
-		std::string					_root;
-		std::vector<std::string> 	_index;
-        s_method	                _method;
-		std::string 				_upload;
-		std::string 				_path_cgi;
-		std::string					_cgi_ext; // fastcgi_extension
-		std::pair<int, std::string> _return;
+        bool 								_autoindex;
+		int									_max_body;
+		std::string							_root;
+		std::vector<std::string> 			_index;
+        s_method	                		_method;
+		std::string 						_upload;
+		std::map<std::string, std::string>	_cgi;
+		std::pair<int, std::string>			_return;
 
 };
 

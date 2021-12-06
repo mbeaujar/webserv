@@ -11,14 +11,15 @@ Request::Request(int & client_socket) :
     _content_type(),
 	_methods(),
 	_error(200, "OK"),
-	_return(-1, "")
+	_return(-1, ""),
+	_accept()
 {
 	int len = 0;
 	char *header = this->read_header(client_socket);
 
 	if (header)
 		len = strlen(header);
-	
+	std::cerr << header << std::endl;
 	if (header == NULL)
 	{
 		std::cerr << "webserv: [warn]: class Request: Constructor: can't read header request" << std::endl;
@@ -50,7 +51,8 @@ Request::Request(Request const & src) :
     _content_type(src._content_type),
 	_methods(),
 	_error(src._error),
-	_return(src._return) {}
+	_return(src._return),
+	_accept(src._accept) {}
 
 Request::~Request() {}
 
@@ -82,6 +84,7 @@ void Request::set_file(std::string & file)
 	}
 	_file = file;
 }
+
 void        				Request::set_method(int const & method) { _method = method; }
 void        				Request::set_path(std::string const & path) { _path = path; }
 void        				Request::set_date(std::string const & date) { _date = date; }
@@ -91,6 +94,7 @@ void        				Request::set_methods(struct s_method & met) { _methods = met; }
 void        				Request::set_return(std::pair<int, std::string> const & r) { _return = r; }
 void        				Request::set_content_type(std::string const & type) { _content_type = type; }
 void        				Request::set_error(std::pair<int, std::string> const & error) { _error = error; }
+void        				Request::set_accept(std::map<std::string, int> const & accept) { _accept = accept; }
 void        				Request::set_query_string(std::string const & query_string){ _query_string = query_string; }
 
 int &        				Request::get_method() { return _method; }
@@ -103,15 +107,16 @@ std::string & 				Request::get_path() { return _path; }
 struct s_method	&			Request::get_methods() { return _methods; }
 std::string  & 				Request::get_file() { return _file; }
 std::pair<int, std::string> &Request::get_error() { return _error; }
+std::map<std::string, int> &Request::get_accept() { return _accept; }
 std::pair<int, std::string> &Request::get_return() { return _return; }
 
+bool Request::is_query(std::string & path) { return path.find('?') != std::string::npos; }
 
-
-int Request::find_query_string(std::string & request, int i)
+std::string Request::parse_query(std::string & path)
 {
-	while (request[i] && request[i] != '?')
-		++i;
-	return i;
+	size_t pos = path.find('?');
+	_query_string = path.substr(pos + 1, path.length() - (pos + 1));
+	return path.substr(0, pos);
 }
 
 void lower_file(std::string & request)
@@ -148,7 +153,7 @@ std::string Request::recup_word(std::string & request, int & i)
 	return word;
 }
 
-void	Request::get_first_line(std::string & request)
+int	Request::get_first_line(std::string & request)
 {
 	int i = 0;
 	std::string word;
@@ -165,6 +170,8 @@ void	Request::get_first_line(std::string & request)
 	word = recup_word(request, i);
 	if (word.length() > 1 && word[word.length() - 1] == '/')
 		word.erase(--word.end());
+	if (this->is_query(word) == true)
+		word = this->parse_query(word);
 	this->set_path(word);
 	word = recup_word(request, i);
 	if (word != "HTTP/1.1")
@@ -183,6 +190,7 @@ void	Request::get_first_line(std::string & request)
 		word = recup_word(request, i);
 		this->set_host(word);
 	}
+	return i;
 }
 
 char*	Request::read_header(int client_socket)
@@ -215,7 +223,6 @@ char*	Request::read_header(int client_socket)
 	return buffer;
 }
 
-
 void Request::parse_header(std::string request)
 {
 	int i = 0;
@@ -223,10 +230,16 @@ void Request::parse_header(std::string request)
 	int chunked = 0;
 
 	lower_file(request);
-	get_first_line(request);
+	i = get_first_line(request);
 	while (request[i])
 	{
-		if (request.compare(i, 15, "content-length:") == 0)
+		if (request.compare(i, 7, "accept:") == 0)
+		{
+			i += 8;
+			std::string line = request.substr(i, skip_the_word(request, i) - i);
+			this->parse_accept(line);
+		}
+		else if (request.compare(i, 15, "content-length:") == 0)
 		{
 			i += 16;
 			int nb = recup_nb(request, i);
@@ -301,4 +314,22 @@ void Request::print_request(void)
 	std::cout << " -> Return   : -> " << this->get_return().first << " -> " << this->get_return().second << std::endl;
 	std::cout << " -> Query_string : -> " << this->get_query_string() << std::endl;
 	std::cout << "-------------------------------" << std::endl;
+}
+
+void Request::parse_accept(std::string & content)
+{
+	size_t first = 0;
+	size_t pos = 0;
+
+	while (pos != std::string::npos)
+	{
+		pos = content.find(',', first);
+		std::string new_accept = content.substr(first, pos - first);
+		size_t l = new_accept.find(';', 0);
+		if (l != std::string::npos)
+			new_accept = new_accept.substr(0, l);
+		if (new_accept.empty() == false)
+			_accept.insert(std::make_pair(new_accept, 0));
+		first = pos + 1;
+	}
 }

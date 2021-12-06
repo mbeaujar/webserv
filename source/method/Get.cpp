@@ -30,14 +30,16 @@ void Get::execute(void)
 	{
 		if (this->is_method_allowed() == true)
 		{
+			std::string path_cgi;
+
 			if (is_directory(_path_file) == true && _location.get_autoindex() == true)
 			{
 				Autoindex a(_path_file, _request.get_path(), _request.get_host(), this->get_port());
 				_body = a.get_content();
 			}
-			else if (is_extension(_path_file, _location.get_cgi_ext()) == true)
+			else if ((path_cgi = _location.find_path_cgi(extension(_path_file))) != "")
 			{
-				Cgi a(_location.get_path_cgi());
+				Cgi a(path_cgi);
 				_body = a.execute(_request, GET, _client_socket, _path_file);
 			}
 			else

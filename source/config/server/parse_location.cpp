@@ -16,7 +16,6 @@ Location parse_location(std::string file)
 	Location a;
 	int nb_autoindex = 0;
 	int nb_client_size = 0;
-	int cgi = 0, cgi_ext = 0;
 
 	if (file[i] == '{')
 		++i;
@@ -49,15 +48,11 @@ Location parse_location(std::string file)
 		} else if (file.compare(i, 6, "method") == 0) {
             i += 6;
             i = parse_method(file, i, a);
-        } else if (file.compare(i, 8, "fastcgi ") == 0) {
-			i += 7;
-			i = parse_cgi(file, i, a);
-			cgi++;
-		} else if (file.compare(i, 17, "fastcgi_extension") == 0) {
-			i += 17;
-			i = parse_cgi_ext(file, i, a);
-			cgi_ext++;
-		} else if (file.compare(i, 6, "upload") == 0) {
+        } else if (file.compare(i, 3, "cgi") == 0) {
+		 	i += 3;
+		 	i = parse_cgi(file, i, a);
+		}
+		else if (file.compare(i, 6, "upload") == 0) {
 			i += 6;
 			i = parse_upload(file, i ,a);
 		} else if (file[i] && !isspace(file[i]) && file[i] != '#' && file[i] != '}')
@@ -68,7 +63,5 @@ Location parse_location(std::string file)
         a.adding_method(GET);
         a.adding_method(POST);
     }
-	if (cgi != cgi_ext)
-		throw std::invalid_argument("invalid number of arguments for fastcgi");
 	return a;
 }

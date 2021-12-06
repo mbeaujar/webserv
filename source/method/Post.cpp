@@ -118,12 +118,13 @@ void Post::execute(void)
 				
 				// query string
 				bool is_app = APPEND;
+				std::string path_cgi;
 
 				if (_request.get_content_type() == "application/x-www-form-urlencoded")
 				{
-					if (this->is_extension(_path_file, _location.get_cgi_ext()) == true)
+					if ((path_cgi = _location.find_path_cgi(extension(_path_file))) != "")
 					{
-						Cgi a(_location.get_path_cgi());
+						Cgi a(path_cgi);
 
 						content = get_file_content(_file_name);
 						_request.set_query_string(content);
@@ -135,9 +136,9 @@ void Post::execute(void)
 				}
 				else
 				{
-					if (this->is_extension(_path_file, _location.get_cgi_ext()) == true)
+					if ((path_cgi = _location.find_path_cgi(extension(_path_file))) != "")
 					{
-						Cgi a(_location.get_path_cgi());
+						Cgi a(path_cgi);
 						content = a.execute(_request, POST, _client_socket, _file_name);
 					}
 					else

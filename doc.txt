@@ -1,0 +1,14 @@
+-> test query string pour cgi
+	env QUERY_STRING="mael=value&moi=aussi" php-cgi www/query_string.php > index.html
+
+-> stress test (:80)
+	siege localhost -r100 -c100
+
+-> curl 
+	curl ...
+
+-> netcat
+	nc localhost 80 < file
+
+-> requête a nginx
+	echo -en "GET / HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\nCookie: user=mael\r\n\r\n" | nc localhost 80

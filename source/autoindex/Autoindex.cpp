@@ -95,7 +95,8 @@ void Autoindex::fill_lists(void)
 				_body += this->create_element(for_dir->d_name, true);
 			else if (strcmp(for_dir->d_name, ".") != 0)
 			{
-				if (is_directory(_path_file + for_dir->d_name))
+				std::string path_file = _path_file + for_dir->d_name;
+				if (is_directory(path_file))
 					_directory.push_back(for_dir);
 				else
 					_file.push_back(for_dir);

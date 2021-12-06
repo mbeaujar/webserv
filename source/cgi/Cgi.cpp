@@ -61,6 +61,7 @@ std::string & Cgi::execute(Request & request, int method, int & client_socket, s
 	std::string file;
 	bool ret;
 
+	_path_file_in = path_in;
 	file = ".cgi_" + to_string(client_socket);
 	_fd_out = this->create_file(file);
 	_fd_in = open(path_in.c_str(), O_RDONLY);
@@ -269,7 +270,7 @@ void Cgi::parse_status(Request &request, std::string error)
 	request.set_error(std::make_pair(code, error.substr(i, skip - i)));
 }
 
-void Cgi::parse_header(Request &request, std::string header)
+void Cgi::parse_header(Request & request, std::string & header)
 {
 	for (int i = 0; header[i]; i++)
 	{

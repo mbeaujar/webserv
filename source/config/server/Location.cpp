@@ -10,8 +10,7 @@ Location::Location() :
 	_root("/var/www/html"),
 	_index(),
 	_method(),
-	_path_cgi(),
-	_cgi_ext(),
+	_cgi(),
 	_return(-1, "") {}
 
 /**
@@ -31,8 +30,7 @@ Location::Location(Location const &copy) :
 	_root(copy._root),
 	_index(copy._index),
 	_method(copy._method),
-	_path_cgi(copy._path_cgi),
-	_cgi_ext(copy._cgi_ext),
+	_cgi(copy._cgi),
 	_return(copy._return) {}
 
 /**
@@ -50,8 +48,7 @@ Location& Location::operator=(Location const &copy)
 	_root = copy._root;
 	_index = copy._index;
 	_method = copy._method;
-	_path_cgi = copy._path_cgi;
-	_cgi_ext = copy._cgi_ext;
+	_cgi = copy._cgi;
 	_return = copy._return;
 	return *this;
 }
@@ -105,18 +102,24 @@ void Location::set_return(int const & code, std::string const & path) {
 }
 
 void 							Location::set_upload(std::string const & upload) { _upload = upload; }
-void 							Location::set_path_cgi(std::string const & path_cgi) { _path_cgi = path_cgi; }
-void 							Location::set_cgi_ext(std::string const & cgi_ext) { _cgi_ext = cgi_ext; }
 void 							Location::set_max_body(int const & max_body) { _max_body = max_body; }
+void							Location::set_cgi(std::string const & ext, std::string const & path) { _cgi.insert(std::make_pair(ext, path)); }
 
 int& 							Location::get_max_body() { return _max_body; }
 bool& 							Location::get_autoindex() { return _autoindex; }
 std::string& 					Location::get_upload() { return _upload; }
-std::string 					Location::get_path_cgi() { return _path_cgi; }
-std::string& 					Location::get_cgi_ext() { return _cgi_ext; }
 std::string& 					Location::get_root() { return _root; }
 std::vector<std::string>&		Location::get_index() { return _index; }
 std::pair<int, std::string>&	Location::get_return() { return _return; }
+std::map<std::string, std::string> &  Location::get_cgi() { return _cgi; }
+
+std::string 					Location::find_path_cgi(std::string const & ext)
+{
+	std::map<std::string, std::string>::iterator search;
+	if ((search = _cgi.find(ext)) != _cgi.end())
+		return search->second;
+	return "";
+}
 
 bool Location::find_index(std::string const & index) {
 	std::vector<std::string>::const_iterator it = _index.begin(), ite = _index.end();

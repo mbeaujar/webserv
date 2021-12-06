@@ -1,8 +1,8 @@
 #.SILENT:
 NAME   = webserv
-CC     = clang++
+CXX     = clang++
 RM     = rm -rf
-CFLAGS = -Wall -Wextra -Werror -std=c++98
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 
 HEADER = -I source  \
 	-I source/config/server \
@@ -17,8 +17,7 @@ SRCS  =	main.cpp \
 		config/directives/autoindex.cpp \
 		config/directives/client_size.cpp \
 		config/directives/error_page.cpp \
-		config/directives/cgi_ext.cpp \
-		config/directives/path_cgi.cpp \
+		config/directives/cgi.cpp \
 		config/directives/index.cpp \
 		config/directives/listen.cpp \
 		config/directives/method.cpp \
@@ -30,7 +29,7 @@ SRCS  =	main.cpp \
 		config/server/s_method.cpp \
 		config/server/parse_location.cpp \
 		config/server/parse_server.cpp \
-		config/server/Port.cpp \
+		config/server/s_port.cpp \
 		config/server/Server.cpp \
 		config/parser.cpp \
 		autoindex/Autoindex.cpp \
@@ -51,12 +50,12 @@ SRCS_DIRECTORY=source/
 OBJS_DIRECTORY=.objs/
 
 $(OBJS_DIRECTORY)%.o : $(SRCS_DIRECTORY)%.cpp
-	@$(CC) $(CFLAGS) $(HEADER) $< -c -o $@
+	@$(CXX) $(CXXFLAGS) $(HEADER) $< -c -o $@
 
 all : $(OBJS_DIRECTORY) $(NAME)
 
 $(NAME) : $(OBJS)
-	@$(CC) $(CFLAGS) $(OBJS) $(HEADER) -lpthread -o $(NAME)
+	@$(CXX) $(CXXFLAGS) $(OBJS) $(HEADER) -lpthread -o $(NAME)
 
 $(OBJS_DIRECTORY):
 	@mkdir $@

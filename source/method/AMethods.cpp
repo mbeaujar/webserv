@@ -9,7 +9,6 @@ AMethods::AMethods(Server & server, Request & request, int method, int & client_
 	_client_socket(client_socket),
 	_body() {}
 
-
 AMethods::AMethods(AMethods const & src) :
     _method(src._method),
     _location(src._location),
@@ -71,6 +70,8 @@ bool AMethods::is_method_allowed(void)
 
 std::string & AMethods::get_body(void) { return _body; } // only for GET
 
+std::string & AMethods::get_path(void) { return _path_file; } // only for GET
+
 // ------------------------- PRIVATE ------------------------ //
 
 std::string AMethods::path_in_common(std::string const & path_location, std::string & path)
@@ -91,9 +92,9 @@ std::string AMethods::path_in_common(std::string const & path_location, std::str
 
 void AMethods::update_path_file(void)
 {
+	int i = 0;
 	std::string & path = _request.get_path();
 	std::string & root = _location.get_root();
-	int i = 0;
 
 	while (path[i] && _path_file[i] && path[i] == _path_file[i])
 		++i;
@@ -107,7 +108,6 @@ void AMethods::update_path_file(void)
 	if (len > 1 && path[i] != '/' && root[len - 1] != '/')
 		root.push_back('/'); 
 	_path_file = root + path.substr(i, path.length() - i);
-	_request.set_file(_path_file);
 }
 
 int AMethods::path_to_file(void)
@@ -127,6 +127,7 @@ int AMethods::path_to_file(void)
 				if (file_exist(path_with_index) == true && is_directory(path_with_index) == false)
 				{
 					_path_file = path_with_index;
+					_request.set_file(_path_file);
 					return EXIT_SUCCESS;
 				}
 				++it;
@@ -145,6 +146,7 @@ int AMethods::path_to_file(void)
 					_request.set_error(std::make_pair(400, "Bad Request"));
 			}
 		}
+		_request.set_file(_path_file);
 	}
 	else if (_method == POST)
 	{
@@ -193,7 +195,8 @@ void AMethods::create_path(void)
 			std::string word = _path_file.substr(i, j - i);
 			if (_path_file[j] == '/')
 			{
-				if (is_directory(_path_file.substr(0, j)) == false)
+				std::string dir = _path_file.substr(0, j);
+				if (is_directory(dir) == false)
 						mkdir(word.c_str(), S_IRWXO);
 			}
 			else
@@ -207,7 +210,6 @@ void AMethods::create_path(void)
 			i++;
 	}
 }
-
 
 // ------------------- PROTECTED --------------------- //
 
@@ -226,8 +228,8 @@ bool AMethods::is_extension(std::string & path, std::string const & extension)
 
 int AMethods::get_port(void)
 {
-	std::vector<Port> list = _server.get_port();
-	std::vector<Port>::iterator it = list.begin(), ite = list.end();
+	std::vector<s_port> list = _server.get_port();
+	std::vector<s_port>::iterator it = list.begin(), ite = list.end();
 
 	while (it != ite)
 	{

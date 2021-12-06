@@ -28,7 +28,7 @@ Server& Server::operator=(Server const &copy) {
 }
 
 void Server::adding_port(int const &port, bool const &ipv4 = true) {
-	Port a;
+	s_port a;
 	a.port = port;
 	a.ipv4 = ipv4;
 	_port.push_back(a);
@@ -56,10 +56,10 @@ int Server::get_number_of_port() const { return _port.size(); }
 
 bool Server::get_default_server() const { return _default_server; }
 
-std::vector<Port>& Server::get_port() { return _port; }
+std::vector<s_port>& Server::get_port() { return _port; }
 
 bool Server::find_port(int const & port, bool const & ipv4) const {
-	std::vector<Port>::const_iterator it = _port.begin(), ite = _port.end();
+	std::vector<s_port>::const_iterator it = _port.begin(), ite = _port.end();
 
 	while (it != ite) {
 		if (it->port == port && it->ipv4 == ipv4)
@@ -97,8 +97,8 @@ void printserver(Server &a)
 {
 	std::cout << "---------- SERVER ----------" << "\n" << "\n";
 	std::cout << "> port : ";
-	std::vector<Port> b = a.get_port();
-	std::vector<Port>::iterator it = b.begin(), ite = b.end();
+	std::vector<s_port> b = a.get_port();
+	std::vector<s_port>::iterator it = b.begin(), ite = b.end();
 	while (it != ite)
 	{
 		std::cout << "[ " << it->port << ", ";
@@ -157,10 +157,15 @@ void printserver(Server &a)
 			std::cout << "DELETE";
 		}
 		std::cout << std::endl;
-		if (it2->second.get_path_cgi() != "")
-			std::cout << "\t- fastcgi: " << it2->second.get_path_cgi() << std::endl;
-		if (it2->second.get_max_body() != -1)
-			std::cout << "\t- max_body: " << it2->second.get_max_body() << std::endl;
+		std::map<std::string, std::string> & cgi = it2->second.get_cgi();
+		std::map<std::string, std::string>::iterator cgi1 = cgi.begin(), cgi2 = cgi.end();
+		std::cout << "\t-> cgi" << std::endl;
+		while (cgi1 != cgi2)
+		{
+			std::cout << "\t\t- ext  : " << cgi1->first << std::endl;
+			std::cout << "\t\t- path : " << cgi1->second << std::endl;
+			++cgi1;
+		}
 		std::pair<int, std::string> g = it2->second.get_return();
 		if (g.first >= 0)
 			std::cout << "\t- return : " << g.first << " " << g.second << "\n";

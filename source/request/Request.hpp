@@ -36,6 +36,7 @@ class Request
         void			            set_query_string(std::string const & query_string);
         void			            set_error(std::pair<int, std::string> const & error);
         void			            set_return(std::pair<int, std::string> const & error);
+        void			            set_accept(std::map<std::string, int> const & accept);
 
 		// Getters
         int	&			            get_method();
@@ -49,6 +50,7 @@ class Request
 		std::string &         		get_file();
         std::pair<int, std::string> &get_error();
         std::pair<int, std::string> &get_return();
+        std::map<std::string, int> &get_accept();
 
         //Methods
     private:
@@ -64,15 +66,17 @@ class Request
 
 		std::pair<int, std::string> _error;
 		std::pair<int, std::string> _return;
+		std::map<std::string, int> _accept;
         
-
+		bool 		is_query(std::string & path);
+        std::string parse_query(std::string & path);
         int         skip_the_word(std::string & file, int i);
-        int         find_query_string(std::string & request, int i);
-        void        get_first_line(std::string & request);
+        int        get_first_line(std::string & request);
         std::string recup_word(std::string & request, int & i);
 		char*		read_header(int client_socket);
         void        parse_header(std::string header);
 		void        print_request(void);
+		void 		parse_accept(std::string & content);
 };
 
 #endif /* _REQUEST_HPP_ */

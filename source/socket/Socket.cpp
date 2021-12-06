@@ -122,8 +122,8 @@ int Socket::config_sockets(std::vector<Server> &servers)
 
 	while (it != ite)
 	{
-		std::vector<Port> lst = it->get_port();
-		std::vector<Port>::iterator begin = lst.begin(), end = lst.end();
+		std::vector<s_port> lst = it->get_port();
+		std::vector<s_port>::iterator begin = lst.begin(), end = lst.end();
 		while (begin != end)
 		{
 			int server_socket;
@@ -287,12 +287,12 @@ int Socket::create_thread(int & client_socket, Server & server)
 int Socket::doublon_ports(std::vector<Server> & servers)
 {
 	std::vector<Server>::iterator it = servers.begin(), ite = servers.end();
-	std::vector<Port>::iterator begin, end;
-	std::map<Port, int> list;
+	std::vector<s_port>::iterator begin, end;
+	std::map<s_port, int> list;
 
 	while (it != ite)
 	{
-		std::vector<Port> &tmp = it->get_port();
+		std::vector<s_port> &tmp = it->get_port();
 		if (tmp.size() == 0)
 		{
 			std::cerr << "webserv: [emerg]: class Socket: doublon_ports: Server without port" << "\n";

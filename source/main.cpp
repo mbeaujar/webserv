@@ -31,6 +31,17 @@ int main(int argc, char *argv[])
 
 // ----------------------- UTILS ---------------------- //
 
+std::string	extension(std::string & ext) 
+{
+	int i = ext.length() - 1;
+
+	while (i > 0 && ext[i] != '.')
+		--i;
+	if (i == 0)
+		return "";
+	return ext.substr(i, ext.length() - i);
+}
+ 
 void debug(std::vector<Server> &servers)
 {
 	std::vector<Server>::iterator it = servers.begin(), ite = servers.end();
@@ -41,7 +52,7 @@ void debug(std::vector<Server> &servers)
 	}
 }
 
-bool file_exist(std::string filename)
+bool file_exist(std::string & filename)
 {
 	std::ifstream file;
 	file.open(filename.c_str());
@@ -54,7 +65,7 @@ bool file_exist(std::string filename)
 	return false;
 }
 
-bool is_directory(std::string path)
+bool is_directory(std::string & path)
 {
 	struct stat s;
 	if (stat(path.c_str(), &s) == 0)

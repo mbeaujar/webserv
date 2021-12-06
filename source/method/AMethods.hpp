@@ -26,6 +26,7 @@ class AMethods
 		int		search_location(void);
 		bool is_method_allowed(void);
 		std::string & get_body(void);
+		std::string & get_path(void);
 
 	private:
 		std::string	path_in_common(std::string const & path_location, std::string & path);
@@ -33,7 +34,6 @@ class AMethods
 		int			path_to_file(void);
 		bool		path_upload(void);
 		void 		create_path(void);
-
 
 	protected:
 		int		 	_method;

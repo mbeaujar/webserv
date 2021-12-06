@@ -41,9 +41,9 @@ class Cgi
 		int create_file(std::string name);
 		std::string &  error(Request & request, std::string reason);
 		void parse(Request & request, int & client_socket);
-		std::string parse_cgi(Request &request, std::string response);
-		void parse_header(Request &request, std::string header);
-		void parse_status(Request &request, std::string error);
+		std::string parse_cgi(Request & request, std::string response);
+		void parse_header(Request & request, std::string & header);
+		void parse_status(Request & request, std::string error);
 		int skip_line(std::string line, int i);
 		int header_size(std::string & content);
 };
