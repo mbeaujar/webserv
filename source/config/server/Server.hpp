@@ -36,7 +36,7 @@ class Server
 		bool							_default_server;
 		int								_current_port;
 		std::vector<s_port>				_port;
-		std::map<int , std::string>		_error_page;
+		std::map<int, std::string>		_error_page;
 		std::map<std::string, Location> _location;
 };
 

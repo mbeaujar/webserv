@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 	{
 		std::vector<Server> servers;
 		servers = parser(argv[1]);
-		debug(servers);
+		// debug(servers);
 		
 		Socket sockets;
 
@@ -90,4 +90,11 @@ std::string get_file_content(std::string filename)
 	}
 	std::cerr << "Error: can't open the file: " << filename << "\n";
 	return "";
+}
+
+int skip_line(std::string & line, int i)
+{
+	while (line[i] && line[i] != '\n')
+		++i;
+	return i;
 }

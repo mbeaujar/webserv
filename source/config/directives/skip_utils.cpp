@@ -1,5 +1,4 @@
-#include <iostream>
-#include "../../prototype.hpp"
+#include "prototype.hpp"
 
 int recup_nb(std::string & file, int & i) {
 	int port = 0;

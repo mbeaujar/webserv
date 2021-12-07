@@ -152,7 +152,6 @@ int Cgi::create_argv(void)
 		_argv = NULL;
 		return EXIT_FAILURE;
 	}
-	// std::cerr << "cgi path: " << _path_cgi << "\n";
 	_argv[0] = this->strdup(_path_cgi.c_str());
 	_argv[1] = this->strdup(_path_file_in.c_str());
 	_argv[2] = NULL;
@@ -247,13 +246,6 @@ int Cgi::header_size(std::string & response)
 			return i + 2;
 		++i;
 	}
-	return i;
-}
-
-int Cgi::skip_line(std::string line, int i)
-{
-	while (line[i] && line[i] != '\n')
-		++i;
 	return i;
 }
 

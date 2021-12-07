@@ -50,8 +50,10 @@ Socket & Socket::operator=(Socket const & copy)
 	return *this;
 }
 
-void Socket::execute(std::vector<Server> &servers)
+void Socket::execute(std::vector<Server> & servers)
 {
+	if (this->doublon_ports(servers) == EXIT_FAILURE)
+		return ;
 	if (this->config_sockets(servers) == EXIT_FAILURE)
 		return;
 	std::map<int, Server>::iterator search, ite = _sockets.end();
@@ -292,7 +294,7 @@ int Socket::doublon_ports(std::vector<Server> & servers)
 
 	while (it != ite)
 	{
-		std::vector<s_port> &tmp = it->get_port();
+		std::vector<s_port> & tmp = it->get_port();
 		if (tmp.size() == 0)
 		{
 			std::cerr << "webserv: [emerg]: class Socket: doublon_ports: Server without port" << "\n";
@@ -302,11 +304,12 @@ int Socket::doublon_ports(std::vector<Server> & servers)
 		end = tmp.end();
 		while (begin != end)
 		{
-			if (list.insert(std::make_pair(*begin, 0)).first == list.end())
+			if (list.find(*begin) != list.end())
 			{
 				std::cerr << "webserv: [emerg]: class Socket: doublon_ports: Servers with same port" << "\n";
 				return EXIT_FAILURE;
 			}
+			list.insert(std::make_pair(*begin, 0));
 			++begin;
 		}
 		++it;

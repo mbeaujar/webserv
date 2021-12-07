@@ -12,3 +12,6 @@
 
 -> requête a nginx
 	echo -en "GET / HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\nCookie: user=mael\r\n\r\n" | nc localhost 80
+
+
+	echo -en "GET /index.html HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" | nc localhost 80

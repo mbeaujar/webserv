@@ -7,9 +7,11 @@ Response::Response(int & client_socket, Request & request, Server & server) :
 	_response(),
 	_method(NULL),
 	_content_length(),
-	_mime()
+	_mime(),
+	_error()
 {
 	this->init_type_mimes();
+	this->init_error();
 }
 
 
@@ -20,7 +22,8 @@ Response::Response(Response const & copy) :
 	_response(copy._response),
 	_method(copy._method),
 	_content_length(copy._content_length),
-	_mime(copy._mime) {}
+	_mime(copy._mime),
+	_error(copy._error) {}
 
 Response::~Response()
 {
@@ -39,6 +42,7 @@ Response & Response::operator=(Response const & copy)
 		_method = copy._method;
 		_content_length = copy._content_length;
 		_mime = copy._mime;
+		_error = copy._error;
     }
     return *this;
 }
@@ -62,7 +66,7 @@ void Response::execute(void)
 				}
 			}
 		}
-		if (ISERROR(_request.get_error().first) == true && _request.get_method() == GET)
+		if ((ISERROR(_request.get_error().first) == true || ISREDIRECT(_request.get_return().first) == true) && _request.get_method() == GET)
 		{
 			body = this->error_html();
 			_request.set_content_type(_mime[".html"]);
@@ -93,26 +97,43 @@ void Response::send_response(void)
 
 std::string Response::error_html(void)
 {
+	std::string status;
+	std::string path;
 	std::pair<int, std::string> error = _request.get_error();
-	std::string status = to_string(error.first) + " " + error.second;
-	std::string path = _server.find_error(error.first);
-	if (path.empty() == false)
+	std::pair<int, std::string> redirect = _request.get_return();
+
+
+	if (ISREDIRECT(redirect.first) == true)
 	{
-		if (file_exist(path))
-			return get_file_content(path);
+		if (redirect.first >= 300 && redirect.first <= 307 && redirect.first != 306)
+		{
+			std::map<int, std::string>::iterator search  = _error.find(redirect.first);
+			_request.set_error(std::make_pair(search->first, search->second));
+			status = to_string(redirect.first) + " " + search->second;
+		}
+		else
+		{
+			_request.set_error(std::make_pair(redirect.first, ""));
+			return redirect.second;
+		}
 	}
-	path = "<html>\n";
-	path += "	<head>\n";
-	path += "		<title>" + status + "</title>\n";
-	path += "	</head>\n";
-	path += "	<body bgcolor=\"white\">\n";
-	path += "		<center>\n";
-	path += "			<h1>" + status + "</h1>\n";
-	path += "		</center>\n";
-	path += "		<hr>\n";
-	path += "		<center>webserv/1.0.0 (Ubuntu)</center>\n";
-	path += "	</body>\n";
-	path += "</html>\n";
+	else if (ISERROR(error.first) == true)
+	{
+		status = to_string(error.first) + " " + error.second;
+		std::string path = _server.find_error(error.first);
+		if (path.empty() == false)
+		{
+			if (file_exist(path))
+				return get_file_content(path);
+		}
+	}
+	path += "<html>\r\n";
+	path += "<head><title>" + status + "</title></head>\r\n";
+	path += "<body bgcolor=\"white\">\r\n";
+	path += "<center><h1>" + status + "</h1></center>\r\n";
+	path += "<hr><center>webserv/1.0.0 (Ubuntu)</center>\r\n";
+	path += "</body>\r\n";
+	path += "</html>\r\n";
 	return path;
 }
 
@@ -157,6 +178,25 @@ std::string Response::allow_method(void)
 	return method;
 }
 
+// Tue, 07 Dec 2021 14:11:18 GMT
+//  Wed, 21 Oct 2015 07:29:00 GMT;
+
+std::string get_update_date(std::string date)
+{
+	size_t begin = date.find(':', 0);
+	size_t end = date.find(':', begin + 1);
+
+	std::string before = date.substr(0, begin);
+	std::string min = date.substr(begin + 1, end - begin);
+	std::string after = date.substr(end + 1, date.length() - end);
+	size_t nb = atoi(min.c_str());
+	nb++;
+	std::string new_nb = to_string(nb);
+	if (nb < 10)
+		new_nb.insert(new_nb.begin(), '0');
+	return before + ":" + new_nb + ":" + after;
+}
+
 std::string Response::get_hour_date(void)
 {
 	char buf[1000];
@@ -169,9 +209,9 @@ std::string Response::get_hour_date(void)
 
 std::string get_last_modified(std::string & path)
 {
-	struct stat stats;
 	tm *tm;
 	char buf[1000];
+	struct stat stats;
 
 	memset(&stats, 0, sizeof(stats));
 	stat(path.c_str(), &stats);
@@ -183,14 +223,14 @@ std::string get_last_modified(std::string & path)
 
 void Response::create_header(void)
 {
-	std::pair<int, std::string> & redirect  = _request.get_return();
 	std::pair<int, std::string> & error     = _request.get_error();
+	std::pair<int, std::string> & redirect  = _request.get_return();
 
-	if (ISREDIRECT(redirect.first))
-	{
-		error.first = redirect.first;
-		error.second = "Moved Permanently";
-	}
+	// if (ISREDIRECT(redirect.first))
+	// {
+	// 	error.first = redirect.first;
+	// 	error.second = "Moved Permanently";
+	// }
 	_response = "HTTP/1.1 " + to_string(error.first) + " " + error.second + "\r\n";
 	_response += "Server: webserv/1.0.0 (Ubuntu)\r\n";
 	_response += "Date: " + this->get_hour_date() + "\r\n";
@@ -199,17 +239,24 @@ void Response::create_header(void)
 		_response += "Content-Type: " + _request.get_content_type() + "\r\n";
 	if (_request.get_method() == GET)
 		_response += "Content-length: " + to_string(_content_length) + "\r\n";
-	_response += "Set-Cookie: fname=mael\r\n";
-	if (file_exist(_request.get_file()) == true)
+	if (ISERROR(error.first) == false && IS_RANGE_REDIRECT(redirect.first) == false && file_exist(_request.get_file()) == true)
 		_response += "Last-Modified: " + get_last_modified(_request.get_file()) + "\r\n";
 	if (error.first == 405)
 		_response += "Allow: " + this->allow_method() + "\r\n";
-	if (ISREDIRECT(redirect.first) || error.first == 201)
+	if (IS_RANGE_REDIRECT(redirect.first) || error.first == 201)
 	{
-		if (ISREDIRECT(redirect.first))
+		if (IS_RANGE_REDIRECT(redirect.first))
 			_response += "Location: " + redirect.second + "\r\n";
 		else
 			_response += "Location: " + _request.get_path() + "\r\n";
+	}
+	if (_request.get_new_client() == true)
+	{
+		_request.generate_cookie_username();
+		_request.generate_cookie_color();
+		std::cout << "Welcome " + _request.get_cookie_username() + " your color is " + _request.get_cookie_color() << std::endl;
+		_response += "Set-Cookie: username=" + _request.get_cookie_username() + "\r\n";
+		_response += "Set-Cookie: color=" + _request.get_cookie_color() + "; Expires=" + get_update_date(this->get_hour_date()) + ";\r\n";
 	}
 	_response += "\r\n"; // blank line
 }
@@ -247,7 +294,6 @@ void Response::check_content_type(std::string & path_file)
 							special_case = "audio/3gpp2";
 						if (this->set_content_type(search->second, accept) == false)
 							_request.set_error(std::make_pair(406, "Not Acceptable"));
-							
 					}
 				}
 				else
@@ -348,3 +394,49 @@ void Response::init_type_mimes(void)
 	_mime[".7z"] = "application/x-7z-compressed";
 }
 
+
+void Response::init_error(void)
+{
+	if (_error.size() > 0)
+		return;
+	_error[100] = "Continue";
+	_error[101] = "Switching Protocols";
+	_error[200] = "OK";
+	_error[201] = "Created";
+	_error[202] = "Accepted";
+	_error[203] = "Non-Authoritative Information";
+	_error[204] = "No Content";
+	_error[205] = "Reset Content";
+	_error[206] = "Partial Content";
+	_error[300] = "Multiple Choices";
+	_error[301] = "Moved Permanently";
+	_error[302] = "Found";
+	_error[303] = "See Other";
+	_error[304] = "Not Modified";
+	_error[305] = "Use Proxy";
+	_error[307] = "Temporary Redirect";
+	_error[400] = "Bad Request";
+	_error[401] = "Unauthorized";
+	_error[402] = "Payment Required";
+	_error[403] = "Forbidden";
+	_error[404] = "Not Found";
+	_error[405] = "Method Not Allowed";
+	_error[406] = "Not Acceptable";
+	_error[407] = "Proxy Authentication Required";
+	_error[408] = "Request Timeout";
+	_error[409] = "Conflict";
+	_error[410] = "Gone";
+	_error[411] = "Length Required";
+	_error[412] = "Precondition Failed";
+	_error[413] = "Request Entity Too Large";
+	_error[414] = "Request-URI Too Long";
+	_error[415] = "Unsupported Media Type";
+	_error[416] = "Requested Range Not Satisfiable";
+	_error[417] = "Expectation Failed";
+	_error[500] = "Internal Server Error";
+	_error[501] = "Not Implemented";
+	_error[502] = "Bad Gateway";
+	_error[503] = "Service Unavailable";
+	_error[504] = "Gateway Timeout";
+	_error[505] = "HTTP Version Not Supported";
+}

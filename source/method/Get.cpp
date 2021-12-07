@@ -28,24 +28,32 @@ void Get::execute(void)
 {
 	if (this->search_location() == EXIT_SUCCESS)
 	{
-		if (this->is_method_allowed() == true)
+		if (this->is_redirect() == false)
 		{
-			std::string path_cgi;
+			if (this->is_method_allowed() == true)
+			{
+				std::string path_cgi;
 
-			if (is_directory(_path_file) == true && _location.get_autoindex() == true)
-			{
-				Autoindex a(_path_file, _request.get_path(), _request.get_host(), this->get_port());
-				_body = a.get_content();
-			}
-			else if ((path_cgi = _location.find_path_cgi(extension(_path_file))) != "")
-			{
-				Cgi a(path_cgi);
-				_body = a.execute(_request, GET, _client_socket, _path_file);
-			}
-			else
-			{
-				_body = get_file_content(_path_file);
+				if (is_directory(_path_file) == true && _location.get_autoindex() == true)
+				{
+					Autoindex a(_path_file, _request.get_path(), _request.get_host(), this->get_port());
+					_body = a.get_content();
+				}
+				else if ((path_cgi = _location.find_path_cgi(extension(_path_file))) != "")
+				{
+					Cgi a(path_cgi);
+					_body = a.execute(_request, GET, _client_socket, _path_file);
+				}
+				else
+					_body = get_file_content(_path_file);
 			}
 		}
+		else
+			_request.set_return(_location.get_return());
 	}
 }
+
+
+// -------------------- PRIVATE -------------------  //
+
+bool Get::is_redirect(void) {	return ISREDIRECT(_location.get_return().first); }

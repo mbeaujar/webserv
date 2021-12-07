@@ -9,11 +9,13 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <cstring>
+# include <time.h>
 
 # define MAX_LEN 8192
 # define FIX_BROKEN_PIPE usleep(TIME)
 
 void lower_file(std::string & request);
+int skip_line(std::string & line, int i);
 
 class Request
 {
@@ -37,6 +39,8 @@ class Request
         void			            set_error(std::pair<int, std::string> const & error);
         void			            set_return(std::pair<int, std::string> const & error);
         void			            set_accept(std::map<std::string, int> const & accept);
+		void						generate_cookie_username(void);
+		void						generate_cookie_color(void);
 
 		// Getters
         int	&			            get_method();
@@ -46,13 +50,15 @@ class Request
         std::string	&	            get_host();
 		std::string	&	            get_query_string();
         std::string	&	            get_content_type();
+        std::string	&	            get_cookie_username();
+        std::string	&	            get_cookie_color();
         struct s_method	&           get_methods();
 		std::string &         		get_file();
         std::pair<int, std::string> &get_error();
         std::pair<int, std::string> &get_return();
-        std::map<std::string, int> &get_accept();
+        std::map<std::string, int>  &get_accept();
+		bool &                      get_new_client(void);
 
-        //Methods
     private:
         int           	            _method;
         int                         _content_length;
@@ -63,10 +69,12 @@ class Request
         std::string		            _query_string;
         std::string                 _content_type;
        	struct s_method    		    _methods;
-
+		std::string 				_cookie_username;
+		std::string 				_cookie_color;
+		bool 						_new_client;
 		std::pair<int, std::string> _error;
 		std::pair<int, std::string> _return;
-		std::map<std::string, int> _accept;
+		std::map<std::string, int>  _accept;
         
 		bool 		is_query(std::string & path);
         std::string parse_query(std::string & path);
@@ -77,6 +85,7 @@ class Request
         void        parse_header(std::string header);
 		void        print_request(void);
 		void 		parse_accept(std::string & content);
+		void		parse_cookie(std::string & content);
 };
 
 #endif /* _REQUEST_HPP_ */

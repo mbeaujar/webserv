@@ -120,14 +120,19 @@ void Post::execute(void)
 				bool is_app = APPEND;
 				std::string path_cgi;
 
+				// _path_file = /post_form.php
 				if (_request.get_content_type() == "application/x-www-form-urlencoded")
 				{
 					if ((path_cgi = _location.find_path_cgi(extension(_path_file))) != "")
 					{
+						// std::cerr << "DEBUGGGGGGGGGGGGGGGGGGGG" << std::endl;
 						Cgi a(path_cgi);
-
+						// std::cerr << "path_cgi: " << path_cgi << std::endl;
+						// std::cerr << "_file_name: " << _file_name << std::endl;
+						// std::cerr << "_path_file: " << _path_file << std::endl;
 						content = get_file_content(_file_name);
 						_request.set_query_string(content);
+						// std::cerr << "QUERY: " << _request.get_query_string() << std::endl;
 						content = a.execute(_request, POST, _client_socket, _path_file);
 						is_app = NOAPPEND;
 					}

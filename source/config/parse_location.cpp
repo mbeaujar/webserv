@@ -39,11 +39,11 @@ Location parse_location(std::string file)
 			i += 6;
 			i = parse_return(file, i, a);
 		}
-		else if (file.compare(i, 20, "client_max_body_size") == 0) {
-		 	i += 20;
+		else if (file.compare(i, 8, "max_body") == 0) {
+		 	i += 8;
 		 	nb_client_size++;
 		 	if (nb_client_size > 1)
-		 		throw std::invalid_argument("\"client_max_body_size\" directive is duplicate");
+		 		throw std::invalid_argument("\"max_body\" directive is duplicate");
 		 	i = parse_client_size(file, i, a);
 		} else if (file.compare(i, 6, "method") == 0) {
             i += 6;

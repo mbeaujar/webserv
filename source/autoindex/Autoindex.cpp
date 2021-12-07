@@ -108,8 +108,8 @@ void Autoindex::fill_lists(void)
 
 std::string Autoindex::get_date(std::string & filename)
 {
-	std::vector<std::string> words;
 	int x = 0, pos = 0;
+	std::vector<std::string> words;
 
 	std::string path = _path_file + filename;
 	path = get_last_modified(path);

@@ -26,7 +26,6 @@ std::string read_file(std::string filename)
     return contents.str();
 }
 
-
 /**
  * @brief parse the file in argument 
  * 

@@ -17,6 +17,10 @@ class Get : public AMethods
         Get & operator=(Get const & rhs);
 
         void execute(void);
+		std::pair<int, std::string> get_redirect(void);
+
+	private:
+		bool is_redirect(void);
 };
 
 #endif /* _GET_HPP_ */

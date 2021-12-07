@@ -1,5 +1,4 @@
-#include "../../prototype.hpp"
-#include "../server/Location.hpp"
+#include "prototype.hpp"
 
 int parse_method(std::string file, int i, Location &a)
 {

@@ -1,6 +1,4 @@
-#include "../../prototype.hpp"
-#include "../server/Location.hpp"
-
+#include "prototype.hpp"
 
 int is_limit(char c) {
 	return (c == '{' || c == '}' || c == ';' || isspace(c) || c == '#' || c == 0);

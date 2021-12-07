@@ -1,13 +1,11 @@
-#include <iostream>
-#include "../../prototype.hpp"
-#include "../server/Location.hpp"
+#include "prototype.hpp"
 
 int parse_client_size(std::string file, int i, Location &a)
 {
 	int max_size = -1;
 
 	if (!isspace(file[i]))
-		throw std::invalid_argument("unknow directive \"client_max_body_size" + file.substr(i, skip_word_exception(file, i) - i) + "\"");
+		throw std::invalid_argument("unknow directive \"max_body" + file.substr(i, skip_word_exception(file, i) - i) + "\"");
 	while (file[i] && file[i] != ';')
 	{
 		i = skip_space(file, i);
@@ -18,13 +16,13 @@ int parse_client_size(std::string file, int i, Location &a)
 				if (file[i] == 'm' || file[i] == 'M')
 					++i;
 			} else 
-				throw std::invalid_argument("\"client_max_body_size\" directive invalid value");
+				throw std::invalid_argument("\"max_body\" directive invalid value");
 		}
 	}
 	if (!file[i])
 		throw std::invalid_argument("unexpected \"}\"");
 	if (max_size == -1)
-		throw std::invalid_argument("invalid number of arguments in \"client_max_body_size\"");
+		throw std::invalid_argument("invalid number of arguments in \"max_body\"");
 	a.set_max_body(max_size);
 	if (file[i] == ';')
 		++i;

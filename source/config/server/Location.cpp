@@ -101,9 +101,15 @@ void Location::set_return(int const & code, std::string const & path) {
 	}
 }
 
-void 							Location::set_upload(std::string const & upload) { _upload = upload; }
 void 							Location::set_max_body(int const & max_body) { _max_body = max_body; }
-void							Location::set_cgi(std::string const & ext, std::string const & path) { _cgi.insert(std::make_pair(ext, path)); }
+void 							Location::set_upload(std::string const & upload) { _upload = upload; }
+
+void Location::set_cgi(std::string const &ext, std::string const &path)
+{
+	if (_cgi.find(ext) != _cgi.end())
+		throw std::invalid_argument("invalid argument in \"cgi\" directive, doublon extension");
+	_cgi.insert(std::make_pair(ext, path));
+}
 
 int& 							Location::get_max_body() { return _max_body; }
 bool& 							Location::get_autoindex() { return _autoindex; }

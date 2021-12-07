@@ -10,6 +10,8 @@
 # include <fcntl.h>
 # define FREE_LINEAR -1
 
+int skip_line(std::string & line, int i);
+
 class Cgi 
 {
 	public:
@@ -44,7 +46,6 @@ class Cgi
 		std::string parse_cgi(Request & request, std::string response);
 		void parse_header(Request & request, std::string & header);
 		void parse_status(Request & request, std::string error);
-		int skip_line(std::string line, int i);
 		int header_size(std::string & content);
 };
 

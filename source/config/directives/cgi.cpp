@@ -1,5 +1,4 @@
 #include "prototype.hpp"
-#include "Location.hpp"
 
 int parse_cgi(std::string file, int i, Location & a)
 {

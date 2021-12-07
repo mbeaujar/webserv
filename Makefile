@@ -15,7 +15,7 @@ HEADER = -I source  \
 
 SRCS  =	main.cpp \
 		config/directives/autoindex.cpp \
-		config/directives/client_size.cpp \
+		config/directives/max_body.cpp \
 		config/directives/error_page.cpp \
 		config/directives/cgi.cpp \
 		config/directives/index.cpp \
@@ -27,10 +27,10 @@ SRCS  =	main.cpp \
 		config/directives/upload.cpp \
 		config/server/Location.cpp \
 		config/server/s_method.cpp \
-		config/server/parse_location.cpp \
-		config/server/parse_server.cpp \
 		config/server/s_port.cpp \
 		config/server/Server.cpp \
+		config/parse_location.cpp \
+		config/parse_server.cpp \
 		config/parser.cpp \
 		autoindex/Autoindex.cpp \
 		cgi/Cgi.cpp \

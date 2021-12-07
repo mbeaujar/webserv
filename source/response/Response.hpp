@@ -34,6 +34,7 @@ class Response
 		AMethods* _method;
 		size_t		_content_length;
 		std::map<std::string, std::string> _mime;
+		std::map<int, std::string> 			_error;
 
 
 		void create_method(int & method);
@@ -42,9 +43,10 @@ class Response
 		std::string error_html(void);
         void create_header(void);
         std::string allow_method(void);
-		void init_type_mimes(void);
 		bool set_content_type(std::string content_type, std::map<std::string, int> & accept);
 		void check_content_type(std::string & path_file);
+		void init_type_mimes(void);
+		void init_error(void);
 };
 
 #endif /* _RESPONSE_HPP_ */

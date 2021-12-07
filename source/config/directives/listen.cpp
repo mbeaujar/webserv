@@ -1,6 +1,4 @@
-#include <iostream>
-#include "../../prototype.hpp"
-#include "../server/Server.hpp"
+#include "prototype.hpp"
 
 bool parse_word(std::string file, int & i) {
 	int skip = skip_word(file, i);

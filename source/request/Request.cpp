@@ -10,6 +10,9 @@ Request::Request(int & client_socket) :
 	_query_string(),
     _content_type(),
 	_methods(),
+	_cookie_username(),
+	_cookie_color(),
+	_new_client(true),
 	_error(200, "OK"),
 	_return(-1, ""),
 	_accept()
@@ -49,7 +52,10 @@ Request::Request(Request const & src) :
 	_date(src._date),
 	_query_string(src._query_string),
     _content_type(src._content_type),
-	_methods(),
+	_methods(src._methods),
+	_cookie_username(src._cookie_username),
+	_cookie_color(src._cookie_color),
+	_new_client(src._new_client),
 	_error(src._error),
 	_return(src._return),
 	_accept(src._accept) {}
@@ -71,6 +77,9 @@ Request & Request::operator=(Request const & rhs)
 		this->_methods				= rhs._methods;
 		this->_error            	= rhs._error;
 		this->_return           	= rhs._return;
+		this->_cookie_username 		= rhs._cookie_username;
+		this->_cookie_color			= rhs._cookie_color;
+		this->_new_client			= rhs._new_client;
     }
     return *this;
 }
@@ -97,18 +106,36 @@ void        				Request::set_error(std::pair<int, std::string> const & error) { 
 void        				Request::set_accept(std::map<std::string, int> const & accept) { _accept = accept; }
 void        				Request::set_query_string(std::string const & query_string){ _query_string = query_string; }
 
+void						Request::generate_cookie_username(void)
+{
+	std::string tab[5] = { "John", "Kenny", "Mohammed", "Toufik"};
+	srand (time(NULL));
+	_cookie_username = tab[rand() % 4];
+}
+
+void 						Request::generate_cookie_color(void)
+{
+	std::string tab[3] = { "red", "green", "blue" };
+	srand (time(NULL));
+	_cookie_color = tab[rand() % 3];
+}
+
+
 int &        				Request::get_method() { return _method; }
 int &       				Request::get_content_length() { return _content_length; }
 std::string &				Request::get_host() { return _host; }
 std::string &				Request::get_date() { return _date; }
 std::string &				Request::get_query_string() { return _query_string; }
 std::string &				Request::get_content_type() { return _content_type; }
+std::string &				Request::get_cookie_username() { return _cookie_username; }
+std::string &				Request::get_cookie_color() { return _cookie_color; }
 std::string & 				Request::get_path() { return _path; }
 struct s_method	&			Request::get_methods() { return _methods; }
 std::string  & 				Request::get_file() { return _file; }
 std::pair<int, std::string> &Request::get_error() { return _error; }
 std::map<std::string, int> &Request::get_accept() { return _accept; }
 std::pair<int, std::string> &Request::get_return() { return _return; }
+bool & 						Request::get_new_client() { return _new_client; }
 
 bool Request::is_query(std::string & path) { return path.find('?') != std::string::npos; }
 
@@ -229,6 +256,7 @@ void Request::parse_header(std::string request)
 	int host = 0;
 	int chunked = 0;
 
+	_new_client = true;
 	lower_file(request);
 	i = get_first_line(request);
 	while (request[i])
@@ -239,19 +267,24 @@ void Request::parse_header(std::string request)
 			std::string line = request.substr(i, skip_the_word(request, i) - i);
 			this->parse_accept(line);
 		}
+		else if (request.compare(i, 7, "cookie:") == 0)
+		{
+			i += 8;
+			std::string line = request.substr(i, (skip_line(request, i) - 1) - i);
+			this->parse_cookie(line);
+		}
 		else if (request.compare(i, 15, "content-length:") == 0)
 		{
 			i += 16;
 			int nb = recup_nb(request, i);
 			this->set_content_length(nb);
 		}
-		else if (request.compare(i, 13, "content-Type:") == 0)
+		else if (request.compare(i, 13, "content-type:") == 0)
 		{
 			i += 14;
 			int tmp = i;
-			while (request[i] && request[i] != '\n')
-				++i;
-			this->set_content_type(request.substr(tmp, i - tmp));
+			i = skip_line(request, i);
+			this->set_content_type(request.substr(tmp, (i - tmp) - 1));
 		}
 		else if (request.compare(i, 18, "transfer-encoding:") == 0)
 		{
@@ -271,14 +304,12 @@ void Request::parse_header(std::string request)
 		{
 			i += 5;
 			int tmp = i;
-			while (request[i] && request[i] != '\n')
-				++i;
+			i = skip_line(request, i);
 			this->set_date(request.substr(tmp, i - tmp));
 		}
 		else
 		{
-			while (request[i] && request[i] != '\n')
-				++i;
+			i = skip_line(request, i);
 			if (request[i])
 				++i;
 		}
@@ -332,4 +363,37 @@ void Request::parse_accept(std::string & content)
 			_accept.insert(std::make_pair(new_accept, 0));
 		first = pos + 1;
 	}
+}
+
+void Request::parse_cookie(std::string & content)
+{
+	size_t pos = 0;
+	size_t first = 0;
+
+	while (pos != std::string::npos)
+	{
+		pos = content.find(';', first);
+		std::string cookie = content.substr(first, pos - first);
+		size_t l = cookie.find('=', 0);
+		size_t i = 0;
+		while (cookie[i] && cookie[i] == ' ')
+			i++;
+		std::string key = cookie.substr(i, l - i);
+		if (key == "username")
+			_cookie_username = cookie.substr(l + 1, cookie.length() - (l + 1)); 
+		else if (key == "color")
+			_cookie_color = cookie.substr(l + 1, cookie.length() - (l + 1)); 
+		
+		first = pos + 1;
+	}
+	if (_cookie_username != "")
+	{
+		_new_client = false;
+		if (_cookie_color != "")
+			std::cout << "--> Request by " + _cookie_username + " with a " + _cookie_color + " color" << std::endl;
+		else
+			std::cout << "--> Request by " + _cookie_username + " without color" << std::endl;
+	}
+	else
+		_new_client = true;
 }

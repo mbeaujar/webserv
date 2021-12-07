@@ -1,8 +1,8 @@
 #ifndef _PROTOTYPE_HPP_
 # define _PROTOTYPE_HPP_
 
-# include "config/server/Server.hpp"
-# include "config/server/Location.hpp"
+# include "Server.hpp"
+# include "Location.hpp"
 
 # include <iostream>
 # include <sstream>
@@ -14,6 +14,7 @@
 # define OTHER  3
 # define ISERROR(x) (x >= 400) // 4XX request error, 5xx server error
 # define ISREDIRECT(x) (x != -1) // No redirection is -1
+# define IS_RANGE_REDIRECT(x) (x >= 300 && x <= 307 && x != 306)
 
 // -------------------------------- config
 
@@ -55,6 +56,7 @@ bool		is_directory(std::string & path);
 bool		file_exist(std::string & filename);
 int			skip_space(std::string & file, int i);
 int			recup_nb(std::string & file, int & i);
+int 		skip_line(std::string & line, int i);
 int			remove_file(char const * path);
 
 

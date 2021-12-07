@@ -1,6 +1,4 @@
-#include <iostream>
-#include "../server/Server.hpp"
-#include "../../prototype.hpp"
+#include "prototype.hpp"
 
 void braket_check(std::string file, int i)
 {
