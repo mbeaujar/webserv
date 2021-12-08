@@ -58,6 +58,7 @@ class Request
         std::pair<int, std::string> &get_return();
         std::map<std::string, int>  &get_accept();
 		bool &                      get_new_client(void);
+		std::string & 				get_header();
 
     private:
         int           	            _method;
@@ -75,6 +76,7 @@ class Request
 		std::pair<int, std::string> _error;
 		std::pair<int, std::string> _return;
 		std::map<std::string, int>  _accept;
+		std::string 				_header; // only for cgi
         
 		bool 		is_query(std::string & path);
         std::string parse_query(std::string & path);

@@ -8,7 +8,7 @@
 class Delete : public AMethods
 {
     public:
-        Delete(Server & server, Request & request, int & client_socket);
+        Delete(Server & server, Request & request, int & client_socket, int & port);
         Delete(Delete const & copy);
         virtual ~Delete();
         Delete & operator=(Delete const & rhs);

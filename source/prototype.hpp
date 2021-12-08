@@ -54,8 +54,8 @@ std::string	extension(std::string & ext);
 std::string	get_file_content(std::string filename);
 bool		is_directory(std::string & path);
 bool		file_exist(std::string & filename);
-int			skip_space(std::string & file, int i);
 int			recup_nb(std::string & file, int & i);
+int			skip_space(std::string & file, int i);
 int 		skip_line(std::string & line, int i);
 int			remove_file(char const * path);
 

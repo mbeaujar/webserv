@@ -31,6 +31,7 @@ void Server::adding_port(int const &port, bool const &ipv4 = true) {
 	s_port a;
 	a.port = port;
 	a.ipv4 = ipv4;
+	a.fd = -1;
 	_port.push_back(a);
 }
 

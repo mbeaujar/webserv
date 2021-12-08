@@ -1,6 +1,7 @@
 #include "Response.hpp"
 
-Response::Response(int & client_socket, Request & request, Server & server) :
+Response::Response(int & client_socket, Request & request, Server & server, int & port) :
+	_port(port),
 	_client_socket(client_socket),
 	_request(request),
 	_server(server),
@@ -16,6 +17,7 @@ Response::Response(int & client_socket, Request & request, Server & server) :
 
 
 Response::Response(Response const & copy) :
+	_port(copy._port),
 	_client_socket(copy._client_socket),
 	_request(copy._request),
 	_server(copy._server),
@@ -35,6 +37,7 @@ Response & Response::operator=(Response const & copy)
 {
     if (this != &copy)
     {
+		_port = copy._port;
 		_client_socket = copy._client_socket;
 		_request = copy._request;
 		_server = copy._server;
@@ -87,7 +90,7 @@ void Response::execute(void)
 
 void Response::send_response(void)
 {
-	std::cerr << _response << std::endl;
+	// std::cerr << _response << std::endl;
 	if (send(_client_socket, _response.c_str(), _response.length(), MSG_CONFIRM) == -1)
 		std::cerr << "webserv: [warn]: class Response: send_response: can't write to client" << "\n";
 	if (shutdown(_client_socket, SHUT_RDWR) == -1)
@@ -131,7 +134,7 @@ std::string Response::error_html(void)
 	path += "<head><title>" + status + "</title></head>\r\n";
 	path += "<body bgcolor=\"white\">\r\n";
 	path += "<center><h1>" + status + "</h1></center>\r\n";
-	path += "<hr><center>webserv/1.0.0 (Ubuntu)</center>\r\n";
+	path += "<hr><center>webserv/1.0 (Ubuntu)</center>\r\n";
 	path += "</body>\r\n";
 	path += "</html>\r\n";
 	return path;
@@ -142,11 +145,11 @@ void Response::create_method(int & method)
 	try
 	{
 		if (method == POST)
-			_method = new Post(_server, _request, _client_socket);
+			_method = new Post(_server, _request, _client_socket, _port);
 		else if (method == GET)
-			_method = new Get(_server, _request, _client_socket);
+			_method = new Get(_server, _request, _client_socket, _port);
 		else if (method == DELETE)
-			_method = new Delete(_server, _request, _client_socket);
+			_method = new Delete(_server, _request, _client_socket, _port);
 	}
 	catch (const std::exception & e)
 	{

@@ -22,7 +22,7 @@ Request::Request(int & client_socket) :
 
 	if (header)
 		len = strlen(header);
-	std::cerr << header << std::endl;
+	// std::cerr << header << std::endl;
 	if (header == NULL)
 	{
 		std::cerr << "webserv: [warn]: class Request: Constructor: can't read header request" << std::endl;
@@ -104,7 +104,17 @@ void        				Request::set_return(std::pair<int, std::string> const & r) { _re
 void        				Request::set_content_type(std::string const & type) { _content_type = type; }
 void        				Request::set_error(std::pair<int, std::string> const & error) { _error = error; }
 void        				Request::set_accept(std::map<std::string, int> const & accept) { _accept = accept; }
-void        				Request::set_query_string(std::string const & query_string){ _query_string = query_string; }
+
+void Request::set_query_string(std::string const &query_string)
+{
+	if (_query_string.length() != 0) // if already exist we concatenate
+	{
+		_query_string += "&";
+		_query_string = query_string;
+	}
+	else
+		_query_string = query_string;
+}
 
 void						Request::generate_cookie_username(void)
 {
@@ -136,6 +146,7 @@ std::pair<int, std::string> &Request::get_error() { return _error; }
 std::map<std::string, int> &Request::get_accept() { return _accept; }
 std::pair<int, std::string> &Request::get_return() { return _return; }
 bool & 						Request::get_new_client() { return _new_client; }
+std::string & 				Request::get_header() { return _header; }
 
 bool Request::is_query(std::string & path) { return path.find('?') != std::string::npos; }
 
@@ -259,6 +270,8 @@ void Request::parse_header(std::string request)
 	_new_client = true;
 	lower_file(request);
 	i = get_first_line(request);
+	_header = request.substr(i, request.length() - i); // (BIG COPY) only for cgi
+	std::cerr << "HEADER: " << _header << std::endl;
 	while (request[i])
 	{
 		if (request.compare(i, 7, "accept:") == 0)

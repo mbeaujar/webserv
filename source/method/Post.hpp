@@ -16,7 +16,7 @@ class Post : public AMethods
 {
     public:
         // Canonical
-        Post(Server & server, Request & request, int & client_socket);
+        Post(Server & server, Request & request, int & client_socket, int & port);
         Post(Post const & copy);
         virtual ~Post();
         Post & operator=(Post const & rhs);

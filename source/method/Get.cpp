@@ -1,8 +1,8 @@
 #include "Get.hpp"
 
-Get::Get(Server & server, Request & request, int & client_socket) : AMethods(server, request, GET, client_socket) {}
+Get::Get(Server & server, Request & request, int & client_socket, int & port) : AMethods(server, request, GET, client_socket, port) {}
 
-Get::Get(Get const & src) : AMethods(src._server, src._request, GET, src._client_socket)
+Get::Get(Get const & src) : AMethods(src._server, src._request, GET, src._client_socket, src._port)
 {
 	*this = src;
 }
@@ -20,6 +20,7 @@ Get & Get::operator=(Get const & rhs)
 		_request = rhs._request;
 		_client_socket = rhs._client_socket;
 		_body = rhs._body;
+		_port = rhs._port;
     }
     return *this;
 }
@@ -36,13 +37,13 @@ void Get::execute(void)
 
 				if (is_directory(_path_file) == true && _location.get_autoindex() == true)
 				{
-					Autoindex a(_path_file, _request.get_path(), _request.get_host(), this->get_port());
+					Autoindex a(_path_file, _request.get_path(), _request.get_host(), _port);
 					_body = a.get_content();
 				}
 				else if ((path_cgi = _location.find_path_cgi(extension(_path_file))) != "")
 				{
-					Cgi a(path_cgi);
-					_body = a.execute(_request, GET, _client_socket, _path_file);
+					Cgi a(path_cgi, _port);
+					_body = a.execute(_request, "GET", _client_socket, _path_file, _request.get_content_type(), _path_file);
 				}
 				else
 					_body = get_file_content(_path_file);

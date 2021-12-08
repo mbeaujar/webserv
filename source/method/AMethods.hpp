@@ -13,11 +13,12 @@
 # include <stdio.h>
 
 int			remove_file(char const * path);
+int 		get_port(Server & server, int & client_socket);
 
 class AMethods 
 {
 	public:
-		AMethods(Server & server, Request & request, int method, int & client_socket);
+		AMethods(Server & server, Request & request, int method, int & client_socket, int & port);
 		AMethods(AMethods const &copy);
 		virtual ~AMethods();
 		AMethods & operator=(AMethods const & rhs);
@@ -36,6 +37,7 @@ class AMethods
 		void 		create_path(void);
 
 	protected:
+		int &		_port;
 		int		 	_method;
 		Location	_location;
 		std::string _path_file;
@@ -45,7 +47,6 @@ class AMethods
 		std::string _body;
 	
 		bool 		is_extension(std::string & path, std::string const & extension);
-		int			get_port(void);
 };
 
 #endif /* _AMETHODS_HPP_ */

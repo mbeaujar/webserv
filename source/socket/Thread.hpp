@@ -11,15 +11,16 @@ class Thread
 {
 	public:
 		Thread();
-		Thread(Server server, int client_socket);
+		Thread(Server server, int client_socket, int port);
 		Thread(Thread const &);
 		~Thread();
 		Thread &operator=(Thread const &);
 
-		void init(Server server, int client_socket);
+		void init(Server server, int client_socket, int port);
 
 		Server server;
 		int client_socket;
+		int port;
 };
 
 #endif /* _THREAD_HPP_ */

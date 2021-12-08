@@ -2,25 +2,28 @@
 
 Thread::Thread() {}
 
-Thread::Thread(Server server, int client_socket)
-	: server(server), client_socket(client_socket) {}
+Thread::Thread(Server server, int client_socket, int port)
+	: server(server), client_socket(client_socket), port(port) {}
 
 Thread::Thread(Thread const &copy)
-	: server(copy.server), client_socket(copy.client_socket) {}
+	: server(copy.server), client_socket(copy.client_socket), port(copy.port) {}
 
 Thread::~Thread() {}
 
 Thread& Thread::operator=(Thread const & copy)
 {
-	if (this == &copy)
-		return *this;
-	server = copy.server;
-	client_socket = copy.client_socket;
+	if (this != &copy)
+	{
+		server = copy.server;
+		client_socket = copy.client_socket;
+		port = copy.port;
+	}
 	return *this;
 }
 
-void Thread::init(Server server, int client_socket)
+void Thread::init(Server server, int client_socket, int port)
 {
 	this->server = server;
 	this->client_socket = client_socket;
+	this->port = port;
 }

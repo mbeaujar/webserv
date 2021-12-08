@@ -32,6 +32,7 @@ extern bool g_exit;
 
 void signalHandler(int signum);
 void signalPipeHandler(int signum);
+int get_port(Server & server, int & client_socket);
 
 class Socket
 {
@@ -49,7 +50,7 @@ class Socket
 		fd_set _current_clients;
 		fd_set _ready_sockets;
 		fd_set _ready_clients;
-		std::vector<pthread_t> 	_threads_id;
+		std::map<int, int> 		_fd_to_port; // <int client, int port>
 		std::map<int, Server> 	_sockets;
 		std::map<int, Server*> 	_clients;
 

@@ -8,7 +8,7 @@ Socket::Socket() :
 	_current_clients(),
 	_ready_sockets(),
 	_ready_clients(),
-	_threads_id(),
+	_fd_to_port(),
 	_sockets(),
 	_clients()
 {
@@ -23,7 +23,7 @@ Socket::Socket(Socket const & copy) :
 	_current_clients(copy._current_clients),
 	_ready_sockets(copy._ready_sockets),
 	_ready_clients(copy._ready_clients),
-	_threads_id(copy._threads_id),
+	_fd_to_port(copy._fd_to_port),
 	_sockets(copy._sockets),
 	_clients(copy._clients) {}
 
@@ -43,7 +43,7 @@ Socket & Socket::operator=(Socket const & copy)
 		_current_clients = copy._current_clients;
 		_ready_sockets = copy._ready_sockets;
 		_ready_clients = copy._ready_clients;
-		_threads_id = copy._threads_id;
+		_fd_to_port = copy._fd_to_port;
 		_sockets = copy._sockets;
 		_clients = copy._clients;
 	}
@@ -84,6 +84,9 @@ void Socket::execute(std::vector<Server> & servers)
 							int client_socket = this->accept_connection(i);
 							if (client_socket != -1)
 							{
+								// std::cerr << "FDDDD: " << i << std::endl;
+								// std::cerr << "REQUETE SUR PORT: " << get_port(search->second, i) << std::endl;
+								_fd_to_port.insert(std::make_pair(client_socket, get_port(search->second, i)));
 								fcntl(client_socket, F_SETFL, O_NONBLOCK);
 								if (client_socket > _max_fd)
 									_max_fd = client_socket;
@@ -118,13 +121,13 @@ void Socket::execute(std::vector<Server> & servers)
 
 // ------------------------------ PRIVATE ----------------------------------- //
 
-int Socket::config_sockets(std::vector<Server> &servers)
+int Socket::config_sockets(std::vector<Server> & servers)
 {
 	std::vector<Server>::iterator it = servers.begin(), ite = servers.end();
 
 	while (it != ite)
 	{
-		std::vector<s_port> lst = it->get_port();
+		std::vector<s_port> & lst = it->get_port();
 		std::vector<s_port>::iterator begin = lst.begin(), end = lst.end();
 		while (begin != end)
 		{
@@ -254,7 +257,7 @@ void *handle_connection(void *a)
 		Request request(t->client_socket);
 		if (request.get_method() == OTHER)
 			request.set_error(std::make_pair(405, "Method Not Allowed"));
-		Response a(t->client_socket, request, t->server);
+		Response a(t->client_socket, request, t->server, t->port);
 		a.execute();
 	}
 	catch(const std::exception& e)
@@ -279,10 +282,9 @@ int Socket::create_thread(int & client_socket, Server & server)
 		std::cerr << "webserv: [warn]: class Socket: handle_connection: " << e.what() << '\n';
 		return EXIT_FAILURE;
 	}
-	t->init(server, client_socket);
+	t->init(server, client_socket, _fd_to_port.find(client_socket)->second);
 	pthread_create(&id, NULL, handle_connection, t);
 	pthread_detach(id);
-	_threads_id.push_back(id);
 	return EXIT_SUCCESS;
 }
 

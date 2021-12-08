@@ -1,6 +1,6 @@
 #include "Cgi.hpp"
 
-Cgi::Cgi(std::string path) :
+Cgi::Cgi(std::string path, int port) :
 	_pid(-1),
 	_fd_in(-1),
 	_fd_out(-1),
@@ -10,7 +10,8 @@ Cgi::Cgi(std::string path) :
 	_path_cgi(path),
 	_path_file_in(),
 	_path_file_out(),
-	_body() {}
+	_body(),
+	_port(port) {}
 
 Cgi::Cgi(Cgi const & copy) :
     _pid(copy._pid),
@@ -22,7 +23,8 @@ Cgi::Cgi(Cgi const & copy) :
 	_path_cgi(copy._path_cgi),
 	_path_file_in(copy._path_file_in),
 	_path_file_out(copy._path_file_out),
-	_body(copy._body) {}
+	_body(copy._body),
+	_port(copy._port) {}
 
 Cgi::~Cgi()
 {
@@ -35,7 +37,6 @@ Cgi::~Cgi()
 	if (_fd_out != -1)
 		close(_fd_out);
 }
-
 
 Cgi & Cgi::operator=(Cgi const & copy)
 {
@@ -51,27 +52,28 @@ Cgi & Cgi::operator=(Cgi const & copy)
 		_path_file_in = copy._path_file_in;
 		_path_file_out = copy._path_file_out;
 		_body = copy._body;
+		_port = copy._port;
     }
     return *this;
 }
 
-std::string & Cgi::execute(Request & request, int method, int & client_socket, std::string & path_in)
+std::string & Cgi::execute(Request & request, std::string method, int & client_socket, std::string & path_in, std::string & content_type, std::string & stdin)
 {
-	int status;
 	std::string file;
-	bool ret;
+	int		status;
+	bool	ret;
 
 	_path_file_in = path_in;
 	file = ".cgi_" + to_string(client_socket);
 	_fd_out = this->create_file(file);
-	_fd_in = open(path_in.c_str(), O_RDONLY);
+	_fd_in = open(stdin.c_str(), O_RDWR);
 	if (_fd_in == -1 || _fd_out == -1)
 		return this->error(request, "can't create/open file");
 	ret = this->create_argv();
 	if (ret == EXIT_FAILURE)
 		return this->error(request, "can't create argv");
 	_query_string = request.get_query_string();
-	ret = this->create_envp(method);
+	ret = this->create_envp(method, content_type, request);
 	if (ret == EXIT_FAILURE)
 		return this->error(request, "can't create envp");
 	_pid = fork();
@@ -81,7 +83,7 @@ std::string & Cgi::execute(Request & request, int method, int & client_socket, s
 	{
 		dup2(_fd_in, 0);
 		dup2(_fd_out, 1);
-		execve(_path_cgi.c_str(), _argv, _envp);
+		execve(_argv[0], _argv, _envp);
 		exit(EXIT_FAILURE);
 	}
 	waitpid(_pid, &status, 0);
@@ -104,7 +106,7 @@ char* Cgi::strdup(std::string const & s1)
 	{
 		s2 = new char[i + 1];
 	}
-	catch(const std::exception& e)
+	catch (const std::exception& e)
 	{
 		std::cerr << "webserv: [warn]: class Cgi: Method strdup: " << e.what() << "\n";
 		return NULL;
@@ -146,7 +148,7 @@ int Cgi::create_argv(void)
 	{
 		_argv = new char*[3];
 	}
-	catch(const std::exception& e)
+	catch (const std::exception& e)
 	{
 		std::cerr << "webserv: [warn]: class Cgi: Method create_argv: "<< e.what() << '\n';
 		_argv = NULL;
@@ -172,11 +174,21 @@ std::string Cgi::path_dir(std::string path)
 	return path.substr(0, i);
 }
 
-int Cgi::create_envp(int & method)
+int Cgi::create_envp(std::string & method, std::string & content_type, Request & request)
 {
+	std::string & header = request.get_header();
+	size_t count_line_header = 0;
+	size_t len_tab;
+
+	for (size_t i = 0; header[i]; i++)
+	{
+		if (header[i] == '\n')
+			count_line_header++;
+	}
+	len_tab = 18 + --count_line_header;
 	try
 	{
-		_envp = new char*[7];
+		_envp = new char*[len_tab];
 	}
 	catch(const std::exception& e)
 	{
@@ -184,18 +196,54 @@ int Cgi::create_envp(int & method)
 		return EXIT_FAILURE;
 	}
 	std::string cgi_dir = path_dir(_path_cgi);
-	_envp[0] = this->strdup("REQUEST_METHOD=" + to_string(method));
-	_envp[1] = this->strdup("SERVER_PROTOCOL=HTTP/1.1");
-	_envp[2] = this->strdup("PATH_INFO=" + cgi_dir);
-	_envp[3] = this->strdup("QUERY_STRING=" + _query_string);
-	_envp[4] = this->strdup("REQUEST_URI=" + cgi_dir);
-	_envp[5] = this->strdup("SCRIPT_FILENAME=" + _path_file_in);
-	_envp[6] = NULL;
-	for (int i = 0; i < 6; i++)
+	std::string file_dir = path_dir(_path_file_in);
+	struct stat st;
+	stat(_path_file_in.c_str(), &st);
+	
+	_envp[0] = this->strdup("CONTENT_TYPE=" + content_type);
+	_envp[1] = this->strdup("CONTENT_LENGTH=" + to_string(st.st_size - 1));
+	_envp[2] = this->strdup("SERVER_PROTOCOL=HTTP/1.1");
+	_envp[3] = this->strdup("GATEWAY_INTERFACE=CGI/1.1");
+	_envp[4] = this->strdup("REQUEST_METHOD=" + to_string(method));
+	_envp[5] = this->strdup("PATH_INFO=" + request.get_path());
+	_envp[6] = this->strdup("PATH_TRANSLATED=" + _path_file_in);
+	_envp[7] = this->strdup("QUERY_STRING=" + _query_string);
+	_envp[8] = this->strdup("REMOTE_ADDR=127.0.0.1");
+	_envp[9] = this->strdup("REMOTE_USER="); // nothing after '=' is NULL
+	_envp[10] = this->strdup("REMOTE_IDENT=");
+	_envp[11] = this->strdup("REQUEST_URI=" + request.get_path());
+	_envp[12] = this->strdup("REDIRECT_STATUS=200");
+	_envp[13] = this->strdup("SERVER_NAME=webserv");
+	_envp[14] = this->strdup("SERVER_SOFTWARE=webserv/1.0");
+	_envp[15] = this->strdup("SERVER_PORT=" + to_string(_port));
+	_envp[16] = this->strdup("SCRIPT_NAME=" + _path_file_in);
+	size_t index = 0;
+	size_t count = 0;
+	for (; count < count_line_header; count++)
+	{
+		size_t endl = header.find('\n', index);
+		std::string line = header.substr(index, endl - index);
+		if (line.length() > 0 && line[line.length() - 1] == '\r')
+			line.erase(--line.end());
+		index = endl + 1;
+		size_t equal = line.find(':', 0);
+		std::string key = line.substr(0, equal);
+		std::string value = line.substr(equal + 1, line.length() - (equal + 1));  
+		std::transform(key.begin(), key.end(), key.begin(), ::toupper);
+		std::replace(key.begin(), key.end(), '-', '_');
+		if (value[0] == ' ')
+			value.erase(value.begin());
+		_envp[17 + count] = this->strdup("HTTP_" + key + "=" + value); 
+	}
+	_envp[17 + count] = NULL;
+	len_tab = 17 + count;
+	for (size_t i = 0; i < len_tab; i++)
+		std::cerr << _envp[i] << std::endl;
+	for (size_t i = 0; i < len_tab; i++)
 	{
 		if (_envp[i] == NULL)
 		{
-			this->free_tab(_envp, 6);
+			this->free_tab(_envp, len_tab);
 			_envp = NULL;
 			return EXIT_FAILURE;
 		}
@@ -304,6 +352,15 @@ std::string Cgi::parse_cgi(Request &request, std::string response)
 	lower_file(header);
 	parse_header(request, header);
 	return body;
+}
+
+std::string Cgi::cut_filename(std::string & path)
+{
+	int i = path.length();
+
+	while (i > 0 && path[i] != '/')
+		i--;
+	return path.substr(i, path.length() - i);
 }
 
 

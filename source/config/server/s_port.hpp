@@ -7,6 +7,11 @@ struct s_port
 	int fd;
 	bool ipv4;
 
+	s_port();
+	s_port(s_port const &);
+	~s_port();
+	s_port & operator=(s_port const &);
+
 	bool operator==(s_port const & rhs) const;
 	bool operator!=(s_port const &rhs) const;
 	bool operator<(s_port const & rhs) const;

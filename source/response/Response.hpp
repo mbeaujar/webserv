@@ -19,7 +19,7 @@ std::string get_last_modified(std::string & path);
 class Response
 {
     public:
-        Response(int & client_socket, Request & request, Server & server);
+        Response(int & client_socket, Request & request, Server & server, int & port);
         Response(Response const & copy);
         virtual ~Response();
         Response & operator=(Response const & rhs);
@@ -27,6 +27,7 @@ class Response
 		void execute(void);
 
 	private:
+		int & _port;
 		int &	_client_socket;
 		Request & 		_request;
 		Server & 	_server;

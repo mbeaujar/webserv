@@ -1,6 +1,7 @@
 #include "AMethods.hpp"
 
-AMethods::AMethods(Server & server, Request & request, int method, int & client_socket) :
+AMethods::AMethods(Server & server, Request & request, int method, int & client_socket, int & port) :
+	_port(port),
 	_method(method),
 	_location(),
 	_path_file(),
@@ -10,6 +11,7 @@ AMethods::AMethods(Server & server, Request & request, int method, int & client_
 	_body() {}
 
 AMethods::AMethods(AMethods const & src) :
+	_port(src._port),
     _method(src._method),
     _location(src._location),
     _path_file(src._path_file),
@@ -24,6 +26,7 @@ AMethods & AMethods::operator=(AMethods const & rhs)
 {
     if (this != &rhs)
     {
+		_port = rhs._port;
         _method = rhs._method;
         _location = rhs._location;
         _path_file = rhs._path_file;
@@ -226,14 +229,14 @@ bool AMethods::is_extension(std::string & path, std::string const & extension)
 	return false;
 }
 
-int AMethods::get_port(void)
+int get_port(Server & server, int & client_socket)
 {
-	std::vector<s_port> list = _server.get_port();
+	std::vector<s_port> & list = server.get_port();
 	std::vector<s_port>::iterator it = list.begin(), ite = list.end();
 
 	while (it != ite)
 	{
-		if (it->fd == _client_socket)
+		if (it->fd == client_socket)
 			return it->port;
 		++it;
 	}

@@ -11,7 +11,7 @@ class Get : public AMethods
 {
     public:
         // Canonical
-        Get(Server & server, Request & request, int & client_socket);
+        Get(Server & server, Request & request, int & client_socket, int & port);
         Get(Get const & copy);
         virtual ~Get();
         Get & operator=(Get const & rhs);

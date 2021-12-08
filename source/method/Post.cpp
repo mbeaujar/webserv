@@ -1,7 +1,7 @@
 #include "Post.hpp"
 
-Post::Post(Server & server, Request & request, int & client_socket) :
-	AMethods(server, request, POST, client_socket),
+Post::Post(Server & server, Request & request, int & client_socket, int & port) :
+	AMethods(server, request, POST, client_socket, port),
 	_file_fd(-1),
 	_content_length(0),
 	_ret(-1),
@@ -22,7 +22,7 @@ Post::Post(Server & server, Request & request, int & client_socket) :
 }
 
 Post::Post(Post const & src) :
-	AMethods(src._server, src._request, POST, src._client_socket),
+	AMethods(src._server, src._request, POST, src._client_socket, src._port),
 	_file_fd(src._file_fd),
 	_content_length(src._content_length),
 	_ret(src._ret),
@@ -70,6 +70,7 @@ Post & Post::operator=(Post const & rhs)
 		_totalsize = rhs._totalsize;
 		_clientmax = rhs._clientmax;
 		_buffer = rhs._buffer;
+		_port = rhs._port;
     }
     return *this;
 }
@@ -125,15 +126,11 @@ void Post::execute(void)
 				{
 					if ((path_cgi = _location.find_path_cgi(extension(_path_file))) != "")
 					{
-						// std::cerr << "DEBUGGGGGGGGGGGGGGGGGGGG" << std::endl;
-						Cgi a(path_cgi);
-						// std::cerr << "path_cgi: " << path_cgi << std::endl;
-						// std::cerr << "_file_name: " << _file_name << std::endl;
-						// std::cerr << "_path_file: " << _path_file << std::endl;
+						Cgi a(path_cgi, _port);
+
 						content = get_file_content(_file_name);
 						_request.set_query_string(content);
-						// std::cerr << "QUERY: " << _request.get_query_string() << std::endl;
-						content = a.execute(_request, POST, _client_socket, _path_file);
+						content = a.execute(_request, "POST", _client_socket, _path_file, _request.get_content_type(), _file_name);
 						is_app = NOAPPEND;
 					}
 					else
@@ -143,8 +140,8 @@ void Post::execute(void)
 				{
 					if ((path_cgi = _location.find_path_cgi(extension(_path_file))) != "")
 					{
-						Cgi a(path_cgi);
-						content = a.execute(_request, POST, _client_socket, _file_name);
+						Cgi a(path_cgi, _port);
+						content = a.execute(_request, "POST", _client_socket, _file_name, _request.get_content_type(), _file_name);
 					}
 					else
 						content = get_file_content(_file_name);

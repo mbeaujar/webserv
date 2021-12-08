@@ -1,10 +1,10 @@
 #include "Delete.hpp"
 
-Delete::Delete(Server & server, Request & request, int & client_socket) :
-	AMethods(server, request, DELETE, client_socket) {}
+Delete::Delete(Server & server, Request & request, int & client_socket, int & port) :
+	AMethods(server, request, DELETE, client_socket, port) {}
 
 Delete::Delete(Delete const & src) : 
-	AMethods(src._server, src._request, DELETE, src._client_socket) {}
+	AMethods(src._server, src._request, DELETE, src._client_socket, src._port) {}
 
 Delete::~Delete() {}
 
@@ -18,6 +18,7 @@ Delete & Delete::operator=(Delete const & rhs)
 		_server = rhs._server;
 		_request = rhs._request;
 		_client_socket = rhs._client_socket;
+		_port = rhs._port;
 	}
     return *this;
 }
