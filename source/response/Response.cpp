@@ -90,7 +90,7 @@ void Response::execute(void)
 
 void Response::send_response(void)
 {
-	// std::cerr << _response << std::endl;
+	std::cerr << _response << std::endl;
 	if (send(_client_socket, _response.c_str(), _response.length(), MSG_CONFIRM) == -1)
 		std::cerr << "webserv: [warn]: class Response: send_response: can't write to client" << "\n";
 	if (shutdown(_client_socket, SHUT_RDWR) == -1)

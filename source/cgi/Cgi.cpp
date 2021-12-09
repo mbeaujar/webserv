@@ -237,8 +237,8 @@ int Cgi::create_envp(std::string & method, std::string & content_type, Request &
 	}
 	_envp[17 + count] = NULL;
 	len_tab = 17 + count;
-	for (size_t i = 0; i < len_tab; i++)
-		std::cerr << _envp[i] << std::endl;
+	// for (size_t i = 0; i < len_tab; i++)
+		// std::cerr << _envp[i] << std::endl;
 	for (size_t i = 0; i < len_tab; i++)
 	{
 		if (_envp[i] == NULL)

@@ -1,6 +1,2 @@
-<?php
-echo 'Bonjour ';
-echo $_SERVER['QUERY_STRING'];
-echo "\n";
-echo $_POST['last_name'];
-?>
+Bonjour last_name=Je+suis+la
+Je suis la

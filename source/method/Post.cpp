@@ -113,7 +113,7 @@ void Post::execute(std::map<std::string, std::string> & mime)
 
 						content = get_file_content(_file_name);
 						_request.set_query_string(content);
-						content = a.execute(_request, "POST", _client_socket, _path_file, _request.get_content_type(), _file_name);
+						content = a.execute(_request, "POST", _client_socket, _path_file, _request.get_content_type(), _path_file);
 						is_app = NOAPPEND;
 					}
 					else
@@ -124,7 +124,7 @@ void Post::execute(std::map<std::string, std::string> & mime)
 					if ((path_cgi = _location.find_path_cgi(extension(_path_file))) != "")
 					{
 						Cgi a(path_cgi, _port);
-						content = a.execute(_request, "POST", _client_socket, _file_name, _request.get_content_type(), _file_name);
+						content = a.execute(_request, "POST", _client_socket, _file_name, _request.get_content_type(), _path_file);
 					}
 					else
 						content = get_file_content(_file_name);

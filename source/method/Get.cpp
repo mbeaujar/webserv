@@ -51,7 +51,7 @@ void Get::execute(std::map<std::string, std::string> & mime)
 					else
 						_request.set_content_type(search->second);
 					Cgi a(path_cgi, _port);
-					_body = a.execute(_request, "GET", _client_socket, _path_file, _request.get_content_type(), file_name);
+					_body = a.execute(_request, "GET", _client_socket, _path_file, _request.get_content_type(), _path_file);
 					remove_file(file_name.c_str());
 				}
 				else
