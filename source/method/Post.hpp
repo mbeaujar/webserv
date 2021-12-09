@@ -22,8 +22,7 @@ class Post : public AMethods
         Post & operator=(Post const & rhs);
 
         // Methods
-        int set_file_content(std::string & content, bool is_app);
-        virtual void execute(void);
+        virtual void execute(std::map<std::string, std::string> & mime);
 
 	private:
 		int 	_file_fd;

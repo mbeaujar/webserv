@@ -61,7 +61,7 @@ void Response::execute(void)
 			this->create_method(_request.get_method());
 			if (_method != NULL)
 			{
-				_method->execute();
+				_method->execute(_mime);
 				if (_request.get_method() == GET)
 				{
 					body = _method->get_body();
@@ -229,11 +229,6 @@ void Response::create_header(void)
 	std::pair<int, std::string> & error     = _request.get_error();
 	std::pair<int, std::string> & redirect  = _request.get_return();
 
-	// if (ISREDIRECT(redirect.first))
-	// {
-	// 	error.first = redirect.first;
-	// 	error.second = "Moved Permanently";
-	// }
 	_response = "HTTP/1.1 " + to_string(error.first) + " " + error.second + "\r\n";
 	_response += "Server: webserv/1.0.0 (Ubuntu)\r\n";
 	_response += "Date: " + this->get_hour_date() + "\r\n";

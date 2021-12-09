@@ -13,7 +13,7 @@ class Delete : public AMethods
         virtual ~Delete();
         Delete & operator=(Delete const & rhs);
 
-        void execute(void);
+        void execute(std::map<std::string, std::string> & mime);
 
 };
 

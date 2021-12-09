@@ -16,7 +16,7 @@ class Get : public AMethods
         virtual ~Get();
         Get & operator=(Get const & rhs);
 
-        void execute(void);
+        void execute(std::map<std::string, std::string> & mime);
 		std::pair<int, std::string> get_redirect(void);
 
 	private:

@@ -7,10 +7,11 @@
 # include "prototype.hpp"
 
 # include <sys/stat.h>
-# include <iostream>
-# include <sstream>
 # include <fcntl.h>
 # include <stdio.h>
+# include <iostream>
+# include <sstream>
+# include <fstream>
 
 int			remove_file(char const * path);
 int 		get_port(Server & server, int & client_socket);
@@ -23,11 +24,12 @@ class AMethods
 		virtual ~AMethods();
 		AMethods & operator=(AMethods const & rhs);
 
-		virtual void execute(void) = 0;
+		virtual void execute(std::map<std::string, std::string> & mime) = 0;
 		int		search_location(void);
 		bool is_method_allowed(void);
 		std::string & get_body(void);
 		std::string & get_path(void);
+		int set_file_content(std::string & path_file, std::string & content, bool is_app);
 
 	private:
 		std::string	path_in_common(std::string const & path_location, std::string & path);

@@ -23,8 +23,9 @@ Delete & Delete::operator=(Delete const & rhs)
     return *this;
 }
 
-void Delete::execute(void)
+void Delete::execute(std::map<std::string, std::string> & mime)
 {
+	static_cast<void>(mime);
 	if (this->search_location() == EXIT_SUCCESS)
 	{
 		if (this->is_method_allowed() == true)
@@ -32,7 +33,9 @@ void Delete::execute(void)
 			if (file_exist(this->_path_file))
 				remove_file(this->_path_file.c_str());
 			else
-				_request.set_error(std::make_pair(404, "Not Found"));
+				_request.set_error(std::make_pair(204, "No Content"));
 		}
 	}
 }
+
+// 204 -> https://github.com/paypal/api-standards/blob/master/api-style-guide.md#mapping

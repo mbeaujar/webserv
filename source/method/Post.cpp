@@ -75,26 +75,9 @@ Post & Post::operator=(Post const & rhs)
     return *this;
 }
 
-int Post::set_file_content(std::string & content, bool is_app)
+void Post::execute(std::map<std::string, std::string> & mime)
 {
-	std::ofstream file;
-
-	if (is_app == true)
-		file.open(_path_file.c_str(), std::ios_base::app);
-	else
-		file.open(_path_file.c_str());
-	if (file.is_open() == false)
-	{
-		_request.set_error(std::make_pair(500, "Internal Server Error"));
-		return EXIT_FAILURE;
-	}
-	file << content;
-	file.close();
-	return EXIT_SUCCESS;
-}
-
-void Post::execute(void)
-{
+	static_cast<void>(mime);
 	if (_buffer != NULL)
 	{
 		if (this->search_location() == EXIT_SUCCESS)
@@ -150,7 +133,7 @@ void Post::execute(void)
 				if (ISERROR(_request.get_error().first))
 					return ;
 					
-				this->set_file_content(content, is_app);
+				this->set_file_content(_path_file, content, is_app);
 			}
 		}
 	}

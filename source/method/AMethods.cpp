@@ -251,3 +251,21 @@ int remove_file(char const * path)
 		std::cerr << "webserv: [warn]: remove_file: remove fail for path: " << path << std::endl;
 	return ret;
 }
+
+int AMethods::set_file_content(std::string & path_file, std::string & content, bool is_app)
+{
+	std::ofstream file;
+
+	if (is_app == true)
+		file.open(path_file.c_str(), std::ios_base::app);
+	else
+		file.open(path_file.c_str());
+	if (file.is_open() == false)
+	{
+		_request.set_error(std::make_pair(500, "Internal Server Error"));
+		return EXIT_FAILURE;
+	}
+	file << content;
+	file.close();
+	return EXIT_SUCCESS;
+}

@@ -25,7 +25,7 @@ Get & Get::operator=(Get const & rhs)
     return *this;
 }
 
-void Get::execute(void)
+void Get::execute(std::map<std::string, std::string> & mime)
 {
 	if (this->search_location() == EXIT_SUCCESS)
 	{
@@ -42,8 +42,17 @@ void Get::execute(void)
 				}
 				else if ((path_cgi = _location.find_path_cgi(extension(_path_file))) != "")
 				{
+					std::string file_name = ".get_" + to_string(_client_socket);
+					if (set_file_content(file_name, _request.get_query_string(), false) == EXIT_FAILURE)
+						return;
+					std::map<std::string, std::string>::iterator search = mime.find(extension(_path_file));
+					if (search == mime.end())
+						_request.set_content_type(mime["default"]);
+					else
+						_request.set_content_type(search->second);
 					Cgi a(path_cgi, _port);
-					_body = a.execute(_request, "GET", _client_socket, _path_file, _request.get_content_type(), _path_file);
+					_body = a.execute(_request, "GET", _client_socket, _path_file, _request.get_content_type(), file_name);
+					remove_file(file_name.c_str());
 				}
 				else
 					_body = get_file_content(_path_file);
