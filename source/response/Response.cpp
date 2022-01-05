@@ -1,31 +1,28 @@
 #include "Response.hpp"
 
-Response::Response(int & client_socket, Request & request, Server & server, int & port) :
-	_port(port),
-	_client_socket(client_socket),
-	_request(request),
-	_server(server),
-	_response(),
-	_method(NULL),
-	_content_length(),
-	_mime(),
-	_error()
+Response::Response(int &client_socket, Request &request, Server &server, int &port) : _port(port),
+																					  _client_socket(client_socket),
+																					  _request(request),
+																					  _server(server),
+																					  _response(),
+																					  _method(NULL),
+																					  _content_length(),
+																					  _mime(),
+																					  _error()
 {
 	this->init_type_mimes();
 	this->init_error();
 }
 
-
-Response::Response(Response const & copy) :
-	_port(copy._port),
-	_client_socket(copy._client_socket),
-	_request(copy._request),
-	_server(copy._server),
-	_response(copy._response),
-	_method(copy._method),
-	_content_length(copy._content_length),
-	_mime(copy._mime),
-	_error(copy._error) {}
+Response::Response(Response const &copy) : _port(copy._port),
+										   _client_socket(copy._client_socket),
+										   _request(copy._request),
+										   _server(copy._server),
+										   _response(copy._response),
+										   _method(copy._method),
+										   _content_length(copy._content_length),
+										   _mime(copy._mime),
+										   _error(copy._error) {}
 
 Response::~Response()
 {
@@ -33,10 +30,10 @@ Response::~Response()
 		delete _method;
 }
 
-Response & Response::operator=(Response const & copy)
+Response &Response::operator=(Response const &copy)
 {
-    if (this != &copy)
-    {
+	if (this != &copy)
+	{
 		_port = copy._port;
 		_client_socket = copy._client_socket;
 		_request = copy._request;
@@ -46,8 +43,8 @@ Response & Response::operator=(Response const & copy)
 		_content_length = copy._content_length;
 		_mime = copy._mime;
 		_error = copy._error;
-    }
-    return *this;
+	}
+	return *this;
 }
 
 void Response::execute(void)
@@ -78,7 +75,7 @@ void Response::execute(void)
 		this->create_header();
 		_response.append(body);
 	}
-	catch (const std::exception & e)
+	catch (const std::exception &e)
 	{
 		std::cerr << "webserv: [warn]: class Response: execute: " << e.what() << '\n';
 		_request.set_error(std::make_pair(500, "Internal Server Error"));
@@ -91,10 +88,12 @@ void Response::execute(void)
 void Response::send_response(void)
 {
 	std::cerr << _response << std::endl;
-	if (send(_client_socket, _response.c_str(), _response.length(), MSG_CONFIRM) == -1)
-		std::cerr << "webserv: [warn]: class Response: send_response: can't write to client" << "\n";
+	if (send(_client_socket, _response.c_str(), _response.length(), 0) == -1)
+		std::cerr << "webserv: [warn]: class Response: send_response: can't write to client"
+				  << "\n";
 	if (shutdown(_client_socket, SHUT_RDWR) == -1)
-		std::cerr << "webserv: [warn]: class Response: send_response: shutdown can't shut client and socket" << "\n";
+		std::cerr << "webserv: [warn]: class Response: send_response: shutdown can't shut client and socket"
+				  << "\n";
 	close(_client_socket);
 }
 
@@ -105,12 +104,11 @@ std::string Response::error_html(void)
 	std::pair<int, std::string> error = _request.get_error();
 	std::pair<int, std::string> redirect = _request.get_return();
 
-
 	if (ISREDIRECT(redirect.first) == true)
 	{
 		if (redirect.first >= 300 && redirect.first <= 307 && redirect.first != 306)
 		{
-			std::map<int, std::string>::iterator search  = _error.find(redirect.first);
+			std::map<int, std::string>::iterator search = _error.find(redirect.first);
 			_request.set_error(std::make_pair(search->first, search->second));
 			status = to_string(redirect.first) + " " + search->second;
 		}
@@ -140,7 +138,7 @@ std::string Response::error_html(void)
 	return path;
 }
 
-void Response::create_method(int & method)
+void Response::create_method(int &method)
 {
 	try
 	{
@@ -151,13 +149,12 @@ void Response::create_method(int & method)
 		else if (method == DELETE)
 			_method = new Delete(_server, _request, _client_socket, _port);
 	}
-	catch (const std::exception & e)
+	catch (const std::exception &e)
 	{
 		std::cerr << "webserv: [warn]: class Response: create_method: " << e.what() << '\n';
 		_method = NULL;
 	}
 }
-
 
 std::string Response::allow_method(void)
 {
@@ -210,7 +207,7 @@ std::string Response::get_hour_date(void)
 	return date;
 }
 
-std::string get_last_modified(std::string & path)
+std::string get_last_modified(std::string &path)
 {
 	tm *tm;
 	char buf[1000];
@@ -226,8 +223,8 @@ std::string get_last_modified(std::string & path)
 
 void Response::create_header(void)
 {
-	std::pair<int, std::string> & error     = _request.get_error();
-	std::pair<int, std::string> & redirect  = _request.get_return();
+	std::pair<int, std::string> &error = _request.get_error();
+	std::pair<int, std::string> &redirect = _request.get_return();
 
 	_response = "HTTP/1.1 " + to_string(error.first) + " " + error.second + "\r\n";
 	_response += "Server: webserv/1.0.0 (Ubuntu)\r\n";
@@ -261,7 +258,7 @@ void Response::create_header(void)
 
 // 406 Not Acceptable
 
-bool Response::set_content_type(std::string content_type, std::map<std::string, int> & accept)
+bool Response::set_content_type(std::string content_type, std::map<std::string, int> &accept)
 {
 	if (accept.size() > 0 && accept.find(content_type) == accept.end() && accept.find("*/*") == accept.end())
 		return false;
@@ -269,7 +266,7 @@ bool Response::set_content_type(std::string content_type, std::map<std::string, 
 	return true;
 }
 
-void Response::check_content_type(std::string & path_file)
+void Response::check_content_type(std::string &path_file)
 {
 	std::string ext = extension(path_file);
 	std::map<std::string, std::string>::iterator search;
@@ -313,10 +310,8 @@ void Response::check_content_type(std::string & path_file)
 			if (accept.size() > 0 && accept.find(content_type) == accept.end())
 				_request.set_error(std::make_pair(406, "Not Acceptable"));
 		}
-
 	}
 }
-
 
 void Response::init_type_mimes(void)
 {
@@ -387,11 +382,10 @@ void Response::init_type_mimes(void)
 	_mime[".xml"] = "application/xml";
 	_mime[".xul"] = "application/vnd.mozilla.xul+xml";
 	_mime[".zip"] = "application/zip";
-	_mime[".3gp"] = "video/3gpp"; // attention audio/3gpp si il accepte l'audio
+	_mime[".3gp"] = "video/3gpp";  // attention audio/3gpp si il accepte l'audio
 	_mime[".3g2"] = "video/3gpp2"; // same audio/3gpp2
 	_mime[".7z"] = "application/x-7z-compressed";
 }
-
 
 void Response::init_error(void)
 {
