@@ -1,21 +1,21 @@
 #include "Request.hpp"
 
-Request::Request(int & client_socket) :
-    _method(),
-    _content_length(-1),
-    _host(),
-    _path(),
-	_file(),
-	_date(),
-	_query_string(),
-    _content_type(),
-	_methods(),
-	_cookie_username(),
-	_cookie_color(),
-	_new_client(true),
-	_error(200, "OK"),
-	_return(-1, ""),
-	_accept()
+Request::Request(int &client_socket) : _method(),
+																			 _content_length(-1),
+																			 _host(),
+																			 _path(),
+																			 _file(),
+																			 _date(),
+																			 _query_string(),
+																			 _content_type(),
+																			 /*_boundary(),*/
+																			 _methods(),
+																			 _cookie_username(),
+																			 _cookie_color(),
+																			 _new_client(true),
+																			 _error(200, "OK"),
+																			 _return(-1, ""),
+																			 _accept()
 {
 	int len = 0;
 	char *header = this->read_header(client_socket);
@@ -38,72 +38,73 @@ Request::Request(int & client_socket) :
 		std::cerr << "webserv: [warn]: class Request: Constructor: header in the request too large" << std::endl;
 		this->set_error(std::make_pair(413, "Request Entity Too Large"));
 	}
-	else 
+	else
 		parse_header(header);
-	delete [] header;
+	delete[] header;
 }
 
-Request::Request(Request const & src) :
-  	_method(src._method),
-    _content_length(src._content_length),
-	_host(src._host),
-	_path(src._path),
-	_file(src._file),
-	_date(src._date),
-	_query_string(src._query_string),
-    _content_type(src._content_type),
-	_methods(src._methods),
-	_cookie_username(src._cookie_username),
-	_cookie_color(src._cookie_color),
-	_new_client(src._new_client),
-	_error(src._error),
-	_return(src._return),
-	_accept(src._accept) {}
+Request::Request(Request const &src) : _method(src._method),
+																			 _content_length(src._content_length),
+																			 _host(src._host),
+																			 _path(src._path),
+																			 _file(src._file),
+																			 _date(src._date),
+																			 _query_string(src._query_string),
+																			 _content_type(src._content_type),
+																			 _methods(src._methods),
+																			 _cookie_username(src._cookie_username),
+																			 _cookie_color(src._cookie_color),
+																			 _new_client(src._new_client),
+																			 _error(src._error),
+																			 _return(src._return),
+																			 _accept(src._accept) {}
 
 Request::~Request() {}
 
-Request & Request::operator=(Request const & rhs)
+Request &Request::operator=(Request const &rhs)
 {
-    if (this != &rhs)
-    {
-        this->_method           	= rhs._method;
-        this->_content_length   	= rhs._content_length;
-        this->_host             	= rhs._host;
-        this->_path             	= rhs._path;
-		this->_file 				= rhs._file;
-		this->_date             	= rhs._date;
-		this->_query_string			= rhs._query_string;
-        this->_content_type     	= rhs._content_type;
-		this->_methods				= rhs._methods;
-		this->_error            	= rhs._error;
-		this->_return           	= rhs._return;
-		this->_cookie_username 		= rhs._cookie_username;
-		this->_cookie_color			= rhs._cookie_color;
-		this->_new_client			= rhs._new_client;
-    }
-    return *this;
+	if (this != &rhs)
+	{
+		this->_method = rhs._method;
+		this->_content_length = rhs._content_length;
+		this->_host = rhs._host;
+		this->_path = rhs._path;
+		this->_file = rhs._file;
+		this->_date = rhs._date;
+		this->_query_string = rhs._query_string;
+		this->_content_type = rhs._content_type;
+		/*this->_boundary = rhs._boundary;*/
+		this->_methods = rhs._methods;
+		this->_error = rhs._error;
+		this->_return = rhs._return;
+		this->_cookie_username = rhs._cookie_username;
+		this->_cookie_color = rhs._cookie_color;
+		this->_new_client = rhs._new_client;
+	}
+	return *this;
 }
 
-void Request::set_file(std::string & file)
+void Request::set_file(std::string &file)
 {
 	if (is_directory(file))
 	{
 		if (file.length() > 1 && file[file.length() - 1] != '/')
-				file.push_back('/');
+			file.push_back('/');
 	}
 	_file = file;
 }
 
-void        				Request::set_method(int const & method) { _method = method; }
-void        				Request::set_path(std::string const & path) { _path = path; }
-void        				Request::set_date(std::string const & date) { _date = date; }
-void        				Request::set_host(std::string const & host) { _host = host; }
-void        				Request::set_content_length(int & len) { _content_length = len; }
-void        				Request::set_methods(struct s_method & met) { _methods = met; }
-void        				Request::set_return(std::pair<int, std::string> const & r) { _return = r; }
-void        				Request::set_content_type(std::string const & type) { _content_type = type; }
-void        				Request::set_error(std::pair<int, std::string> const & error) { _error = error; }
-void        				Request::set_accept(std::map<std::string, int> const & accept) { _accept = accept; }
+void Request::set_method(int const &method) { _method = method; }
+void Request::set_path(std::string const &path) { _path = path; }
+void Request::set_date(std::string const &date) { _date = date; }
+void Request::set_host(std::string const &host) { _host = host; }
+void Request::set_content_length(int &len) { _content_length = len; }
+/*void Request::set_boundary(std::string const &boundary) { _boundary = boundary; }*/
+void Request::set_methods(struct s_method &met) { _methods = met; }
+void Request::set_return(std::pair<int, std::string> const &r) { _return = r; }
+void Request::set_content_type(std::string const &type) { _content_type = type; }
+void Request::set_error(std::pair<int, std::string> const &error) { _error = error; }
+void Request::set_accept(std::map<std::string, int> const &accept) { _accept = accept; }
 
 void Request::set_query_string(std::string const &query_string)
 {
@@ -116,48 +117,48 @@ void Request::set_query_string(std::string const &query_string)
 		_query_string = query_string;
 }
 
-void						Request::generate_cookie_username(void)
+void Request::generate_cookie_username(void)
 {
-	std::string tab[5] = { "John", "Kenny", "Mohammed", "Toufik"};
-	srand (time(NULL));
+	std::string tab[5] = {"John", "Kenny", "Mohammed", "Toufik"};
+	srand(time(NULL));
 	_cookie_username = tab[rand() % 4];
 }
 
-void 						Request::generate_cookie_color(void)
+void Request::generate_cookie_color(void)
 {
-	std::string tab[3] = { "red", "green", "blue" };
-	srand (time(NULL));
+	std::string tab[3] = {"red", "green", "blue"};
+	srand(time(NULL));
 	_cookie_color = tab[rand() % 3];
 }
 
-
-int &        				Request::get_method() { return _method; }
-int &       				Request::get_content_length() { return _content_length; }
-std::string &				Request::get_host() { return _host; }
-std::string &				Request::get_date() { return _date; }
-std::string &				Request::get_query_string() { return _query_string; }
-std::string &				Request::get_content_type() { return _content_type; }
-std::string &				Request::get_cookie_username() { return _cookie_username; }
-std::string &				Request::get_cookie_color() { return _cookie_color; }
-std::string & 				Request::get_path() { return _path; }
-struct s_method	&			Request::get_methods() { return _methods; }
-std::string  & 				Request::get_file() { return _file; }
+int &Request::get_method() { return _method; }
+int &Request::get_content_length() { return _content_length; }
+std::string &Request::get_host() { return _host; }
+std::string &Request::get_date() { return _date; }
+std::string &Request::get_query_string() { return _query_string; }
+std::string &Request::get_content_type() { return _content_type; }
+/*std::string &Request::get_boundary() { return _boundary; }*/
+std::string &Request::get_cookie_username() { return _cookie_username; }
+std::string &Request::get_cookie_color() { return _cookie_color; }
+std::string &Request::get_path() { return _path; }
+struct s_method &Request::get_methods() { return _methods; }
+std::string &Request::get_file() { return _file; }
 std::pair<int, std::string> &Request::get_error() { return _error; }
 std::map<std::string, int> &Request::get_accept() { return _accept; }
 std::pair<int, std::string> &Request::get_return() { return _return; }
-bool & 						Request::get_new_client() { return _new_client; }
-std::string & 				Request::get_header() { return _header; }
+bool &Request::get_new_client() { return _new_client; }
+std::string &Request::get_header() { return _header; }
 
-bool Request::is_query(std::string & path) { return path.find('?') != std::string::npos; }
+bool Request::is_query(std::string &path) { return path.find('?') != std::string::npos; }
 
-std::string Request::parse_query(std::string & path)
+std::string Request::parse_query(std::string &path)
 {
 	size_t pos = path.find('?');
 	_query_string = path.substr(pos + 1, path.length() - (pos + 1));
 	return path.substr(0, pos);
 }
 
-void lower_file(std::string & request)
+void lower_file(std::string &request)
 {
 	int i = 0;
 	while (request[i])
@@ -174,13 +175,14 @@ void lower_file(std::string & request)
 	}
 }
 
-int Request::skip_the_word(std::string & file, int i) {
+int Request::skip_the_word(std::string &file, int i)
+{
 	while (file[i] && !isspace(file[i]))
 		++i;
 	return i;
 }
 
-std::string Request::recup_word(std::string & request, int & i)
+std::string Request::recup_word(std::string &request, int &i)
 {
 	int tmp;
 	std::string word;
@@ -191,7 +193,7 @@ std::string Request::recup_word(std::string & request, int & i)
 	return word;
 }
 
-int	Request::get_first_line(std::string & request)
+int Request::get_first_line(std::string &request)
 {
 	int i = 0;
 	std::string word;
@@ -217,7 +219,9 @@ int	Request::get_first_line(std::string & request)
 		std::cerr << "webserv: [warn]: get_first_line: Bad HTTP version: " << word << std::endl;
 		this->set_error(std::make_pair(505, "HTTP Version Not Supporteds"));
 	}
+
 	word = recup_word(request, i);
+	//std::cout << "AAAAAAAA" << word << std::endl;
 	if (word != "host:")
 	{
 		std::cerr << "webserv: [warn]: get_first_line: Request without host part" << std::endl;
@@ -231,7 +235,7 @@ int	Request::get_first_line(std::string & request)
 	return i;
 }
 
-char*	Request::read_header(int client_socket)
+char *Request::read_header(int client_socket)
 {
 	int bytes_read, msgsize;
 	char *buffer;
@@ -271,7 +275,9 @@ void Request::parse_header(std::string request)
 	lower_file(request);
 	i = get_first_line(request);
 	_header = request.substr(i, request.length() - i); // (BIG COPY) only for cgi
-	std::cerr << "HEADER: " << _header << std::endl;
+	std::cerr << "HEADER: \n"
+						<< request << std::endl;
+	std::cerr << "--------------------------------------------" << std::endl;
 	while (request[i])
 	{
 		if (request.compare(i, 7, "accept:") == 0)
@@ -298,6 +304,10 @@ void Request::parse_header(std::string request)
 			int tmp = i;
 			i = skip_line(request, i);
 			this->set_content_type(request.substr(tmp, (i - tmp) - 1));
+			if (get_content_type() == "multipart/form-data")
+			{
+				std::cout << "multipart" << std::endl;
+			}
 		}
 		else if (request.compare(i, 18, "transfer-encoding:") == 0)
 		{
@@ -360,7 +370,7 @@ void Request::print_request(void)
 	std::cout << "-------------------------------" << std::endl;
 }
 
-void Request::parse_accept(std::string & content)
+void Request::parse_accept(std::string &content)
 {
 	size_t first = 0;
 	size_t pos = 0;
@@ -378,7 +388,7 @@ void Request::parse_accept(std::string & content)
 	}
 }
 
-void Request::parse_cookie(std::string & content)
+void Request::parse_cookie(std::string &content)
 {
 	size_t pos = 0;
 	size_t first = 0;
@@ -393,10 +403,10 @@ void Request::parse_cookie(std::string & content)
 			i++;
 		std::string key = cookie.substr(i, l - i);
 		if (key == "username")
-			_cookie_username = cookie.substr(l + 1, cookie.length() - (l + 1)); 
+			_cookie_username = cookie.substr(l + 1, cookie.length() - (l + 1));
 		else if (key == "color")
-			_cookie_color = cookie.substr(l + 1, cookie.length() - (l + 1)); 
-		
+			_cookie_color = cookie.substr(l + 1, cookie.length() - (l + 1));
+
 		first = pos + 1;
 	}
 	if (_cookie_username != "")

@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 	{
 		std::vector<Server> servers;
 		servers = parser(argv[1]);
-		// debug(servers);
+	  debug(servers);
 		
 		Socket sockets;
 
@@ -98,3 +98,10 @@ int skip_line(std::string & line, int i)
 		++i;
 	return i;
 }
+
+/*int skip_semicolon(std::string & line, int i)
+{
+	while (line[i] && line[i] != ';')
+		++i;
+	return i;
+}*/

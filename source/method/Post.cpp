@@ -129,6 +129,10 @@ void Post::execute(std::map<std::string, std::string> & mime)
 					else
 						content = get_file_content(_file_name);
 				}
+				/*else if (_request.get_content_type() == "multipart/form-data")
+				{
+					
+				}*/
 
 				if (ISERROR(_request.get_error().first))
 					return ;
@@ -183,8 +187,10 @@ int Post::read_body_child(int msgsize)
 	if (msgsize == -1)
 		msgsize = 0;
 	_buffer[msgsize] = 0;
+	std::cerr << _buffer << std::endl;
 	if (msgsize > 0)
 		write(_file_fd, _buffer, msgsize);
+	
 	return 0;
 }
 
