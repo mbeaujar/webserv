@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 	{
 		std::vector<Server> servers;
 		servers = parser(argv[1]);
-	  debug(servers);
+		debug(servers);
 		
 		Socket sockets;
 
