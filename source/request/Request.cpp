@@ -33,7 +33,6 @@ Request::Request(int &client_socket)
     }
     else
         parse_header(header);
-    // this->print_request();
     delete[] header;
 }
 
@@ -296,7 +295,6 @@ int Request::get_first_line(std::string &request)
     }
 
     word = recup_word(request, i);
-    // std::cout << "AAAAAAAA" << word << std::endl;
     if (word != "host:")
     {
         std::cerr << "webserv: [warn]: get_first_line: Request without host part" << std::endl;
@@ -351,8 +349,8 @@ void Request::parse_header(std::string request)
     lower_file(request);
     i = get_first_line(request);
     _header = request.substr(i, request.length() - i); // (BIG COPY) only for cgi
-    std::cerr << "HEADER: \n" << request << std::endl;
-    std::cerr << "--------------------------------------------" << std::endl;
+    // std::cerr << "HEADER: \n" << request << std::endl;
+    // std::cerr << "--------------------------------------------" << std::endl;
     while (request[i])
     {
         if (request.compare(i, 7, "accept:") == 0)
@@ -361,12 +359,12 @@ void Request::parse_header(std::string request)
             std::string line = request.substr(i, skip_the_word(request, i) - i);
             this->parse_accept(line);
         }
-        else if (request.compare(i, 7, "cookie:") == 0)
-        {
-            i += 8;
-            std::string line = request.substr(i, (skip_line(request, i) - 1) - i);
-            this->parse_cookie(line);
-        }
+        // else if (request.compare(i, 7, "cookie:") == 0)
+        // {
+        //     i += 8;
+        //     std::string line = request.substr(i, (skip_line(request, i) - 1) - i);
+        //     this->parse_cookie(line);
+        // }
         else if (request.compare(i, 15, "content-length:") == 0)
         {
             i += 16;
@@ -375,13 +373,17 @@ void Request::parse_header(std::string request)
         }
         else if (request.compare(i, 13, "content-type:") == 0)
         {
+            // Exmple of boundary multipart/form-data; boundary=---------------------------735323031399963166993862150
             i += 14;
-            int tmp = i;
-            i = skip_line(request, i);
-            this->set_content_type(request.substr(tmp, (i - tmp) - 1));
+            size_t semicolon = request.find(';', i);
+            this->set_content_type(request.substr(i, semicolon - i));
             if (get_content_type() == "multipart/form-data")
             {
-                std::cout << "MLMULTIPARTTTT" << std::endl;
+                for (; request[semicolon] != '='; semicolon++)
+                    ;
+                this->set_boundary(
+                    "--" + request.substr(semicolon + 1, (request.find('\n', semicolon) - 1) - (semicolon + 1)));
+                // std::cout << _boundary << std::endl;
             }
         }
         else if (request.compare(i, 18, "transfer-encoding:") == 0)
