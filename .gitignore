@@ -3,6 +3,8 @@
 *2.o
 *2.cpp
 ali
+_post.*
+webserv
 
 # Compiled Object files
 *.slo
@@ -36,3 +38,6 @@ ali
 
 #vscode de merde
 .vscode
+
+#best of file
+push.sh

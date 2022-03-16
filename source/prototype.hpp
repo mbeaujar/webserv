@@ -57,6 +57,7 @@ bool		file_exist(std::string & filename);
 int			recup_nb(std::string & file, int & i);
 int			skip_space(std::string & file, int i);
 int 		skip_line(std::string & line, int i);
+int skip_semicolon(std::string & line, int i);
 int			remove_file(char const * path);
 
 

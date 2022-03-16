@@ -35,6 +35,7 @@ class Request
         void			            set_methods(struct s_method & met);
         void			            set_date(std::string const & date);
         void			            set_content_type(std::string const & type);
+        void			            set_boundary(std::string const & boundary);
         void			            set_query_string(std::string const & query_string);
         void			            set_error(std::pair<int, std::string> const & error);
         void			            set_return(std::pair<int, std::string> const & error);
@@ -52,6 +53,7 @@ class Request
         std::string	&	            get_content_type();
         std::string	&	            get_cookie_username();
         std::string	&	            get_cookie_color();
+        std::string	&	            get_boundary();
         struct s_method	&           get_methods();
 		std::string &         		get_file();
         std::pair<int, std::string> &get_error();
@@ -69,6 +71,7 @@ class Request
 		std::string		            _date;
         std::string		            _query_string;
         std::string                 _content_type;
+        std::string                 _boundary;
        	struct s_method    		    _methods;
 		std::string 				_cookie_username;
 		std::string 				_cookie_color;
