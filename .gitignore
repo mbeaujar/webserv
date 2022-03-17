@@ -3,8 +3,9 @@
 *2.o
 *2.cpp
 ali
-_post.*
+.post_*
 webserv
+.DS_Store
 
 # Compiled Object files
 *.slo
