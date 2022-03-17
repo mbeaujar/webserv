@@ -106,9 +106,13 @@ void Post::read_boundary(void)
     std::string boundary_content;
 
     int fd_file = open(_file_name.c_str(), O_RDWR);
+    _totalsize = 0;
     while (true)
     {
         std::string line = readline(fd_file);
+        _totalsize += line.length();
+        if (_totalsize >= _content_length)
+            break;
         state = is_boundary(line);
         if ((first_boundary == true && state == BOUNDARY) || state == END_BOUNDARY)
         {
