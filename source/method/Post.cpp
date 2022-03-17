@@ -33,8 +33,8 @@ Post::Post(Post const &src)
 
 Post::~Post()
 {
-    // if (file_exist(_file_name))
-    //     remove_file(_file_name.c_str());
+    if (file_exist(_file_name))
+        remove_file(_file_name.c_str());
     if (_file_fd != -1)
         close(_file_fd);
     if (_buffer != NULL)
@@ -87,6 +87,7 @@ std::string readline(int fd)
             break;
         if (c == '\r')
         {
+            line += c;
             ret = read(fd, &c, 1);
             if (c == '\n')
                 break;
@@ -94,11 +95,7 @@ std::string readline(int fd)
         line += c;
     }
     if (c == '\n' && ret != 0)
-    {
-        line += '\r';
         line += c;
-    }
-
     return line;
 }
 
@@ -115,9 +112,7 @@ void Post::read_boundary(void)
         state = is_boundary(line);
         if ((first_boundary == true && state == BOUNDARY) || state == END_BOUNDARY)
         {
-            // std::cout << "ici" << std::endl;
             size_t blank_line = boundary_content.find("\r\n\r\n", 0);
-            // std::cout << "boundary: \n" << boundary_content << std::endl;
             int fd = parse_boundary_header(boundary_content.substr(0, blank_line));
             if (blank_line != std::string::npos)
             {
@@ -139,7 +134,6 @@ void Post::read_boundary(void)
             first_boundary = true;
         if (state == NO_BOUNDARY)
             boundary_content += line;
-        std::cout << "line: " << line << std::endl;
     }
     close(fd_file);
 }
