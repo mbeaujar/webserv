@@ -66,9 +66,9 @@ Post &Post::operator=(Post const &rhs)
 
 int Post::is_boundary(std::string &line)
 {
-    if (line == _request.get_boundary() + "\n")
+    if (line == _request.get_boundary() + "\r\n")
         return BOUNDARY;
-    std::string end = _request.get_boundary() + "--\n";
+    std::string end = _request.get_boundary() + "--\r\n";
     if (line == end)
         return END_BOUNDARY;
     return NO_BOUNDARY;
@@ -94,7 +94,11 @@ std::string readline(int fd)
         line += c;
     }
     if (c == '\n' && ret != 0)
+    {
+        line += '\r';
         line += c;
+    }
+
     return line;
 }
 
@@ -111,9 +115,9 @@ void Post::read_boundary(void)
         state = is_boundary(line);
         if ((first_boundary == true && state == BOUNDARY) || state == END_BOUNDARY)
         {
-            std::cout << "ici" << std::endl;
-            size_t blank_line = boundary_content.find("\n\n", 0);
-            std::cout << "boundary: \n" << boundary_content << std::endl;
+            // std::cout << "ici" << std::endl;
+            size_t blank_line = boundary_content.find("\r\n\r\n", 0);
+            // std::cout << "boundary: \n" << boundary_content << std::endl;
             int fd = parse_boundary_header(boundary_content.substr(0, blank_line));
             if (blank_line != std::string::npos)
             {
@@ -122,7 +126,7 @@ void Post::read_boundary(void)
                 else
                 {
                     std::string body =
-                        boundary_content.substr(blank_line + 2, boundary_content.length() - (blank_line + 3));
+                        boundary_content.substr(blank_line + 4, boundary_content.length() - (blank_line + 6));
                     write(fd, body.c_str(), body.length());
                     boundary_content.clear();
                 }
