@@ -359,12 +359,12 @@ void Request::parse_header(std::string request)
             std::string line = request.substr(i, skip_the_word(request, i) - i);
             this->parse_accept(line);
         }
-        // else if (request.compare(i, 7, "cookie:") == 0)
-        // {
-        //     i += 8;
-        //     std::string line = request.substr(i, (skip_line(request, i) - 1) - i);
-        //     this->parse_cookie(line);
-        // }
+        else if (request.compare(i, 7, "cookie:") == 0)
+        {
+            i += 8;
+            std::string line = request.substr(i, (skip_line(request, i) - 1) - i);
+            this->parse_cookie(line);
+        }
         else if (request.compare(i, 15, "content-length:") == 0)
         {
             i += 16;
@@ -476,6 +476,7 @@ void Request::parse_cookie(std::string &content)
     size_t pos = 0;
     size_t first = 0;
 
+    std::cout << "Cookie: " << content << std::endl;
     while (pos != std::string::npos)
     {
         pos = content.find(';', first);
@@ -493,13 +494,7 @@ void Request::parse_cookie(std::string &content)
         first = pos + 1;
     }
     if (_cookie_username != "")
-    {
         _new_client = false;
-        if (_cookie_color != "")
-            std::cout << "--> Request by " + _cookie_username + " with a " + _cookie_color + " color" << std::endl;
-        else
-            std::cout << "--> Request by " + _cookie_username + " without color" << std::endl;
-    }
     else
         _new_client = true;
 }
