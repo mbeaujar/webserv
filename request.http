@@ -20,6 +20,10 @@ Content of a.txt.
 
 ###############################################################
 
+GET http://localhost:8081
+
+
+###
 POST /echo/post/form HTTP/1.1
 Host: reqbin.com
 Content-Type: application/x-www-form-urlencoded

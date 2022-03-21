@@ -3,6 +3,7 @@ NAME   = webserv
 CXX     = clang++
 RM     = rm -rf
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
+BONUS=0
 
 HEADER = -I source  \
 	-I source/config/server \
@@ -47,38 +48,41 @@ SRCS  =	main.cpp \
 OBJS = $(addprefix .objs/, $(SRCS:.cpp=.o))
 
 SRCS_DIRECTORY=source/
+SRCS_SUBDIRECTORY=config \
+		config/directives \
+		config/server \
+		autoindex \
+		cgi \
+		method \
+		request \
+		response \
+		socket
 OBJS_DIRECTORY=.objs/
 
+.SILENT:
+
 $(OBJS_DIRECTORY)%.o : $(SRCS_DIRECTORY)%.cpp
-	@$(CXX) $(CXXFLAGS) $(HEADER) $< -c -o $@
+	$(CXX) $(CXXFLAGS) -D BONUS=$(BONUS) $(HEADER) $< -c -o $@
 
 all : $(OBJS_DIRECTORY) $(NAME)
 
 $(NAME) : $(OBJS)
-	@$(CXX) $(CXXFLAGS) $(OBJS) $(HEADER) -lpthread -o $(NAME)
+	$(CXX) $(CXXFLAGS) $(OBJS) $(HEADER) -lpthread -o $(NAME)
+
+bonus: BONUS=1
+bonus: all
 
 $(OBJS_DIRECTORY):
-	@mkdir $@
-	@mkdir -p $@/config/directives
-	@mkdir -p $@/config/server
-	@mkdir -p $@/autoindex
-	@mkdir -p $@/cgi
-	@mkdir -p $@/method
-	@mkdir -p $@/request
-	@mkdir -p $@/response
-	@mkdir -p $@/socket
-
-test:
-	@netcat localhost 80 < netcat
+	mkdir $@ $(addprefix $@/, $(SRCS_SUBDIRECTORY))
 
 clean :
-	@$(RM) $(OBJS)
+	$(RM) $(OBJS)
 
 fclean : clean
-	@$(RM) $(NAME)
-	@$(RM) $(OBJS_DIRECTORY)
+	$(RM) $(NAME)
+	$(RM) $(OBJS_DIRECTORY)
 
 re : fclean all
 
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re $(NAME) bonus

@@ -293,18 +293,17 @@ int Request::get_first_line(std::string &request)
         std::cerr << "webserv: [warn]: get_first_line: Bad HTTP version: " << word << std::endl;
         this->set_error(std::make_pair(505, "HTTP Version Not Supporteds"));
     }
-
-    word = recup_word(request, i);
-    if (word != "host:")
-    {
-        std::cerr << "webserv: [warn]: get_first_line: Request without host part" << std::endl;
-        this->set_error(std::make_pair(400, "Bad request"));
-    }
-    else
-    {
-        word = recup_word(request, i);
-        this->set_host(word);
-    }
+    // word = recup_word(request, i);
+    // if (word != "host:")
+    // {
+    // std::cerr << "webserv: [warn]: get_first_line: Request without host part" << std::endl;
+    // this->set_error(std::make_pair(400, "Bad request"));
+    // }
+    // else
+    // {
+    // // word = recup_word(request, i);
+    // this->set_host(word);
+    // }
     return i;
 }
 
@@ -349,8 +348,6 @@ void Request::parse_header(std::string request)
     lower_file(request);
     i = get_first_line(request);
     _header = request.substr(i, request.length() - i); // (BIG COPY) only for cgi
-    // std::cerr << "HEADER: \n" << request << std::endl;
-    // std::cerr << "--------------------------------------------" << std::endl;
     while (request[i])
     {
         if (request.compare(i, 7, "accept:") == 0)
@@ -358,6 +355,13 @@ void Request::parse_header(std::string request)
             i += 8;
             std::string line = request.substr(i, skip_the_word(request, i) - i);
             this->parse_accept(line);
+        }
+        else if (request.compare(i, 5, "host:") == 0)
+        {
+            i += 6;
+            std::string line = recup_word(request, i);
+            std::cout << "host: " << line << std::endl;
+            this->set_host(line);
         }
         else if (request.compare(i, 7, "cookie:") == 0)
         {
@@ -373,7 +377,6 @@ void Request::parse_header(std::string request)
         }
         else if (request.compare(i, 13, "content-type:") == 0)
         {
-            // Exmple of boundary multipart/form-data; boundary=---------------------------735323031399963166993862150
             i += 14;
             size_t semicolon = request.find(';', i);
             this->set_content_type(request.substr(i, semicolon - i));
@@ -383,7 +386,6 @@ void Request::parse_header(std::string request)
                     ;
                 this->set_boundary(
                     "--" + request.substr(semicolon + 1, (request.find('\n', semicolon) - 1) - (semicolon + 1)));
-                // std::cout << _boundary << std::endl;
             }
         }
         else if (request.compare(i, 18, "transfer-encoding:") == 0)

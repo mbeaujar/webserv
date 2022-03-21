@@ -74,8 +74,6 @@ void Socket::execute(std::vector<Server> &servers)
                             int client_socket = this->accept_connection(i);
                             if (client_socket != -1)
                             {
-                                // std::cerr << "FDDDD: " << i << std::endl;
-                                // std::cerr << "REQUETE SUR PORT: " << get_port(search->second, i) << std::endl;
                                 _fd_to_port.insert(std::make_pair(client_socket, get_port(search->second, i)));
                                 fcntl(client_socket, F_SETFL, O_NONBLOCK);
                                 if (client_socket > _max_fd)
@@ -154,7 +152,7 @@ int Socket::create_socket_ipv4(int &port, int backlog)
         return -1;
     }
     fcntl(server_socket, F_SETFL, O_NONBLOCK);
-#ifndef __APPLE__
+    // #ifndef __APPLE__
     int opt = 1;
     socklen_t optlen = sizeof(opt);
     if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, optlen) == -1)
@@ -163,7 +161,7 @@ int Socket::create_socket_ipv4(int &port, int backlog)
         close(server_socket);
         return -1;
     }
-#endif
+    // #endif
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_port = htons(port);
     server_addr.sin_family = AF_INET;
@@ -195,7 +193,7 @@ int Socket::create_socket_ipv6(int &port, int backlog)
         return -1;
     }
     fcntl(server_socket, F_SETFL, O_NONBLOCK);
-#ifndef __APPLE__
+    // #ifndef __APPLE__
     int opt = 1;
     socklen_t optlen = sizeof(opt);
     if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, optlen) == -1)
@@ -204,7 +202,7 @@ int Socket::create_socket_ipv6(int &port, int backlog)
         close(server_socket);
         return -1;
     }
-#endif
+    // #endif
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin6_family = AF_INET6;
     server_addr.sin6_port = htons(port);
