@@ -257,6 +257,8 @@ void Post::execute(std::map<std::string, std::string> &mime)
                             i++;
                         if (i == upload.size() - 1)
                             read_boundary();
+                        else
+                            ; // throw error on essaye d'upload pas au bon endroit
                     }
                     else
                         _request.set_error(std::make_pair(401, "Unauthorized"));
