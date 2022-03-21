@@ -232,20 +232,25 @@ void Post::execute(std::map<std::string, std::string> &mime)
                 bool is_app = APPEND;
                 std::string path_cgi;
 
+                std::cout << "la: " << _request.get_content_type() << std::endl;
+
                 if (_request.get_content_type() == "application/x-www-form-urlencoded")
                 {
-                    if ((path_cgi = _location.find_path_cgi(extension(_path_file))) != "")
-                    {
-                        Cgi a(path_cgi, _port);
+                    // if ((path_cgi = _location.find_path_cgi(extension(_path_file))) != "")
+                    // {
+                    //     Cgi a(path_cgi, _port);
 
-                        content = get_file_content(_file_name);
-                        _request.set_query_string(content);
-                        content = a.execute(_request, "POST", _client_socket, _path_file, _request.get_content_type(),
-                                            _path_file);
-                        is_app = NOAPPEND;
-                    }
-                    else
-                        return;
+                    //     content = get_file_content(_file_name);
+                    //     _request.set_query_string(content);
+                    //     content = a.execute(_request, "POST", _client_socket, _path_file,
+                    //     _request.get_content_type(),
+                    //                         _path_file);
+                    //     is_app = NOAPPEND;
+                    // }
+                    // else
+                    //     return;
+                    std::cout << "ICICII" << std::endl;
+                    return;
                 }
                 else if (_request.get_content_type() == "multipart/form-data")
                 {
@@ -356,8 +361,6 @@ int Post::read_chunk_child(int msgsize)
 void Post::read_for(int (Post::*f)(int))
 {
     int msgsize;
-
-    std::cout << "LEN: " << _content_length << std::endl;
 
     for (_totalsize = 0; _totalsize < _content_length; _totalsize += msgsize)
     {
