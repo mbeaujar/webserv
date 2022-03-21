@@ -66,10 +66,10 @@ Post &Post::operator=(Post const &rhs)
 
 int Post::is_boundary(std::string &line)
 {
-    if (line == _request.get_boundary() + "\r\n")
+    // std::cout << "end: " << _request.get_boundary() + "--\n" << std::endl;
+    if (line == _request.get_boundary() + "\n" || line == _request.get_boundary() + "\r\n")
         return BOUNDARY;
-    std::string end = _request.get_boundary() + "--\r\n";
-    if (line == end)
+    if (line == _request.get_boundary() + "--\n" || line == _request.get_boundary() + "--\r\n")
         return END_BOUNDARY;
     return NO_BOUNDARY;
 }
@@ -110,13 +110,31 @@ void Post::read_boundary(void)
     while (true)
     {
         std::string line = readline(fd_file);
-        _totalsize += line.length();
-        if (_totalsize >= _content_length)
-            break;
         state = is_boundary(line);
         if ((first_boundary == true && state == BOUNDARY) || state == END_BOUNDARY)
         {
-            size_t blank_line = boundary_content.find("\r\n\r\n", 0);
+            size_t blank_line;
+            for (blank_line = 0; blank_line < boundary_content.length(); blank_line++)
+            {
+                if (boundary_content[blank_line] == '\r')
+                {
+                    if (blank_line + 2 < boundary_content.length() &&
+                        boundary_content.compare(blank_line, 3, "\r\n\n") == 0)
+                        break;
+                    if (blank_line + 3 < boundary_content.length() &&
+                        boundary_content.compare(blank_line, 4, "\r\n\r\n") == 0)
+                        break;
+                }
+                if (boundary_content[blank_line] == '\n')
+                {
+                    if (blank_line + 2 < boundary_content.length() &&
+                        boundary_content.compare(blank_line, 3, "\n\r\n") == 0)
+                        break;
+                    if (blank_line + 1 < boundary_content.length() &&
+                        boundary_content.compare(blank_line, 2, "\n\n") == 0)
+                        break;
+                }
+            }
             int fd = parse_boundary_header(boundary_content.substr(0, blank_line));
             if (blank_line != std::string::npos)
             {
@@ -138,6 +156,9 @@ void Post::read_boundary(void)
             first_boundary = true;
         if (state == NO_BOUNDARY)
             boundary_content += line;
+        _totalsize += line.length();
+        if (_totalsize >= _content_length)
+            break;
     }
     close(fd_file);
 }
@@ -197,10 +218,8 @@ int Post::parse_boundary_header(std::string header)
         }
         ++it;
     }
-    std::cout << "filename:  " << filename << std::endl;
-    std::cout << "name:  " << name << std::endl;
     std::string path_file = _location.get_upload() + "/" + ((filename != "") ? filename : name);
-    return open(path_file.c_str(), O_CREAT | O_RDWR, S_IRWXU);
+    return open(path_file.c_str(), O_CREAT | O_RDWR, S_IRWXO);
 }
 
 void Post::execute(std::map<std::string, std::string> &mime)
@@ -212,6 +231,7 @@ void Post::execute(std::map<std::string, std::string> &mime)
         {
             if (this->is_method_allowed() == true)
             {
+                // return;
                 std::string content;
 
                 // create file
@@ -257,13 +277,17 @@ void Post::execute(std::map<std::string, std::string> &mime)
                     if (_location.get_upload() != "")
                     {
                         size_t i = 0;
+                        std::cout << "path: " << _path_file << std::endl;
                         std::string upload = _location.get_upload() + "/";
+                        std::cout << "upload: " << upload << std::endl;
                         while (_path_file[i] && upload[i] && _path_file[i] == upload[i])
                             i++;
-                        if (i == upload.size() - 1)
+                        std::cout << "i: " << i << std::endl;
+                        std::cout << "upload size: " << upload.size() << std::endl;
+                        if (i == upload.size())
                             read_boundary();
                         else
-                            ; // throw error on essaye d'upload pas au bon endroit
+                            _request.set_error(std::make_pair(400, "Bad Request"));
                     }
                     else
                         _request.set_error(std::make_pair(401, "Unauthorized"));

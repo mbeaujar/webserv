@@ -9,7 +9,6 @@ Request::Request(int &client_socket)
 
     if (header)
         len = strlen(header);
-    // std::cerr << header << std::endl;
     if (header == NULL)
     {
         std::cerr << "webserv: [warn]: class Request: Constructor: can't read "
@@ -368,14 +367,30 @@ void Request::parse_header(std::string request)
         else if (request.compare(i, 13, "content-type:") == 0)
         {
             i += 14;
-            size_t semicolon = request.find(';', i);
-            this->set_content_type(request.substr(i, semicolon - i));
-            if (get_content_type() == "multipart/form-data")
+            size_t endline = request.find('\n', i);
+
+            if (endline == std::string::npos)
+                endline = request.find("\r\n", i) - 2;
+            else
+                endline--;
+            if (endline != std::string::npos)
             {
-                for (; request[semicolon] != '='; semicolon++)
-                    ;
-                this->set_boundary(
-                    "--" + request.substr(semicolon + 1, (request.find('\n', semicolon) - 1) - (semicolon + 1)));
+
+                std::string word = request.substr(i, endline - i);
+                if (word.length() > 18 && word.compare(0, 19, "multipart/form-data") == 0)
+                {
+                    size_t equal = word.find('=', 18);
+                    if (equal == std::string::npos)
+                        this->set_error(std::make_pair(400, "Bad Request"));
+                    this->set_boundary("--" + word.substr(equal + 1, (endline - 1) - (equal + 1)));
+                    size_t semicolon = word.find(';', 0);
+                    if (semicolon == std::string::npos)
+                        this->set_error(std::make_pair(400, "Bad Request"));
+                    this->set_content_type(word.substr(0, semicolon));
+                    std::cout << "boundary: " << _boundary << std::endl;
+                }
+                else
+                    this->set_content_type(word);
             }
         }
         else if (request.compare(i, 18, "transfer-encoding:") == 0)

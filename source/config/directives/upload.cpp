@@ -19,7 +19,8 @@ int parse_upload(std::string file, int i, Location &a)
             if (word.length() > 1 && word[word.length() - 1] == '/')
                 word.erase(--word.end());
             if (file_exist(word) == false || is_directory(word) == false)
-                throw std::invalid_argument("invalid argument in \"upload\" directive, path does not exist");
+                throw std::invalid_argument(
+                    "invalid argument in \"upload\" directive, path does not exist or is not a directory");
             a.set_upload(word);
             i = skip;
             count++;
