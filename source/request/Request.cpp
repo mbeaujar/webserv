@@ -293,17 +293,6 @@ int Request::get_first_line(std::string &request)
         std::cerr << "webserv: [warn]: get_first_line: Bad HTTP version: " << word << std::endl;
         this->set_error(std::make_pair(505, "HTTP Version Not Supporteds"));
     }
-    // word = recup_word(request, i);
-    // if (word != "host:")
-    // {
-    // std::cerr << "webserv: [warn]: get_first_line: Request without host part" << std::endl;
-    // this->set_error(std::make_pair(400, "Bad request"));
-    // }
-    // else
-    // {
-    // // word = recup_word(request, i);
-    // this->set_host(word);
-    // }
     return i;
 }
 
@@ -360,15 +349,16 @@ void Request::parse_header(std::string request)
         {
             i += 6;
             std::string line = recup_word(request, i);
-            std::cout << "host: " << line << std::endl;
             this->set_host(line);
         }
+#if BONUS
         else if (request.compare(i, 7, "cookie:") == 0)
         {
             i += 8;
             std::string line = request.substr(i, (skip_line(request, i) - 1) - i);
             this->parse_cookie(line);
         }
+#endif
         else if (request.compare(i, 15, "content-length:") == 0)
         {
             i += 16;

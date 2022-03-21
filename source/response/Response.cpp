@@ -241,6 +241,7 @@ void Response::create_header(void)
         else
             _response += "Location: " + _request.get_path() + "\r\n";
     }
+#if BONUS
     if (_request.get_new_client() == true)
     {
         _request.generate_cookie_username();
@@ -251,6 +252,7 @@ void Response::create_header(void)
         _response += "Set-Cookie: color=" + _request.get_cookie_color() +
                      "; Expires=" + get_update_date(this->get_hour_date()) + ";\r\n";
     }
+#endif
     _response += "\r\n"; // blank line
 }
 

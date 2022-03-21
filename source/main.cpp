@@ -95,7 +95,12 @@ std::string get_file_content(std::string filename)
 int skip_line(std::string &line, int i)
 {
     while (line[i] && line[i] != '\n')
+    {
+        if (line[i] == '\r')
+            if (line[i + 1] && line[i + 1] == '\n')
+                break;
         ++i;
+    }
     return i;
 }
 

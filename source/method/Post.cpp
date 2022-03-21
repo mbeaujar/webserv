@@ -232,7 +232,7 @@ void Post::execute(std::map<std::string, std::string> &mime)
                 bool is_app = APPEND;
                 std::string path_cgi;
 
-                std::cout << "la: " << _request.get_content_type() << std::endl;
+                std::cout << "la: -" << _request.get_content_type() << "-" << std::endl;
 
                 if (_request.get_content_type() == "application/x-www-form-urlencoded")
                 {
