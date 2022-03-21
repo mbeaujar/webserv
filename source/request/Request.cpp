@@ -373,12 +373,12 @@ void Request::parse_header(std::string request)
         }
         else if (request.compare(i, 13, "content-type:") == 0)
         {
-            // Exmple of boundary multipart/form-data; boundary=---------------------------735323031399963166993862150
             i += 14;
-            size_t semicolon = request.find(';', i);
+            size_t semicolon = request.find('\n', i);
             this->set_content_type(request.substr(i, semicolon - i));
-            if (get_content_type() == "multipart/form-data")
+            if (get_content_type().compare(i, 19, "multipart/form-data") == 0)
             {
+                semicolon = 0;
                 for (; request[semicolon] != '='; semicolon++)
                     ;
                 this->set_boundary(
