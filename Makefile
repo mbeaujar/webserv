@@ -1,4 +1,3 @@
-#.SILENT:
 NAME   = webserv
 CXX     = clang++
 RM     = rm -rf
@@ -83,6 +82,5 @@ fclean : clean
 	$(RM) $(OBJS_DIRECTORY)
 
 re : fclean all
-
 
 .PHONY: all clean fclean re $(NAME) bonus

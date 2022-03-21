@@ -360,15 +360,16 @@ void Request::parse_header(std::string request)
         {
             i += 6;
             std::string line = recup_word(request, i);
-            std::cout << "host: " << line << std::endl;
             this->set_host(line);
         }
+#if BONUS
         else if (request.compare(i, 7, "cookie:") == 0)
         {
             i += 8;
             std::string line = request.substr(i, (skip_line(request, i) - 1) - i);
             this->parse_cookie(line);
         }
+#endif
         else if (request.compare(i, 15, "content-length:") == 0)
         {
             i += 16;
