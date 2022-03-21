@@ -59,30 +59,29 @@ SRCS_SUBDIRECTORY=config \
 		socket
 OBJS_DIRECTORY=.objs/
 
-.SILENT:
-
 $(OBJS_DIRECTORY)%.o : $(SRCS_DIRECTORY)%.cpp
-	$(CXX) $(CXXFLAGS) -D BONUS=$(BONUS) $(HEADER) $< -c -o $@
+	@$(CXX) $(CXXFLAGS) -D BONUS=$(BONUS) $(HEADER) $< -c -o $@
 
-all : $(OBJS_DIRECTORY) $(NAME)
+all : $(NAME)
 
-$(NAME) : $(OBJS)
-	$(CXX) $(CXXFLAGS) $(OBJS) $(HEADER) -lpthread -o $(NAME)
+$(NAME) :  $(OBJS_DIRECTORY)  $(OBJS)
+	@$(CXX) $(CXXFLAGS) $(OBJS) $(HEADER) -lpthread -o $(NAME)
 
 bonus: BONUS=1
 bonus: all
 
 $(OBJS_DIRECTORY):
-	mkdir $@ $(addprefix $@/, $(SRCS_SUBDIRECTORY))
+	@mkdir $@ $(addprefix $@/, $(SRCS_SUBDIRECTORY))
+
 
 clean :
-	$(RM) $(OBJS)
+	@$(RM) $(OBJS)
 
 fclean : clean
-	$(RM) $(NAME)
-	$(RM) $(OBJS_DIRECTORY)
+	@$(RM) $(NAME)
+	@$(RM) $(OBJS_DIRECTORY)
 
 re : fclean all
 
 
-.PHONY: all clean fclean re $(NAME) bonus
+.PHONY: all clean fclean re
