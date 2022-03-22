@@ -152,7 +152,6 @@ int Socket::create_socket_ipv4(int &port, int backlog)
         return -1;
     }
     fcntl(server_socket, F_SETFL, O_NONBLOCK);
-    // #ifndef __APPLE__
     int opt = 1;
     socklen_t optlen = sizeof(opt);
     if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, optlen) == -1)
@@ -161,7 +160,6 @@ int Socket::create_socket_ipv4(int &port, int backlog)
         close(server_socket);
         return -1;
     }
-    // #endif
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_port = htons(port);
     server_addr.sin_family = AF_INET;
@@ -193,7 +191,6 @@ int Socket::create_socket_ipv6(int &port, int backlog)
         return -1;
     }
     fcntl(server_socket, F_SETFL, O_NONBLOCK);
-    // #ifndef __APPLE__
     int opt = 1;
     socklen_t optlen = sizeof(opt);
     if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, optlen) == -1)
@@ -202,7 +199,6 @@ int Socket::create_socket_ipv6(int &port, int backlog)
         close(server_socket);
         return -1;
     }
-    // #endif
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin6_family = AF_INET6;
     server_addr.sin6_port = htons(port);
@@ -232,7 +228,6 @@ int Socket::accept_connection(int server_socket)
     if ((client_socket = accept(server_socket, reinterpret_cast<SA *>(&client_addr),
                                 reinterpret_cast<socklen_t *>(&addr_size))) == -1)
         std::cerr << "werbserv: [emerg]: class Socket: accept_connection: accept failed" << std::endl;
-    // std::cerr << "fd: " << client_socket << "\n";
     return client_socket;
 }
 

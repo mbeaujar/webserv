@@ -103,10 +103,3 @@ int skip_line(std::string &line, int i)
     }
     return i;
 }
-
-/*int skip_semicolon(std::string & line, int i)
-{
-    while (line[i] && line[i] != ';')
-        ++i;
-    return i;
-}*/

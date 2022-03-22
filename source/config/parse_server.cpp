@@ -41,7 +41,6 @@ Server config_server(std::string file)
 {
     Server a;
     int i = 0;
-    // int nb_client_size = 0;
 
     if (file[i] == '{')
         ++i;
@@ -59,14 +58,6 @@ Server config_server(std::string file)
             i += 10;
             i = parse_error_page(file, i, a);
         }
-        // else if (file.compare(i, 20, "client_max_body_size") == 0)
-        // {
-        //     i += 20;
-        //     nb_client_size++;
-        //     if (nb_client_size > 1)
-        //         throw std::invalid_argument("\"client_max_body_size\" directive is duplicate");
-        //     i = parse_client_size(file, i, a);
-        // }
         else if (file.compare(i, 8, "location") == 0)
         {
             i += 8;

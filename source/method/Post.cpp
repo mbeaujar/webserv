@@ -391,7 +391,6 @@ void Post::read_body(void)
     _content_length = _request.get_content_length();
     if (_clientmax != 0 && _content_length > _clientmax)
         _content_length = _clientmax;
-    std::cout << "content_length: " << _content_length << std::endl;
     this->read_for(&Post::read_body_child);
     if (_totalsize != _content_length)
     {
