@@ -15,3 +15,7 @@
 
 
 	echo -en "GET /index.html HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" | nc localhost 80
+
+
+-> delete 
+	echo -en "DELETE /post/upload/LICENSE HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n" |  nc localhost 8081

@@ -2,7 +2,7 @@
 NAME   = webserv
 CXX     = clang++
 RM     = rm -rf
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -fsanitize=address
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 	
 BONUS=0
 
 HEADER = -I source  \

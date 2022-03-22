@@ -307,7 +307,6 @@ int Post::read_buffer(int size)
     _ret = recv(_client_socket, _buffer, size, 0);
     if (_ret == -1)
     {
-        std::cout << "ERRNO: " << strerror(errno) << std::endl;
         std::cerr << "werbserv: [warn]: read_buffer: can't read fd: " << _client_socket << " with buffer of " << size
                   << std::endl;
     }
@@ -347,7 +346,8 @@ int Post::read_body_child(int msgsize)
         return 1;
     if (msgsize == -1)
         msgsize = 0;
-    _buffer[msgsize] = 0;
+    if (msgsize < 1024)
+        _buffer[msgsize] = 0;
     if (msgsize > 0)
         write(_file_fd, _buffer, msgsize);
 
@@ -393,10 +393,7 @@ void Post::read_body(void)
         _content_length = _clientmax;
     this->read_for(&Post::read_body_child);
     if (_totalsize != _content_length)
-    {
-        std::cerr << "read " << _totalsize << " / " << _content_length << std::endl;
         std::cerr << "webserv: [warn]: class Post: read_body: read not enough\n";
-    }
 }
 
 int Post::read_chunked_length(void)
