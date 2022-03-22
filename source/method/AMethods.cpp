@@ -203,11 +203,11 @@ void AMethods::create_path(void)
             {
                 std::string dir = _path_file.substr(0, j);
                 if (is_directory(dir) == false)
-                    mkdir(word.c_str(), S_IRWXO);
+                    mkdir(word.c_str(), S_IRWXU);
             }
             else
             {
-                int fd = open(word.c_str(), O_CREAT, S_IRWXO);
+                int fd = open(word.c_str(), O_CREAT, S_IRWXU);
                 close(fd);
             }
             i = j;

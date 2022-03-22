@@ -219,7 +219,7 @@ int Post::parse_boundary_header(std::string header)
         ++it;
     }
     std::string path_file = _location.get_upload() + "/" + ((filename != "") ? filename : name);
-    return open(path_file.c_str(), O_CREAT | O_RDWR, S_IRWXO);
+    return open(path_file.c_str(), O_CREAT | O_RDWR, S_IRWXU);
 }
 
 void Post::execute(std::map<std::string, std::string> &mime)
@@ -234,7 +234,7 @@ void Post::execute(std::map<std::string, std::string> &mime)
                 std::string content;
 
                 // create file
-                _file_fd = open(_file_name.c_str(), O_CREAT | O_RDWR, S_IRWXO);
+                _file_fd = open(_file_name.c_str(), O_CREAT | O_RDWR, S_IRWXU);
                 if (_file_fd == -1)
                 {
                     _request.set_error(std::make_pair(502, "Bad Gateway"));

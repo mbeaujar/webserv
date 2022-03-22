@@ -244,7 +244,7 @@ int Cgi::create_file(std::string name)
     if (file_exist(name))
         fd = open(name.c_str(), O_RDWR);
     else
-        fd = open(name.c_str(), O_CREAT | O_RDWR, S_IRWXO);
+        fd = open(name.c_str(), O_CREAT | O_RDWR, S_IRWXU);
     if (fd == -1)
         std::cerr << "webserv: [warn]: class Cgi: Method create_file: can't create file: " << name << '\n';
     return fd;
