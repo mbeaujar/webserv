@@ -12,13 +12,11 @@
 class Autoindex
 {
   public:
-    // Canonical
     Autoindex(std::string &path_file, std::string &request_path, std::string const &host, int const port);
     Autoindex(Autoindex const &src);
     virtual ~Autoindex();
     Autoindex &operator=(Autoindex const &rhs);
 
-    // Method
     std::string get_content(void);
 
   private:

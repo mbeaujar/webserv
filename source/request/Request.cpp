@@ -387,7 +387,6 @@ void Request::parse_header(std::string request)
                     if (semicolon == std::string::npos)
                         this->set_error(std::make_pair(400, "Bad Request"));
                     this->set_content_type(word.substr(0, semicolon));
-                    std::cout << "boundary: " << _boundary << std::endl;
                 }
                 else
                     this->set_content_type(word);

@@ -170,9 +170,6 @@ std::string Response::allow_method(void)
     return method;
 }
 
-// Tue, 07 Dec 2021 14:11:18 GMT
-//  Wed, 21 Oct 2015 07:29:00 GMT;
-
 std::string get_update_date(std::string date)
 {
     size_t begin = date.find(':', 0);

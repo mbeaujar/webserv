@@ -18,13 +18,11 @@
 class Post : public AMethods
 {
   public:
-    // Canonical
     Post(Server &server, Request &request, int &client_socket, int &port);
     Post(Post const &copy);
     virtual ~Post();
     Post &operator=(Post const &rhs);
 
-    // Methods
     virtual void execute(std::map<std::string, std::string> &mime);
 
   private:

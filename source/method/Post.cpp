@@ -74,11 +74,11 @@ int Post::is_boundary(std::string &line)
     return NO_BOUNDARY;
 }
 
-std::string readline(int fd)
+std::string readline(int fd, int &ret)
 {
     std::string line;
     char c;
-    int ret = 1;
+    // int ret = 1;
 
     while (true)
     {
@@ -104,14 +104,15 @@ void Post::read_boundary(void)
     int state = 0;
     bool first_boundary = false;
     std::string boundary_content;
+    int ret = 1;
 
     int fd_file = open(_file_name.c_str(), O_RDWR);
     _totalsize = 0;
     while (true)
     {
-        std::string line = readline(fd_file);
+        std::string line = readline(fd_file, ret);
         state = is_boundary(line);
-        if ((first_boundary == true && state == BOUNDARY) || state == END_BOUNDARY)
+        if (((first_boundary == true && state == BOUNDARY) || state == END_BOUNDARY) || ret == 0)
         {
             size_t blank_line;
             for (blank_line = 0; blank_line < boundary_content.length(); blank_line++)
@@ -136,7 +137,7 @@ void Post::read_boundary(void)
                 }
             }
             int fd = parse_boundary_header(boundary_content.substr(0, blank_line));
-            if (blank_line != std::string::npos)
+            if (blank_line < boundary_content.length())
             {
                 if (fd == -1)
                     _request.set_error(std::make_pair(500, "Internal Server Error"));
@@ -156,8 +157,7 @@ void Post::read_boundary(void)
             first_boundary = true;
         if (state == NO_BOUNDARY)
             boundary_content += line;
-        _totalsize += line.length();
-        if (_totalsize >= _content_length)
+        if (ret == 0)
             break;
     }
     close(fd_file);
@@ -171,17 +171,24 @@ int Post::parse_boundary_header(std::string header)
     std::string content_type;
     std::vector<std::string> boundary_header;
 
-    while ((pos = header.find('\n')) != std::string::npos)
+    pos = 0;
+    while (pos != std::string::npos)
     {
-        boundary_header.push_back(header.substr(0, pos));
-        header.erase(0, pos + 1);
+        pos = header.find('\n', pos);
+        if (pos == std::string::npos)
+            pos = header.find("\r\n", pos);
+        if (pos == std::string::npos)
+            break;
+        std::string line = header.substr(0, pos);
+        boundary_header.push_back(line);
+        header.erase(0, pos);
+        pos++;
     }
-    boundary_header.push_back(header);
 
     std::vector<std::string>::iterator it = boundary_header.begin(), ite = boundary_header.end();
     while (it != ite)
     {
-        if (it->compare(0, 19, "Content-Disposition") == 0)
+        if (it->length() > 18 && it->compare(0, 19, "Content-Disposition") == 0)
         {
             int i = 0;
             while ((*it)[i] != '\0')
@@ -189,7 +196,7 @@ int Post::parse_boundary_header(std::string header)
                 if (it->compare(i, 4, "name") == 0)
                 {
                     i += 6;
-                    while ((*it)[i] != '\"')
+                    while ((*it)[i] && (*it)[i] != '\"')
                     {
                         name += (*it)[i];
                         i++;
@@ -198,7 +205,7 @@ int Post::parse_boundary_header(std::string header)
                 else if (it->compare(i, 8, "filename") == 0)
                 {
                     i += 10;
-                    while ((*it)[i] != '\"')
+                    while ((*it)[i] && (*it)[i] != '\"')
                     {
                         filename += (*it)[i];
                         i++;
@@ -207,15 +214,8 @@ int Post::parse_boundary_header(std::string header)
                 i++;
             }
         }
-        if (it->compare(0, 12, "Content-Type") == 0)
-        {
-            int j = 13;
-            while ((*it)[j] != '\0')
-            {
-                content_type += (*it)[j];
-                j++;
-            }
-        }
+        if (it->length() > 11 && it->compare(0, 12, "Content-Type") == 0)
+            content_type = it->substr(13, it->length() - 13);
         ++it;
     }
     std::string path_file = _location.get_upload() + "/" + ((filename != "") ? filename : name);
@@ -231,11 +231,10 @@ void Post::execute(std::map<std::string, std::string> &mime)
         {
             if (this->is_method_allowed() == true)
             {
-                // return;
                 std::string content;
 
                 // create file
-                _file_fd = open(_file_name.c_str(), O_CREAT | O_RDWR, S_IRWXU);
+                _file_fd = open(_file_name.c_str(), O_CREAT | O_RDWR, S_IRWXO);
                 if (_file_fd == -1)
                 {
                     _request.set_error(std::make_pair(502, "Bad Gateway"));
@@ -252,39 +251,26 @@ void Post::execute(std::map<std::string, std::string> &mime)
                 bool is_app = APPEND;
                 std::string path_cgi;
 
-                std::cout << "la: -" << _request.get_content_type() << "-" << std::endl;
-
                 if (_request.get_content_type() == "application/x-www-form-urlencoded")
                 {
-                    // if ((path_cgi = _location.find_path_cgi(extension(_path_file))) != "")
-                    // {
-                    //     Cgi a(path_cgi, _port);
+                    if ((path_cgi = _location.find_path_cgi(extension(_path_file))) != "")
+                    {
+                        Cgi a(path_cgi, _port);
 
-                    //     content = get_file_content(_file_name);
-                    //     _request.set_query_string(content);
-                    //     content = a.execute(_request, "POST", _client_socket, _path_file,
-                    //     _request.get_content_type(),
-                    //                         _path_file);
-                    //     is_app = NOAPPEND;
-                    // }
-                    // else
-                    //     return;
-                    std::cout << "ICICII" << std::endl;
-                    return;
+                        content = get_file_content(_file_name);
+                        _request.set_query_string(content);
+                        content = a.execute(_request, "POST", _client_socket, _path_file, _request.get_content_type(),
+                                            _path_file);
+                        is_app = NOAPPEND;
+                    }
+                    else
+                        return;
                 }
                 else if (_request.get_content_type() == "multipart/form-data")
                 {
                     if (_location.get_upload() != "")
                     {
-                        size_t i = 0;
-                        std::cout << "path: " << _path_file << std::endl;
-                        std::string upload = _location.get_upload() + "/";
-                        std::cout << "upload: " << upload << std::endl;
-                        while (_path_file[i] && upload[i] && _path_file[i] == upload[i])
-                            i++;
-                        std::cout << "i: " << i << std::endl;
-                        std::cout << "upload size: " << upload.size() << std::endl;
-                        if (i == upload.size())
+                        if (this->path_upload() == true)
                             read_boundary();
                         else
                             _request.set_error(std::make_pair(400, "Bad Request"));
@@ -318,7 +304,6 @@ void Post::execute(std::map<std::string, std::string> &mime)
 
 int Post::read_buffer(int size)
 {
-    // std::cout << "SIZE: " << size << std::endl;
     _ret = recv(_client_socket, _buffer, size, 0);
     if (_ret == -1)
     {
@@ -358,12 +343,11 @@ int Post::read_endline(void)
 
 int Post::read_body_child(int msgsize)
 {
-    if (msgsize == 0) // code d'erreur -> return 1 -- a test
+    if (msgsize == 0)
         return 1;
     if (msgsize == -1)
         msgsize = 0;
     _buffer[msgsize] = 0;
-    // std::cerr << _buffer << std::endl;
     if (msgsize > 0)
         write(_file_fd, _buffer, msgsize);
 
@@ -372,7 +356,7 @@ int Post::read_body_child(int msgsize)
 
 int Post::read_chunk_child(int msgsize)
 {
-    if (msgsize == 0) // a test
+    if (msgsize == 0)
         return 1;
     if (msgsize == -1)
         msgsize = 0;
@@ -403,9 +387,11 @@ void Post::read_for(int (Post::*f)(int))
 
 void Post::read_body(void)
 {
+    _clientmax = _location.get_max_body();
     _content_length = _request.get_content_length();
     if (_clientmax != 0 && _content_length > _clientmax)
         _content_length = _clientmax;
+    std::cout << "content_length: " << _content_length << std::endl;
     this->read_for(&Post::read_body_child);
     if (_totalsize != _content_length)
     {
