@@ -156,12 +156,14 @@ int AMethods::path_to_file(void)
     }
     else if (_method == POST)
     {
-        // if (this->path_upload() == false)
-        // {
-        // 	_request.set_error(std::make_pair(400, "Bad Request"));
-        // 	std::cerr << "webserv: [warn]: class AMethods: path_to_file: no permission to post on this path" << "\n";
-        // 	return EXIT_FAILURE;
-        // }
+        // std::cout << "PATH_UPLOAD: " << this->path_upload() << std::endl;
+        if (this->path_upload() == false)
+        {
+            _request.set_error(std::make_pair(400, "Bad Request"));
+            std::cerr << "webserv: [warn]: class AMethods: path_to_file: no permission to post on this path"
+                      << "\n";
+            return EXIT_FAILURE;
+        }
         this->create_path();
     }
     else
@@ -177,6 +179,8 @@ bool AMethods::path_upload(void)
 {
     std::string &upload = _location.get_upload();
 
+    if (upload == "")
+        return false;
     if (_path_file.length() < upload.length())
         return false;
     int i = 0;

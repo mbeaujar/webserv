@@ -264,7 +264,10 @@ void Post::execute(std::map<std::string, std::string> &mime)
                         is_app = NOAPPEND;
                     }
                     else
+                    {
+                        _request.set_error(std::make_pair(415, "Unsupported Media Type"));
                         return;
+                    }
                 }
                 else if (_request.get_content_type() == "multipart/form-data")
                 {
