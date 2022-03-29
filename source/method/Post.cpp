@@ -321,7 +321,7 @@ int Post::read_endline(void)
     char c;
 
     _ret = recv(_client_socket, &c, 1, 0);
-    if (_ret == -1)
+    if (_ret == -1 || _ret == 0)
     {
         std::cerr << "werbserv: [warn]: read_endline: recv can't read\n";
         return EXIT_FAILURE;
@@ -329,7 +329,7 @@ int Post::read_endline(void)
     if (c == '\r')
     {
         _ret = recv(_client_socket, &c, 1, 0);
-        if (_ret == -1)
+        if (_ret == -1 || _ret == 0)
         {
             std::cerr << "werbserv: [warn]: read_endline: recv can't read after '\\r'\n";
             return EXIT_FAILURE;
@@ -353,23 +353,10 @@ int Post::read_body_child(int msgsize)
         _buffer[msgsize] = 0;
     if (msgsize > 0)
         write(_file_fd, _buffer, msgsize);
-
     return 0;
 }
 
-int Post::read_chunk_child(int msgsize)
-{
-    if (msgsize == 0)
-        return 1;
-    if (msgsize == -1)
-        msgsize = 0;
-    _buffer[msgsize] = 0;
-    if (msgsize > 0)
-        write(_file_fd, _buffer, msgsize);
-    return 0;
-}
-
-void Post::read_for(int (Post::*f)(int))
+void Post::read_for(void)
 {
     int msgsize;
 
@@ -381,7 +368,7 @@ void Post::read_for(int (Post::*f)(int))
             msgsize = read_buffer(BUFFERSIZE);
         else
             msgsize = read_buffer(_content_length - _totalsize);
-        if ((this->*f)(msgsize) == 1)
+        if (read_body_child(msgsize) == 1)
             break;
         if (msgsize < 0)
             msgsize = 0;
@@ -394,7 +381,7 @@ void Post::read_body(void)
     _content_length = _request.get_content_length();
     if (_clientmax != 0 && _content_length > _clientmax)
         _content_length = _clientmax;
-    this->read_for(&Post::read_body_child);
+    this->read_for();
     if (_totalsize != _content_length)
         std::cerr << "webserv: [warn]: class Post: read_body: read not enough\n";
 }
@@ -442,7 +429,7 @@ void Post::read_body_chunked(void)
             _clientmax = _totalsize + _content_length;
         if (_totalsize + _content_length > _clientmax)
             _content_length = _clientmax - _totalsize;
-        this->read_for(&Post::read_chunk_child);
+        this->read_for();
         this->read_endline();
         if (_location.get_max_body() != 0 && _totalsize + _content_length > _location.get_max_body())
             break;

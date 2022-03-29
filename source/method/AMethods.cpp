@@ -159,7 +159,7 @@ int AMethods::path_to_file(void)
         // std::cout << "PATH_UPLOAD: " << this->path_upload() << std::endl;
         if (this->path_upload() == false)
         {
-            _request.set_error(std::make_pair(400, "Bad Request"));
+            _request.set_error(std::make_pair(404, "Not Found"));
             std::cerr << "webserv: [warn]: class AMethods: path_to_file: no permission to post on this path"
                       << "\n";
             return EXIT_FAILURE;

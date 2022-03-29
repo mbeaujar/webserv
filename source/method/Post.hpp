@@ -43,8 +43,7 @@ class Post : public AMethods
     int read_buffer(int size);
     int read_endline(void);
     int read_body_child(int msgsize);
-    int read_chunk_child(int msgsize);
-    void read_for(int (Post::*)(int));
+    void read_for(void);
     void read_body(void);
     int read_chunked_length(void);
     void read_body_chunked(void);
