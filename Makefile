@@ -73,6 +73,8 @@ bonus: all
 $(OBJS_DIRECTORY):
 	@mkdir $@ $(addprefix $@/, $(SRCS_SUBDIRECTORY))
 
+path:
+	@./.path.sh
 
 clean :
 	@$(RM) $(OBJS)
